@@ -14,7 +14,7 @@ The larger NUM_LAYERS is, the closer the reconstruction gets to the original.
 Dependencies: numpy and Pillow
     pip install numpy pillow
 """
-
+ 
 import os
 import numpy as np
 from PIL import Image

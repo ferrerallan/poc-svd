@@ -1,103 +1,101 @@
 # poc-svd
 
-POC de **SVD (Singular Value Decomposition)** aplicada a uma imagem.
+A POC of **SVD (Singular Value Decomposition)** applied to an image.
 
-A ideia: uma imagem em tons de cinza é só uma matriz de números. A SVD quebra
-essa matriz em uma pilha de **camadas** ordenadas por importância. Somando as
-primeiras `N` camadas você já recupera quase a imagem inteira — usando bem menos
-números do que a original.
+The idea: a grayscale image is just a matrix of numbers. SVD breaks that matrix
+apart into a stack of **layers** ordered by importance. Adding up the first `N`
+layers already gets you almost the whole image back — using far fewer numbers
+than the original.
 
-## O que o script faz
+## What the script does
 
-[svd_imagem.py](svd_imagem.py) lê `entrada.png`, converte para tons de cinza e,
-para as primeiras `NUM_LAYERS` camadas:
+[svd_imagem.py](svd_imagem.py) reads `entrada.png`, converts it to grayscale
+and, for the first `NUM_LAYERS` layers:
 
-1. salva **cada camada isolada** em dois formatos:
-   - `layer_NN.png` — versão visível, só para enxergar o padrão
-   - `layer_NN.npy` — os números crus (já com o peso/sigma embutido), úteis para somar depois
-2. salva a **reconstrução** com as `N` camadas somadas em `reconstructed.png`
-3. imprime um relatório de compressão no terminal
+1. saves **each layer on its own** in two formats:
+   - `layer_NN.png` — a visible version, just to see the pattern
+   - `layer_NN.npy` — the raw numbers (with the weight/sigma baked in), useful to add up later
+2. saves the **reconstruction** of the `N` layers summed together as `reconstructed.png`
+3. prints a compression report to the terminal
 
-Quanto maior o `NUM_LAYERS`, mais perto a reconstrução fica do original.
+The larger `NUM_LAYERS` is, the closer the reconstruction gets to the original.
 
-## Requisitos
+## Requirements
 
 ```bash
 pip install numpy pillow
 ```
 
-## Como rodar
+## Running it
 
 ```bash
 python svd_imagem.py
 ```
 
-Formato da saída no terminal (com a `entrada.png` de 336 × 296 e 35 camadas):
+Shape of the terminal output (with the 336 × 296 `entrada.png` and 35 layers):
 
 ```
 image:             336 x 296  (99,456 numbers)
 layers generated:  35 of 296
 reconstruction:    22,155 numbers (22.3% of the original)
-image captured:    <depende da imagem>%
+image captured:    <depends on the image>%
 everything saved:  saida/
 ```
 
-Ou seja: nesta configuração a reconstrução guarda só **22,3% dos números** da
-imagem original.
+In other words: at this setting the reconstruction keeps only **22.3% of the
+numbers** in the original image.
 
-## Configuração
+## Configuration
 
-As três variáveis ficam no topo de [svd_imagem.py:25-27](svd_imagem.py#L25-L27):
+The three variables live at the top of [svd_imagem.py:25-27](svd_imagem.py#L25-L27):
 
-| Variável      | Padrão         | O que é                                             |
-| ------------- | -------------- | --------------------------------------------------- |
-| `IMAGE_PATH`  | `"entrada.png"` | imagem de entrada (qualquer formato que o Pillow abra) |
-| `NUM_LAYERS`  | `35`           | quantas camadas gerar (limitado a `min(altura, largura)`) |
-| `OUTPUT_DIR`  | `"saida"`      | pasta onde tudo é salvo                             |
+| Variable     | Default         | What it is                                              |
+| ------------ | --------------- | ------------------------------------------------------- |
+| `IMAGE_PATH` | `"entrada.png"` | input image (any format Pillow can open)                |
+| `NUM_LAYERS` | `35`            | how many layers to generate (capped at `min(height, width)`) |
+| `OUTPUT_DIR` | `"saida"`       | folder where everything gets saved                      |
 
-## Estrutura
+## Layout
 
 ```
 .
-├── svd_imagem.py       # o script inteiro
-├── entrada.png         # imagem de entrada
+├── svd_imagem.py       # the whole script
+├── entrada.png         # input image
 ├── saida/
-│   ├── layer_01.png    # camada 1 isolada (visualização)
-│   ├── layer_01.npy    # camada 1 isolada (números crus)
+│   ├── layer_01.png    # layer 1 on its own (visualization)
+│   ├── layer_01.npy    # layer 1 on its own (raw numbers)
 │   ├── ...
 │   └── reconstructed.png
 └── README.md
 ```
 
-## Como funciona
+## How it works
 
-A SVD decompõe a matriz da imagem `W` em `W = U · Σ · Vᵀ`. Cada camada `i` é o
-produto externo de uma coluna de `U` por uma linha de `Vᵀ`, multiplicado pelo
-peso `σᵢ`:
-
-```python
-camada_i = σᵢ * np.outer(U[:, i], Vt[i])
-```
-
-Os pesos `σ` vêm ordenados do maior para o menor — por isso a camada 1 carrega o
-"esqueleto" da imagem e as últimas só acrescentam detalhe fino.
-
-Somar as `N` primeiras camadas é o mesmo que a multiplicação de matrizes truncada:
+SVD decomposes the image matrix `W` into `W = U · Σ · Vᵀ`. Each layer `i` is the
+outer product of a column of `U` with a row of `Vᵀ`, scaled by the weight `σᵢ`:
 
 ```python
-reconstruida = (U[:, :N] * σ[:N]) @ Vt[:N, :]
+layer_i = σᵢ * np.outer(U[:, i], Vt[i])
 ```
 
-### Sobre os PNGs de camada
+The `σ` weights come out sorted largest to smallest — which is why layer 1
+carries the "skeleton" of the image and the later ones only add fine detail.
 
-Uma camada isolada tem valores **negativos e positivos**. Para virar imagem, o
-script centra o zero no cinza médio (128) e reescala pelo maior valor absoluto
-([`to_visible_image`](svd_imagem.py#L55-L62)). Isso é **só para visualização** —
-os números reais só existem nos `.npy`.
+Summing the first `N` layers is the same as the truncated matrix multiplication:
 
-## Métricas do relatório
+```python
+reconstructed = (U[:, :N] * σ[:N]) @ Vt[:N, :]
+```
 
-- **reconstruction** — cada camada custa `altura + largura + 1` números
-  (uma coluna de `U`, uma linha de `Vᵀ` e um `σ`), contra `altura × largura` da
-  imagem cheia
-- **image captured** — a "energia" retida, `Σσᵢ² (usados) / Σσᵢ² (todos)`
+### About the layer PNGs
+
+A single layer has **both negative and positive** values. To turn it into an
+image, the script centers zero on mid gray (128) and rescales by the largest
+absolute value ([`to_visible_image`](svd_imagem.py#L55-L62)). That's **for
+visualization only** — the real numbers only survive in the `.npy` files.
+
+## Report metrics
+
+- **reconstruction** — each layer costs `height + width + 1` numbers (one column
+  of `U`, one row of `Vᵀ` and one `σ`), against `height × width` for the full image
+- **image captured** — the retained "energy", `Σσᵢ² (used) / Σσᵢ² (all)`

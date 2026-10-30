@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leituras do doutorado</title>
+<style>
+:root{
+  --bg:#fbfaf8; --card:#fff; --ink:#1b1b1d; --ink2:#55565e; --ink3:#86868f;
+  --line:#e4e2dd; --accent:#7a4bd0; --accent-bg:#f3edfd; --done:#1d6b4a; --done-bg:#e9f5ee;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#16161a; --card:#1e1e24; --ink:#eceaf2; --ink2:#aaa8b5; --ink3:#7e7c89;
+    --line:#2f2f37; --accent:#b699f5; --accent-bg:#26203a; --done:#7bcea5; --done-bg:#1c2f26;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:0 20px 80px}
+header{padding:52px 0 26px}
+h1{font-size:31px;margin:0 0 12px;letter-spacing:-.02em}
+.sub{color:var(--ink2);margin:0 0 18px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:20px 0}
+.box p{margin:0 0 10px}
+.box p:last-child{margin:0}
+.box.dica{border-left:3px solid var(--accent)}
+h2{font-size:19px;margin:38px 0 4px;letter-spacing:-.01em}
+h2 .bloco{display:block;font:600 11px/1.6 var(--mono);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent)}
+.blurb{color:var(--ink2);margin:6px 0 16px;font-size:15px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:15px 17px;margin:0 0 12px;display:grid;grid-template-columns:26px 1fr;gap:12px}
+.item.lido{border-color:var(--done);background:var(--done-bg)}
+.item input{width:18px;height:18px;margin-top:4px;accent-color:var(--accent);cursor:pointer}
+.tit{font-weight:650;font-size:16px;margin:0 0 3px}
+.aut{font-size:13.5px;color:var(--ink3);margin:0 0 9px}
+.item dl{margin:0;font-size:14.5px}
+.item dt{font:600 11px/1.6 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:8px}
+.item dd{margin:1px 0 0;color:var(--ink2)}
+.item dd.destaque{color:var(--ink)}
+a{color:var(--accent)}
+.link{font:13px var(--mono);margin-top:10px;display:inline-block}
+.barra{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);
+  padding:12px 0;margin-bottom:6px;font-size:14px;color:var(--ink2);z-index:2}
+.barra b{color:var(--ink)}
+footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);
+  color:var(--ink3);font-size:13.5px}
+@media (max-width:560px){h1{font-size:25px}header{padding-top:32px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>O que ler primeiro</h1>
+  <p class="sub">Lista de leitura para a tese: SVD no transfer learning de foundation models.
+  A pergunta central é <b>o que muda mais durante o fine-tuning, os valores singulares ou os
+  vetores singulares</b>.</p>
+</header>
+
+<div class="barra"><span id="contador">0 de 13 lidos</span></div>
+
+<div class="box dica">
+  <p><b>Como usar esta lista.</b> Ela está em ordem de leitura, não em ordem de importância.
+  Leia um bloco por vez. Marque a caixinha quando terminar, o navegador guarda a marcação.</p>
+  <p>Você não precisa entender tudo na primeira passada. Em cada artigo, procure só duas coisas:
+  <b>o que eles mediram</b> e <b>o que eles concluíram sobre valores versus vetores</b>.</p>
+</div>
+
+<h2><span class="bloco">Bloco 1</span>Comece por estes três</h2>
+<p class="blurb">São os que estão mais perto da sua pergunta. Depois deles você já vai saber
+onde a sua tese se encaixa.</p>
+
+<div class="item" data-id="fsgan">
+  <input type="checkbox">
+  <div>
+    <p class="tit">1. Few-Shot Adaptation of Generative Adversarial Networks (FSGAN)</p>
+    <p class="aut">Robb, Chu, Kumar, Huang — 2020</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>Eles adaptaram um gerador de imagens mexendo <b>só nos valores singulares</b> e
+      deixando os vetores singulares congelados. Funcionou com menos de 100 imagens.</dd>
+      <dt>Por que ler</dt>
+      <dd class="destaque">É a origem da ideia. Alguém já apostou que os valores são o que
+      importa, e mostrou que a aposta se paga. Você precisa saber disso antes de tudo.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2010.11943" target="_blank" rel="noopener">arxiv.org/abs/2010.11943</a>
+  </div>
+</div>
+
+<div class="item" data-id="spectralbasis">
+  <input type="checkbox">
+  <div>
+    <p class="tit">2. Pretraining Induces a Reusable Spectral Basis for Downstream Task Adaptation</p>
+    <p class="aut">Yu, Wang, Deng, Zhu, Ma, Liu — 2026</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>Mediram e concluíram que os <b>vetores singulares principais quase não mudam</b>
+      no fine-tuning, e que são até parecidos entre tarefas diferentes. Para eles, o
+      pré-treino cria um sistema de coordenadas que depois é só reaproveitado.</dd>
+      <dt>Por que ler</dt>
+      <dd class="destaque">É o artigo mais recente e mais parecido com o que você quer fazer.
+      Leia com atenção o método deles, porque é exatamente o tipo de medição que a sua tese
+      vai precisar fazer melhor.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2605.07302" target="_blank" rel="noopener">arxiv.org/abs/2605.07302</a>
+  </div>
+</div>
+
+<div class="item" data-id="weightspectra">
+  <input type="checkbox">
+  <div>
+    <p class="tit">3. Weight Spectra Induced Efficient Model Adaptation</p>
+    <p class="aut">Si, Yang, Liu, Wang, Yang, Su, Zheng, Shen — 2025</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>O fine-tuning <b>aumenta os valores singulares do topo</b> e quase não toca no resto.
+      Mas eles também dizem que os <b>vetores do topo giram</b> na direção da nova tarefa.</dd>
+      <dt>Por que ler</dt>
+      <dd class="destaque">Compare a conclusão deste com a do artigo 2. Um diz que os vetores
+      principais ficam parados, o outro diz que giram. Essa discordância é o melhor ponto de
+      partida que você pode ter: existe um buraco na literatura e ele é exatamente o seu tema.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2505.23099" target="_blank" rel="noopener">arxiv.org/abs/2505.23099</a>
+  </div>
+</div>
+
+<h2><span class="bloco">Bloco 2</span>Quem já escolheu um lado</h2>
+<p class="blurb">Estes não fazem a pergunta, eles apostam numa resposta e constroem um método
+em cima dela. Servem como prova de que a pergunta é boa, e como comparação para a sua tese.</p>
+
+<div class="item" data-id="svdiff">
+  <input type="checkbox">
+  <div>
+    <p class="tit">4. SVDiff: Compact Parameter Space for Diffusion Fine-Tuning</p>
+    <p class="aut">Han e outros — ICCV 2023</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>Fine-tuning de modelo de difusão treinando <b>só um deslocamento nos valores
+      singulares</b>. O arquivo final tem 1,7 MB em vez de 3,66 GB.</dd>
+      <dt>Por que ler</dt>
+      <dd>É o FSGAN levado para modelos de imagem modernos. Mostra o tamanho da economia
+      quando a aposta dá certo, que é justamente o que a sua tese promete orientar.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2303.11305" target="_blank" rel="noopener">arxiv.org/abs/2303.11305</a>
+  </div>
+</div>
+
+<div class="item" data-id="svf">
+  <input type="checkbox">
+  <div>
+    <p class="tit">5. Transformer²: Self-Adaptive LLMs (método SVF)</p>
+    <p class="aut">Sun, Cetin, Tang (Sakana AI) — 2025</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>Mesma aposta, agora em modelos de linguagem: aprender <b>um vetor que escala cada
+      valor singular</b> e nada mais.</dd>
+      <dt>Por que ler</dt>
+      <dd>Mostra que a aposta nos valores não é específica de imagem. Se você quiser dizer que
+      seu framework vale para foundation models em geral, precisa citar este.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2501.06252" target="_blank" rel="noopener">arxiv.org/abs/2501.06252</a>
+  </div>
+</div>
+
+<div class="item" data-id="oft">
+  <input type="checkbox">
+  <div>
+    <p class="tit">6. Controlling Text-to-Image Diffusion by Orthogonal Finetuning (OFT)</p>
+    <p class="aut">Qiu, Liu, Feng e outros — NeurIPS 2023</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>A aposta contrária: <b>só girar</b> os pesos, mantendo as magnitudes intactas.
+      Também funciona.</dd>
+      <dt>Por que ler</dt>
+      <dd class="destaque">Este é o contraexemplo da sua pergunta. Se mexer só nos valores
+      funciona e mexer só na rotação também funciona, então "quem muda mais" não tem resposta
+      única, e o seu framework precisa dizer <b>quando</b> cada um vale a pena.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2306.07280" target="_blank" rel="noopener">arxiv.org/abs/2306.07280</a>
+  </div>
+</div>
+
+<div class="item" data-id="dora">
+  <input type="checkbox">
+  <div>
+    <p class="tit">7. DoRA: Weight-Decomposed Low-Rank Adaptation</p>
+    <p class="aut">Liu, Wang, Yin, Molchanov e outros (NVIDIA) — ICML 2024</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>Quebra o peso em <b>magnitude e direção</b> e trata cada parte de um jeito. É a sua
+      pergunta feita com outra decomposição, mais simples que a SVD.</dd>
+      <dt>Por que ler</dt>
+      <dd>Para saber como eles justificaram a separação e como mostraram que ela importa.
+      Você vai precisar explicar por que a SVD é uma lente melhor que essa.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2402.09353" target="_blank" rel="noopener">arxiv.org/abs/2402.09353</a>
+  </div>
+</div>
+
+<h2><span class="bloco">Bloco 3</span>A base que todo mundo cita</h2>
+<p class="blurb">Sem estes três você não consegue escrever a introdução da tese. São leitura
+obrigatória, mas podem vir depois dos blocos 1 e 2.</p>
+
+<div class="item" data-id="lora">
+  <input type="checkbox">
+  <div>
+    <p class="tit">8. LoRA: Low-Rank Adaptation of Large Language Models</p>
+    <p class="aut">Hu e outros (Microsoft) — 2021</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>Em vez de treinar a matriz inteira, treina duas matrizes pequenas cuja multiplicação
+      tem posto baixo. Virou o padrão da área.</dd>
+      <dt>Por que ler</dt>
+      <dd>É o ponto de comparação de qualquer método novo. E a ideia de posto baixo é prima
+      direta da SVD, então a ponte entre os dois é natural.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2106.09685" target="_blank" rel="noopener">arxiv.org/abs/2106.09685</a>
+  </div>
+</div>
+
+<div class="item" data-id="pissa">
+  <input type="checkbox">
+  <div>
+    <p class="tit">9. PiSSA: Principal Singular Values and Singular Vectors Adaptation</p>
+    <p class="aut">Meng, Wang, Zhang — NeurIPS 2024</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>É LoRA, mas começando pelos <b>componentes principais da SVD</b> do peso original em
+      vez de começar aleatório. Converge mais rápido.</dd>
+      <dt>Por que ler</dt>
+      <dd>Mostra que a parte "grande" do espectro é onde a adaptação quer acontecer. É um
+      indício empírico a favor de uma das suas hipóteses.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2404.02948" target="_blank" rel="noopener">arxiv.org/abs/2404.02948</a>
+  </div>
+</div>
+
+<div class="item" data-id="intrinsic">
+  <input type="checkbox">
+  <div>
+    <p class="tit">10. Intrinsic Dimensionality Explains the Effectiveness of Language Model Fine-Tuning</p>
+    <p class="aut">Aghajanyan, Gupta, Zettlemoyer — ACL 2021</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>O fine-tuning precisa de <b>pouquíssimos graus de liberdade</b>. Eles ajustaram um
+      RoBERTa mexendo em 200 parâmetros e chegaram a 90% do resultado completo.</dd>
+      <dt>Por que ler</dt>
+      <dd>É a explicação de fundo para tudo no bloco 2. Se a adaptação cabe em pouquíssimas
+      dimensões, a pergunta vira <b>quais</b> dimensões, que é a sua tese.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2012.13255" target="_blank" rel="noopener">arxiv.org/abs/2012.13255</a>
+  </div>
+</div>
+
+<h2><span class="bloco">Bloco 4</span>Como medir sem se enganar</h2>
+<p class="blurb">Estes não são sobre SVD em fine-tuning. São sobre <b>método</b>: como comparar
+dois modelos sem tirar conclusão errada. Você vai voltar neles quando montar o experimento.</p>
+
+<div class="item" data-id="neyshabur">
+  <input type="checkbox">
+  <div>
+    <p class="tit">11. What is being transferred in transfer learning?</p>
+    <p class="aut">Neyshabur, Sedghi, Zhang — NeurIPS 2020</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>Investiga o que de fato é transferido de um modelo pré-treinado, separando reuso de
+      features de outros efeitos, e mostra que o modelo ajustado fica na mesma região da
+      paisagem de erro em que começou.</dd>
+      <dt>Por que ler</dt>
+      <dd class="destaque">É o melhor exemplo de como desenhar experimentos com controle para
+      responder um "o que muda". O valor aqui é o método, mais até que o resultado.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/2008.11687" target="_blank" rel="noopener">arxiv.org/abs/2008.11687</a>
+  </div>
+</div>
+
+<div class="item" data-id="svcca">
+  <input type="checkbox">
+  <div>
+    <p class="tit">12. SVCCA: Singular Vector Canonical Correlation Analysis</p>
+    <p class="aut">Raghu, Gilmer, Yosinski, Sohl-Dickstein — NeurIPS 2017</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>Usa SVD para comparar representações de duas redes de um jeito que não se confunde
+      com rotação ou escala.</dd>
+      <dt>Por que ler</dt>
+      <dd>Eles já enfrentaram o problema que você vai enfrentar: comparar dois espaços quando
+      a base pode girar sem que nada de real tenha mudado.</dd>
+    </dl>
+    <a class="link" href="https://arxiv.org/abs/1706.05806" target="_blank" rel="noopener">arxiv.org/abs/1706.05806</a>
+  </div>
+</div>
+
+<div class="item" data-id="stewart">
+  <input type="checkbox">
+  <div>
+    <p class="tit">13. Matrix Perturbation Theory (livro, capítulos de SVD)</p>
+    <p class="aut">G. W. Stewart e Ji-guang Sun — 1990</p>
+    <dl>
+      <dt>O que diz</dt>
+      <dd>A matemática de quanto os valores e os vetores singulares se mexem quando você
+      perturba um pouquinho a matriz.</dd>
+      <dt>Por que ler</dt>
+      <dd class="destaque">Este é o seguro contra o erro mais comum do seu tipo de
+      experimento: quando dois valores singulares são parecidos, os vetores correspondentes
+      giram sozinhos, sem que nada tenha aprendido nada. Sem essa teoria você pode medir ruído
+      e chamar de descoberta.</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="box">
+  <p><b>Uma observação antes de começar.</b> Repare que os artigos 2 e 3 se contradizem: um diz
+  que os vetores principais ficam estáveis, o outro diz que eles giram. Os dois são recentes e
+  os dois mediram de jeitos diferentes.</p>
+  <p>Guarde essa contradição. Ela é provavelmente a melhor porta de entrada para a sua tese,
+  porque mostra que falta um jeito padronizado de medir, e é isso que o seu framework pode ser.</p>
+</div>
+
+<footer>
+  Lista montada em 26 de setembro de 2026. Todas as referências foram conferidas nos links do
+  arXiv, com exceção do item 13, que é livro. Confira sempre a versão mais recente antes de citar.
+</footer>
+
+</div>
+<script>
+(function(){
+  var itens = document.querySelectorAll('.item');
+  var contador = document.getElementById('contador');
+  function ler(id){
+    try { return localStorage.getItem('lido:'+id) === '1'; } catch(e){ return false; }
+  }
+  function salvar(id, v){
+    try { localStorage.setItem('lido:'+id, v ? '1':'0'); } catch(e){}
+  }
+  function atualizar(){
+    var n = 0;
+    itens.forEach(function(it){ if(it.querySelector('input').checked) n++; });
+    contador.innerHTML = '<b>'+n+'</b> de '+itens.length+' lidos';
+  }
+  itens.forEach(function(it){
+    var id = it.dataset.id, cx = it.querySelector('input');
+    cx.checked = ler(id);
+    it.classList.toggle('lido', cx.checked);
+    cx.addEventListener('change', function(){
+      salvar(id, cx.checked);
+      it.classList.toggle('lido', cx.checked);
+      atualizar();
+    });
+  });
+  atualizar();
+})();
+</script>
+</body>
+</html>

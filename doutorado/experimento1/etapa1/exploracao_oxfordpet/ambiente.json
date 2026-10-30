@@ -1,0 +1,7 @@
+{
+ "python": "3.10.12",
+ "pandas": "2.3.3",
+ "numpy": "2.2.6",
+ "matplotlib": "3.10.8",
+ "plataforma": "Linux-6.16.3-76061603-generic-x86_64-with-glibc2.35"
+}

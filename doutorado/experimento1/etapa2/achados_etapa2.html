@@ -1,0 +1,26 @@
+<div class="caixa ok"><span class="rot">Resposta curta: a hipótese se confirma em parte</span>
+  <p>Sem weight decay, a <b>escala geral</b> dos pesos desaparece: a média com sinal vai de <b>[[E1_COMUM_SINAL]]%</b> para <b>[[E2_COMUM_SINAL]]%</b>, e deixa de ter um sentido único. Essa parte era <b>efeito do otimizador</b>.</p>
+  <p>Mas a parte <b>diferencial</b> (um σ mudando em relação aos outros) fica <b>igual</b>: [[E1_DIF_ABS]]% na etapa 1 e [[E2_DIF_ABS]]% na etapa 2. Então a mudança de tamanho <b>não</b> é só artefato do otimizador: o que sobra sem o weight decay é uma reponderação <b>sistemática e repetível</b> entre treinos (ainda sem prova de que seja específica da tarefa). As <b>direções</b> não mudam com o weight decay.</p></div>
+
+<h4>Achados</h4>
+<ol>
+  <li><b>A escala geral era mesmo efeito do weight decay.</b> A escala geral média com sinal passou de [[E1_COMUM_SINAL]]% para [[E2_COMUM_SINAL]]%, e a fração de casos em que ela é positiva foi de [[E1_COMUM_POS]]% para [[E2_COMUM_POS]]% (sem um efeito sistemático, seria cerca de 50%). A fração da energia da mudança que é escala geral caiu de [[E1_FRAC_COMUM]]% para [[E2_FRAC_COMUM]]%, quase o que o acaso daria com 10 σ independentes ([[BASE_COMUM]]%). Na etapa 1 o valor observado ([[E1_COMUM_SINAL]]%) batia com o encolhimento previsto pelo cronograma do treino ([[E1_ENCOLH]]%).</li>
+  <li><b>A parte diferencial dos pesos não mudou:</b> [[E1_DIF_ABS]]% contra [[E2_DIF_ABS]]%. A reponderação dos σ entre si não é efeito do weight decay.</li>
+  <li><b>No total, os pesos mudaram um pouco menos:</b> de [[E1_P_FULL]]% para [[E2_P_FULL]]% ([[DIF_P]]%), uma diferença clara frente à variação entre sementes ([[E1_P_SD]]% e [[E2_P_SD]]%, t de Welch = [[T_P]]), mas pequena: cerca de um décimo da mudança dos pesos era efeito do otimizador.</li>
+  <li><b>A concentração média caiu</b> de [[CONC1]] para [[CONC2]] (variação entre sementes de ± [[CONC1_SD]] e ± [[CONC2_SD]]): sem o weight decay, menos da mudança cai na diagonal da base da SVD, isto é, na parte "valores singulares". É coerente com a escala geral ter saído, mas essa relação não foi testada diretamente. As quatro medidas, com mapas, estão em 2.4 (em <code>resultados.html</code>).</li>
+  <li><b>A concordância entre treinos dos pesos caiu</b> de [[E1_CP]] para [[E2_CP]], como se suspeitava: a escala geral era igual em todas as sementes e inflava a concordância. Mesmo sem ela, os pesos concordam [[E2_CP]]: a reponderação é reprodutível.</li>
+  <li><b>As direções não mudaram.</b> A mudança foi de [[E1_D_FULL]]% para [[E2_D_FULL]]% ([[DIF_D]]%, dentro da variação entre sementes, t de Welch = [[T_D]]) e a concordância foi de [[E1_CD]] para [[E2_CD]]. Na matriz inteira, a concordância foi [[COSM1]] na etapa 1 e [[COSM2]] na etapa 2, ou seja, igual.</li>
+  <li><b>A resposta da etapa 1 se mantém, agora sem o efeito do otimizador:</b> em % do valor original, as direções mudam cerca de <b>[[E2_RAZAO]] vezes</b> mais que os pesos (eram [[E1_RAZAO]]), e os pesos mudam de forma mais repetível ([[E2_CP]]) do que as direções ([[E2_CD]]). A acurácia ficou igual (média [[ACC1_MED]]% e [[ACC2_MED]]%).</li>
+  <li><b>O procedimento é reprodutível, mas não determinístico.</b> Repetir a semente 0 deu modelos que diferem em média [[REP_REL]]% da mudança causada pelo fine-tuning (só [[REP_IDENT]] de 223 tensores idênticos), contra [[DIST_SEMENTES]]% entre sementes diferentes. O ruído da GPU é pequeno frente à variação entre sementes (cerca de [[REP_FRACAO]]% da diferença ao quadrado), e a acurácia final foi a mesma nas duas execuções.</li>
+</ol>
+
+<div class="caixa aviso"><span class="rot">O que a etapa 2 ainda não permite concluir</span><ul>
+  <li><b>Que a mudança seja específica da tarefa.</b> A concordância entre treinos mostra que a mudança é sistemática, mas não que ela venha das raças. O controle com <b>rótulos embaralhados</b> continua sem ser feito, e agora, com <code>weight_decay = 0</code>, seria o controle mais limpo.</li>
+  <li><b>Que as direções mudem mesmo tanto assim.</b> A instabilidade de direções com valores singulares vizinhos próximos continua valendo ([[COLADOS]] de [[PARES_TOP]] pares com diferença menor que 2%).</li>
+  <li><b>Que isso valha em geral.</b> Seguem valendo: só as 10 direções principais, um único modelo, um único domínio fácil, um único passo de treino, 10 sementes por etapa (o teste de Welch supõe sementes independentes).</li></ul></div>
+
+<h4>Próximos passos (candidatos a etapa 3)</h4>
+<ol>
+  <li>Treinar com os <b>rótulos embaralhados</b>, com <code>weight_decay = 0</code>, e medir a concordância desse treino com os reais.</li>
+  <li>Repetir tudo em um <b>domínio distante</b>, onde o corpo congelado não basta e a mudança tende a ser maior.</li>
+  <li><b>Teste funcional:</b> devolver ao modelo só a mudança dos pesos, ou só a das direções, e medir a acurácia de cada um.</li></ol>

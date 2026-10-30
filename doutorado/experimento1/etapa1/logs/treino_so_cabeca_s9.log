@@ -1,0 +1,25 @@
+1) downloading and preparing the data...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+   train: 3680 photos | test: 3669 photos
+   classes: 37
+
+2) building the model...
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8685.39it/s]
+   accuracy before training: 4.9%  (random head)
+
+3) training...
+   (the body stays frozen for the first 5 epoch(s),
+    so the head learns to read before it can push the body)
+   epoch 1/5  body frozen  loss 1.377  accuracy 91.8%
+   epoch 2/5  body frozen  loss 0.935  accuracy 93.0%
+   epoch 3/5  body frozen  loss 0.880  accuracy 93.5%
+   epoch 4/5  body frozen  loss 0.853  accuracy 93.8%
+   epoch 5/5  body frozen  loss 0.839  accuracy 93.9%
+
+4) saving the 'after' model in models/etapa1_so_cabeca/s9/ ...
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  9.12it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  9.10it/s]
+
+DONE in 0.8 min
+  accuracy: 4.9%  ->  93.9%
+  the 'before' model stays untouched in models/dinov2-small/
+  the 'after' model is in models/etapa1_so_cabeca/s9/

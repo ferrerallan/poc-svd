@@ -1,0 +1,16 @@
+CLS output: original photo x photo with shuffled patches (cosine similarity)
+seed   with position   without position
+   0          0.4799             1.0000
+   1          0.4185             1.0000
+   2          0.4974             1.0000
+   3          0.4009             1.0000
+   4          0.4556             1.0000
+   5          0.4612             1.0000
+   6          0.3997             1.0000
+   7          0.5440             1.0000
+   8          0.3490             1.0000
+   9          0.3921             1.0000
+
+with position:    mean 0.4398  min 0.3490  max 0.5440
+without position: mean 1.0000  min 1.0000  max 1.0000
+written: doutorado/experimento1/etapa1/estudos/posicao_embaralhada.json

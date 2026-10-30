@@ -1,0 +1,4 @@
+completo      n=10 acc 72.84+-0.54 | desloc 0.545% | s10 0.0175% (max 0.051%) | sTodos 0.2002% | sub10 0.396 | sub50 0.370 | dir preservadas 0.9910 | sigma max 39.210% | params restritos None
+congelado_72  n=10 acc 60.31+-0.60 | desloc 0.000% | s10 0.0000% (max 0.000%) | sTodos 0.0000% | sub10 0.020 | sub50 0.017 | dir preservadas 1.0000 | sigma max 0.000% | params restritos 0
+so_sigma      n=10 acc 70.30+-0.63 | desloc 9.277% | s10 3.6876% (max 8.754%) | sTodos 2.1693% | sub10 21.800 | sub50 13.872 | dir preservadas 1.0000 | sigma max 16.341% | params restritos 27648
+so_rotacao    n=10 acc 71.26+-0.56 | desloc 2.217% | s10 0.0000% (max 0.000%) | sTodos 0.0001% | sub10 1.340 | sub50 1.098 | dir preservadas 0.9998 | sigma max 0.021% | params restritos 1327104

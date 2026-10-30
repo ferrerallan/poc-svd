@@ -1,0 +1,61 @@
+Arquivos em data/hf/data
+Colunas: ['image', 'label', 'image_id', 'label_cat_dog']  (image = bytes da foto; label = numero da raca; image_id = nome do arquivo original; label_cat_dog = 0 gato, 1 cao)
+Fotos de treino: 3680   Fotos de teste: 3669   Total: 7349
+Racas (classes): 37
+
+Convencao de nomes do dataset original: arquivo com inicial MAIUSCULA = gato, minuscula = cao -> confere em todas as 37 racas
+
+ n  raca (rotulo)               especie  treino  teste  exemplo de image_id
+ 0  abyssinian                  gato        100     98  Abyssinian_125
+ 1  american_bulldog            cao         100    100  american_bulldog_138
+ 2  american_pit_bull_terrier   cao         100    100  american_pit_bull_terrier_176
+ 3  basset_hound                cao         100    100  basset_hound_161
+ 4  beagle                      cao         100    100  beagle_178
+ 5  bengal                      gato        100    100  Bengal_103
+ 6  birman                      gato        100    100  Birman_108
+ 7  bombay                      gato         96     88  Bombay_113
+ 8  boxer                       cao         100     99  boxer_12
+ 9  british_shorthair           gato        100    100  British_Shorthair_100
+10  chihuahua                   cao         100    100  chihuahua_166
+11  egyptian_mau                gato         93     97  Egyptian_Mau_138
+12  english_cocker_spaniel      cao          96    100  english_cocker_spaniel_115
+13  english_setter              cao         100    100  english_setter_103
+14  german_shorthaired          cao         100    100  german_shorthaired_132
+15  great_pyrenees              cao         100    100  great_pyrenees_167
+16  havanese                    cao         100    100  havanese_157
+17  japanese_chin               cao         100    100  japanese_chin_180
+18  keeshond                    cao         100     99  keeshond_112
+19  leonberger                  cao         100    100  leonberger_166
+20  maine_coon                  gato        100    100  Maine_Coon_204
+21  miniature_pinscher          cao         100    100  miniature_pinscher_160
+22  newfoundland                cao          96    100  newfoundland_117
+23  persian                     gato        100    100  Persian_14
+24  pomeranian                  cao         100    100  pomeranian_10
+25  pug                         cao         100    100  pug_123
+26  ragdoll                     gato        100    100  Ragdoll_18
+27  russian_blue                gato        100    100  Russian_Blue_103
+28  saint_bernard               cao         100    100  saint_bernard_121
+29  samoyed                     cao         100    100  samoyed_127
+30  scottish_terrier            cao         100     99  scottish_terrier_167
+31  shiba_inu                   cao         100    100  shiba_inu_178
+32  siamese                     gato         99    100  Siamese_167
+33  sphynx                      gato        100    100  Sphynx_202
+34  staffordshire_bull_terrier  cao         100     89  staffordshire_bull_terrier_194
+35  wheaten_terrier             cao         100    100  wheaten_terrier_142
+36  yorkshire_terrier           cao         100    100  yorkshire_terrier_160
+
+Especies: 12 racas de gato e 25 racas de cao
+Fotos de gato no treino: 1188   de cao: 2492
+Fotos por raca no treino: minimo 93, maximo 100, media 99.5
+Fotos por raca no teste:  minimo 88, maximo 100, media 99.2
+Fotos que aparecem no treino e no teste ao mesmo tempo: 0 (deve ser 0)
+Acuracia de quem chutasse sempre a mesma raca: 2.7%;  chute aleatorio: 2.7%
+
+Largura das fotos: min 114, mediana 500, max 3264
+Altura das fotos:  min 103, mediana 375, max 2606
+Tamanho do arquivo: mediana 105 KB
+Fotos exatamente 224 x 224: 0 de 7349
+Fotos mais largas que altas: 4872;  mais altas que largas: 2361
+Fotos com lado maior acima de 800 pixels (ficam fora dos graficos de tamanho): 44
+
+Gravado em doutorado/experimento1/etapa1/exploracao_oxfordpet e em artigo/images

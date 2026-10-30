@@ -1,0 +1,14 @@
+1) variante so_rotacao | treino 3312 | validacao 368 | classes 8 | lr restrito 0.0001
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9233.63it/s]
+   parametros treinaveis: restritos 1,327,104 | resto do corpo 822,912 | cabeca 3,080
+   acuracia antes de treinar (validacao): 16.3%
+   epoca 1/5  travado  perda 1.734  acc treino 38.8%  acc validacao 45.1%
+   epoca 2/5  solto    perda 1.425  acc treino 54.6%  acc validacao 49.7%
+   epoca 3/5  solto    perda 1.174  acc treino 67.2%  acc validacao 62.5%
+   epoca 4/5  solto    perda 1.046  acc treino 74.5%  acc validacao 65.5%
+   epoca 5/5  solto    perda 0.981  acc treino 78.3%  acc validacao 64.4%
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9014.62it/s]
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9375.14it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 31.50it/s]
+
+PRONTO em 1.5 min | so_rotacao | validacao: 16.3% -> 66.3% | salvo em models/etapa4/piloto_so_rotacao_exp_lr1e-4/

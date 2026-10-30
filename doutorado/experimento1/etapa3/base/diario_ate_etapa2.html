@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Experimento 1 — diário de bordo</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#fff; --ink:#1a1a1c; --ink2:#52535b; --ink3:#86868f;
+  --line:#e5e3de; --accent:#7a4bd0; --accent-bg:#f3edfd; --onacc:#fff;
+  --aviso:#8a5a00; --aviso-bg:#fdf3e1; --ok:#1d6b4a; --ok-bg:#e9f5ee; --ruim:#b23b3b; --ruim-bg:#fbeceb;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#141418; --card:#1d1d23; --ink:#ecebf1; --ink2:#a8a7b3; --ink3:#7c7b87;
+    --line:#2e2e36; --accent:#b699f5; --accent-bg:#26203a; --onacc:#16161a;
+    --aviso:#e6ab5b; --aviso-bg:#332a1b; --ok:#7bcea5; --ok-bg:#1c2f26; --ruim:#e58b83; --ruim-bg:#33211f;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px 80px}
+header{padding:46px 0 10px}
+.kicker{font:600 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:31px;line-height:1.15;margin:13px 0 10px;letter-spacing:-.02em}
+.lede{font-size:16.5px;color:var(--ink2);margin:0;max-width:78ch}
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:18px 0 0}
+nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:4px 16px;margin:0;padding:10px 0;font:500 13px/1.3 inherit}
+nav a{color:var(--ink2);text-decoration:none;border-bottom:1px solid transparent}
+nav a:hover{color:var(--accent);border-color:var(--accent)}
+nav .e{font-weight:700;color:var(--ink)}
+h2{font-size:24px;margin:0 0 8px;letter-spacing:-.01em}
+h3{font-size:19px;margin:36px 0 8px;letter-spacing:-.01em}
+h3 .n{font:700 13px var(--mono);color:var(--accent);margin-right:8px}
+h4{font-size:16px;margin:20px 0 6px}
+p{margin:0 0 12px;max-width:82ch}
+ul,ol{max-width:84ch}
+li{margin:5px 0}
+b{font-weight:650}
+code{font:13px/1.45 var(--mono);background:var(--accent-bg);border-radius:4px;padding:1.5px 5px}
+a{color:var(--accent)}
+pre{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:12px 15px;overflow-x:auto;margin:8px 0 14px}
+pre code{background:none;padding:0;font-size:12.5px;line-height:1.6}
+.sec{padding:34px 0 6px;border-bottom:1px solid var(--line)}
+.banner{border-radius:12px;padding:20px 24px;margin:34px 0 6px;background:var(--accent);color:var(--onacc)}
+.banner .k{font:700 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.banner h2{margin:8px 0 6px;font-size:27px}
+.banner p{margin:0;opacity:.95;max-width:78ch}
+.repro{background:var(--card);border:1px dashed var(--accent);border-radius:10px;padding:12px 16px;margin:16px 0}
+.repro .rot{color:var(--accent)}
+.caixa{border-radius:11px;padding:16px 20px;margin:18px 0}
+.caixa>:last-child{margin-bottom:0}
+.rot{font:700 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:9px}
+.leia{background:var(--accent-bg)} .leia .rot{color:var(--accent)}
+.aviso{background:var(--aviso-bg)} .aviso .rot{color:var(--aviso)}
+.ok{background:var(--ok-bg)} .ok .rot{color:var(--ok)}
+.ruim{background:var(--ruim-bg)} .ruim .rot{color:var(--ruim)}
+.caixa ul,.caixa ol{margin:0 0 8px;padding-left:20px}
+table{border-collapse:collapse;font-size:13.5px;width:100%;margin:8px 0 14px}
+.rolagem{overflow-x:auto}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:700 10.5px/1.4 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);white-space:nowrap}
+td.n,th.n{text-align:right;font-family:var(--mono);white-space:nowrap}
+tr.dest td{background:var(--ok-bg)}
+.cartoes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0 8px}
+.cartao{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.cartao h4{font-size:18px;margin:0 0 3px}
+.cartao .sub{font-size:13.5px;color:var(--ink3);margin:0 0 12px}
+.cartao dl{margin:0;display:grid;grid-template-columns:104px 1fr;gap:8px 12px;font-size:14px}
+.cartao dt{font:700 10.5px/1.7 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);padding-top:2px}
+.cartao dd{margin:0;color:var(--ink2)} .cartao dd b{color:var(--ink)}
+.svd{margin:14px 0;padding:18px 20px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.svd .fluxo{display:grid;grid-template-columns:minmax(150px,1.1fr) 28px minmax(90px,.7fr) 28px 3fr;gap:8px 6px;align-items:stretch;margin:14px 0 6px}
+.svd .sai{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.bx{border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:13px;line-height:1.4;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.bx small{display:block;color:var(--ink3);font:11px/1.35 var(--mono);margin-top:3px}
+.bx.mat{background:var(--bg)}
+.bx.svdbox{background:var(--accent);border-color:var(--accent);color:var(--onacc)}
+.bx.usado{background:var(--accent-bg);border-color:var(--accent)}
+.bx.nao{border-style:dashed;color:var(--ink3);background:transparent}
+.seta{align-self:center;text-align:center;color:var(--ink3);font:600 16px var(--mono)}
+.comp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 10px}
+.comp .bx{text-align:left;align-items:flex-start}
+.exemplo{font:13px/1.7 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:10px 0 4px;overflow-x:auto;white-space:pre}
+.resumo{display:flex;flex-wrap:wrap;gap:8px 30px;margin:16px 0 18px;font-size:15px;color:var(--ink2)}
+.resumo b{font:700 17px var(--mono);color:var(--accent)}
+.mapas{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;margin:6px 0 14px}
+.mapa{flex:1 1 400px;min-width:300px}
+.mapa h4{font-size:17px;margin:0 0 2px}
+.mapa .sub{font-size:13px;color:var(--ink3);margin:0 0 10px}
+.grade{display:grid;grid-template-columns:28px repeat(6,1fr);gap:3px}
+.cab{font:600 10px/1.2 var(--mono);color:var(--ink3);text-align:center;align-self:end;padding-bottom:3px}
+.grupo{font:700 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);text-align:center;border-bottom:2px solid var(--accent);padding-bottom:4px;margin-bottom:2px}
+.lin{font:600 11px/30px var(--mono);color:var(--ink3);text-align:right;padding-right:6px}
+.cel{font:11.5px/30px var(--mono);text-align:center;border-radius:4px;border:1px solid var(--line);color:var(--ink);cursor:default}
+.cel.forte{color:var(--onacc)}
+.med .lin{color:var(--ink)} .med .cel{border-style:dashed;font-weight:700}
+.leg{margin-top:14px}
+.degraus{display:flex;gap:4px}
+.deg{flex:1;text-align:center;font:11.5px var(--mono);color:var(--ink3);max-width:70px}
+.deg i{display:block;height:14px;border-radius:4px;border:1px solid var(--line);margin-bottom:3px}
+.fichadl{display:grid;grid-template-columns:150px 1fr;gap:9px 16px;font-size:14.5px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 18px;margin:8px 0 12px}
+.fichadl dt{font:700 10.5px/1.7 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding-top:2px}
+.fichadl dd{margin:0;color:var(--ink2)} .fichadl dd b{color:var(--ink)}
+.medida{border-top:1px solid var(--line);margin-top:26px;padding-top:4px}
+.medida h4{font-size:19px;margin:14px 0 6px}
+@media (max-width:640px){.fichadl{grid-template-columns:1fr;gap:2px}.fichadl dt{margin-top:8px}}
+footer{padding:24px 0 0;color:var(--ink3);font-size:13px;border-top:1px solid var(--line);margin-top:30px}
+@media (max-width:760px){.cartoes{grid-template-columns:1fr}.cartao dl{grid-template-columns:1fr;gap:2px}.cartao dt{margin-top:8px}.svd .fluxo{grid-template-columns:1fr}.seta{transform:rotate(90deg)}.comp{grid-template-columns:1fr}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Doutorado · Experimento 1 · Diário de bordo</div>
+  <h1>Pesos ou direções: o que muda no fine-tuning?</h1>
+  <p class="lede">Este diário registra, etapa por etapa, o Experimento 1: especializar um foundation model de imagem e medir com SVD o que mudou dentro dele. Cada etapa tem objetivo, comandos exatos, arquivos de saída, resultados e conclusão, e pode ser refeita com o script indicado no começo dela.</p>
+</header>
+
+<nav><ul>
+  <li><a href="#visao" class="e">Visão geral</a></li>
+  <li><a href="#etapa1" class="e">Etapa 1</a></li>
+  <li><a href="#e1-material">1.1 material</a></li><li><a href="#e1-tentativa0">1.2 tentativa 0</a></li><li><a href="#e1-treinos">1.3 treinos</a></li><li><a href="#e1-svd">1.4 SVD</a></li><li><a href="#e1-resultados">1.5 resultados</a></li><li><a href="#e1-versoes">1.6 tudo da etapa 1</a></li><li><a href="#e1-conclusao">1.7 conclusão</a></li><li><a href="#e1-fim">1.8 hipótese</a></li>
+  <li><a href="#etapa2" class="e">Etapa 2</a></li>
+  <li><a href="#e2-muda">2.1 o que muda</a></li><li><a href="#e2-repeticao">2.2 repetição</a></li><li><a href="#e2-treinos">2.3 treinos</a></li><li><a href="#e2-resultados">2.4 resultados</a></li><li><a href="#e2-hipotese">2.5 hipótese</a></li><li><a href="#e2-comparacao">2.6 comparação</a></li><li><a href="#e2-achados">2.7 achados</a></li>
+  <li><a href="#anexo" class="e">Anexo</a></li>
+</ul></nav>
+
+<section class="sec" id="visao">
+  <h2>Visão geral</h2>
+  <p><b>Pergunta da tese.</b> Quando um foundation model é especializado numa tarefa nova, muda mais o <b>peso</b> das direções que ele já tinha (os valores singulares σ) ou as <b>direções</b> em si (os vetores singulares)?</p>
+  <p><b>Papel deste experimento.</b> Calibrar a régua num caso fácil e conhecido (raças de pet), antes de aplicá-la em domínios distantes. O classificador de raças é descartável: o que interessa são os pesos do modelo antes e depois.</p>
+  <div class="rolagem"><table>
+    <thead><tr><th>Etapa</th><th>O que muda</th><th>Por quê</th><th>Reproduzir</th></tr></thead>
+    <tbody>
+      <tr><td><b>1</b></td><td><code>weight_decay = 0,05</code></td><td>Primeira rodada completa: 10 treinos, SVD das 72 matrizes, medidas de pesos e direções.</td><td><code>bash doutorado/experimento1/reproduzir_etapa1.sh</code></td></tr>
+      <tr><td><b>2</b></td><td><code>weight_decay = 0</code> (somente isso)</td><td>Testar a hipótese de que parte da mudança dos pesos era efeito do otimizador, e não da tarefa.</td><td><code>bash doutorado/experimento1/reproduzir_etapa2.sh</code></td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Convenções.</b> Os caminhos são relativos à raiz do projeto. "Treino k" é o treino com a semente k. Os percentuais de mudança são médias de diferenças (explicado em <a href="#e1-svd">1.4</a>). Nada do que foi feito numa etapa é apagado ao começar a seguinte.</p>
+</section>
+
+<!-- =============================== ETAPA 1 =============================== -->
+<div class="banner" id="etapa1"><div class="k">Etapa 1</div><h2>weight_decay = 0,05</h2><p>Primeira rodada completa do experimento: do download do modelo até a conclusão, mais a hipótese que motivou a etapa 2.</p></div>
+<div class="repro"><span class="rot">Reproduzir a etapa 1</span>
+<pre><code>bash doutorado/experimento1/reproduzir_etapa1.sh</code></pre>
+<p style="margin:0;font-size:14px">Na etapa 1 os comandos foram rodados um a um, em sessão interativa. O script é a <b>receita equivalente</b>, reconstruída depois com os mesmos parâmetros. Os complementos (<a href="#e1-tentativa0">tentativa 0</a>, diagnóstico, decomposição e ambiente) foram <b>reexecutados de fato</b> pelo <code>complementos_etapa1.sh</code>.</p></div>
+
+<section class="sec" id="e1-material">
+  <h3><span class="n">1.1</span>Material: o modelo original e os dados</h3>
+<pre><code>python3 doutorado/experimento1/baixar_modelo.py        # modelo -> models/dinov2-small/
+# os dados são baixados sozinhos pelo treinar.py -> data/hf/data/*.parquet</code></pre>
+  <div class="cartoes">
+    <div class="cartao">
+      <h4>O modelo original</h4><p class="sub">o ponto de partida, antes de qualquer fine-tuning</p>
+      <dl>
+        <dt>Nome</dt><dd><b>DINOv2-Small</b> (<code>facebook/dinov2-small</code>), da Meta, 2023 (Oquab et al., <a href="https://arxiv.org/abs/2304.07193">arXiv 2304.07193</a>).</dd>
+        <dt>Tipo</dt><dd>Vision Transformer. Vem só com o <b>corpo</b>, sem cabeça de classificação.</dd>
+        <dt>Tamanho</dt><dd><b>22,1 milhões</b> de pesos, 12 layers, 6 matrizes de pesos por layer (<b>72 no total</b>), 6 cabeças de atenção, bitola 384.</dd>
+        <dt>Entrada</dt><dd>Foto de 224 × 224 vira 256 patches de 14 × 14 pixels, mais o token CLS: 257 tokens de 384 números.</dd>
+        <dt>Pré-treino</dt><dd>Auto-supervisionado, <b>sem rótulos</b>, em cerca de <b>142 milhões</b> de imagens selecionadas automaticamente (LVD-142M).</dd>
+        <dt>Arquivo</dt><dd><code>model.safetensors</code>, 85 MB, 223 tabelas. SHA-256 no anexo.</dd>
+      </dl>
+    </div>
+    <div class="cartao">
+      <h4>Os dados do fine-tuning</h4><p class="sub">a tarefa que obriga o modelo a mudar</p>
+      <dl>
+        <dt>Dataset</dt><dd><b>Oxford-IIIT Pet</b> (Parkhi et al., CVPR 2012): fotos de cães e gatos de <b>37 raças</b>, cada foto com a raça como rótulo.</dd>
+        <dt>Quantidade</dt><dd><b>3.680</b> fotos de treino e <b>3.669</b> de teste (7.349 no total), pelo espelho <a href="https://huggingface.co/datasets/timm/oxford-iiit-pet"><code>timm/oxford-iiit-pet</code></a> do HuggingFace (o servidor de Oxford entregava a 70 KB/s).</dd>
+        <dt>Preparo</dt><dd>Treino: recorte aleatório de 224 × 224 (70% a 100% da foto) e espelhamento horizontal. Teste: lado menor em 256 e recorte central de 224 × 224. Normalização padrão do ImageNet.</dd>
+        <dt>Protocolo</dt><dd>Cabeça nova de 384 → 37, aleatória. 5 épocas, lote 32, AdamW, passo <code>1e-5</code> no corpo e <code>1e-3</code> na cabeça, agenda cosseno, label smoothing 0,1, bf16, corpo congelado na 1ª época. <b>10 sementes</b> (0 a 9).</dd>
+        <dt>Resultado</dt><dd>Acurácia no teste de <b>1,5% a 5,6%</b> (cabeça aleatória) para <b>93,8% a 94,7%</b> depois do fine-tuning.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="e1-tentativa0">
+  <h3><span class="n">1.2</span>Tentativa 0 (descartada) e diagnóstico</h3>
+  <p>O primeiro treino destravou o corpo desde o primeiro passo, com passo <code>5e-5</code> e sem aquecimento. A cabeça nasce aleatória, erra muito no começo, e esse erro empurrou o corpo com força antes de ela aprender a ler.</p>
+  <div class="caixa ruim"><span class="rot">Resultado da tentativa 0</span>
+    <p><b>Registro original</b> (log perdido; números anotados na sessão): acurácia <b>4,1% → 5,2% → 9,7%</b> nas épocas 1 a 3, quando foi interrompido.</p>
+    <p><b>Reexecução</b> (<code>etapa1/logs/treino_s0_tentativa0_reexecucao.log</code>, 5 épocas completas): acurácia por época <b>4,4% → 6,2% → 10,0% → 15,9% → 17,7%</b>. Não é idêntica bit a bit ao original, mas mostra o mesmo colapso.</p></div>
+  <p><b>Diagnóstico.</b> Corpo congelado e só uma regressão logística sobre os 384 números do token CLS: <b>94,8%</b> no registro original, e <b>94,8%</b> na reexecução (<code>etapa1/diagnostico.json</code>). O corpo estava intacto, e o problema era o método de treino.</p>
+  <p><b>Correção adotada para todos os treinos seguintes:</b> corpo congelado na 1ª época (<code>--epocas-aquecer 1</code>) e passo do corpo de <code>1e-5</code> (<code>--lr-corpo 1e-5</code>).</p>
+<pre><code>python3 -u doutorado/experimento1/treinar.py --semente 0 --lr-corpo 5e-5 --epocas-aquecer 0 --saida models/etapa1_tentativa0
+python3 doutorado/experimento1/diagnostico_corpo_congelado.py</code></pre>
+</section>
+
+<section class="sec" id="e1-treinos">
+  <h3><span class="n">1.3</span>Treinos da etapa 1</h3>
+  <p>Mesmo protocolo para as 10 sementes (0 a 9). Comando de cada treino (os valores padrão do <code>treinar.py</code> são os da etapa 1):</p>
+<pre><code>python3 -u doutorado/experimento1/treinar.py --semente S --saida models/dinov2-small-pets-sS     # S = 1..9
+python3 -u doutorado/experimento1/treinar.py --semente 0 --saida models/dinov2-small-pets          # semente 0</code></pre>
+  <div class='rolagem'><table><thead><tr><th class='n'>Semente</th><th class='n'>Acurácia antes</th><th class='n'>Acurácia depois</th><th class='n'>Minutos de treino</th></tr></thead><tbody><tr><td class='n'>0</td><td class='n'>2,1%</td><td class='n'>94,2%</td><td class='n'>1,6</td></tr><tr><td class='n'>1</td><td class='n'>1,8%</td><td class='n'>94,3%</td><td class='n'>1,5</td></tr><tr><td class='n'>2</td><td class='n'>5,6%</td><td class='n'>94,7%</td><td class='n'>1,5</td></tr><tr><td class='n'>3</td><td class='n'>5,4%</td><td class='n'>93,8%</td><td class='n'>1,5</td></tr><tr><td class='n'>4</td><td class='n'>3,4%</td><td class='n'>94,1%</td><td class='n'>1,5</td></tr><tr><td class='n'>5</td><td class='n'>2,8%</td><td class='n'>94,0%</td><td class='n'>1,4</td></tr><tr><td class='n'>6</td><td class='n'>1,9%</td><td class='n'>93,9%</td><td class='n'>1,4</td></tr><tr><td class='n'>7</td><td class='n'>1,5%</td><td class='n'>94,4%</td><td class='n'>1,4</td></tr><tr><td class='n'>8</td><td class='n'>2,4%</td><td class='n'>94,1%</td><td class='n'>1,5</td></tr><tr><td class='n'>9</td><td class='n'>4,9%</td><td class='n'>94,1%</td><td class='n'>1,4</td></tr><tr class='dest'><td><b>média</b></td><td></td><td class='n'><b>94,15%</b></td><td></td></tr></tbody></table></div>
+  <p style="font-size:13.5px;color:var(--ink3)">Saídas: <code>models/dinov2-small-pets[-sS]/{model.safetensors, cabeca.pt, relatorio.json}</code>. Os logs das sementes 0 e 1 foram perdidos (veja o anexo); os números delas estão nos <code>relatorio.json</code>. Os relatórios da etapa 1 não registram <code>weight_decay</code>: é o padrão 0,05 do script.</p>
+</section>
+
+<section class="sec" id="e1-svd">
+  <h3><span class="n">1.4</span>Onde o SVD foi usado e como cada número é calculado</h3>
+  <div class="svd">
+    <p>O SVD foi aplicado <b>nas matrizes de pesos do modelo</b>, uma por uma, e só nelas. Para cada matriz, ele separa os <b>pesos</b> (σ, os valores singulares) das <b>direções</b> (U e Vᵀ, os vetores singulares).</p>
+    <div class="fluxo">
+      <div class="bx mat"><b>W0</b><small>matriz do modelo original</small></div><div class="seta">→</div>
+      <div class="bx svdbox"><b>SVD</b></div><div class="seta">→</div>
+      <div class="sai"><div class="bx usado"><b>σ0</b><small>pesos</small></div><div class="bx usado"><b>U0</b><small>direções</small></div><div class="bx nao"><b>Vᵀ0</b><small>não usado aqui</small></div></div>
+      <div class="bx mat"><b>W1</b><small>a mesma matriz depois do fine-tuning</small></div><div class="seta">→</div>
+      <div class="bx svdbox"><b>SVD</b></div><div class="seta">→</div>
+      <div class="sai"><div class="bx usado"><b>σ1</b><small>pesos</small></div><div class="bx usado"><b>U1</b><small>direções</small></div><div class="bx nao"><b>Vᵀ1</b><small>não usado aqui</small></div></div>
+    </div>
+    <div class="comp">
+      <div class="bx usado"><b>Mapa Pesos</b><small>compara σ1 com σ0: quanto mudaram os 10 maiores pesos, em %</small></div>
+      <div class="bx usado"><b>Mapa Direções</b><small>compara U1 com U0: quanto giraram as 10 principais direções, em %</small></div>
+    </div>
+    <ul>
+      <li><b>Quais matrizes:</b> as 72 (<code>query</code>, <code>key</code>, <code>value</code>, <code>dense</code>, <code>fc1</code> e <code>fc2</code> dos 12 layers).</li>
+      <li><b>Quantas vezes:</b> em cada matriz do modelo original e em cada um dos 10 modelos depois do fine-tuning. São 72 × 11 = <b>792 SVDs</b> por etapa.</li>
+      <li><b>Onde o SVD não foi usado:</b> nos patches, nos tokens, nas fotos, na cabeça de classificação, nem na diferença W1 − W0.</li>
+    </ul>
+  </div>
+  <h4>Como cada número do mapa é calculado: comparar as matrizes e tirar a média das diferenças</h4>
+  <ol>
+    <li><b>Par de matrizes:</b> a matriz do modelo original e a de mesma posição (mesmo layer e mesmo tipo) do modelo fine-tuned.</li>
+    <li><b>SVD nas duas</b>, o que dá σ e U de cada uma.</li>
+    <li><b>Uma diferença por item:</b> para cada um dos 10 maiores σ, a diferença em % do valor original (o 1º com o 1º, o 2º com o 2º...). Para cada uma das 10 principais direções, o ângulo entre a versão original e a fine-tuned, convertido em %. Uma direção é um vetor de comprimento 1, e girar θ radianos o desloca θ × 100% do comprimento (1° vale 1,75%).</li>
+    <li><b>Primeira média:</b> a média dessas 10 diferenças, que dá um valor para aquele treino.</li>
+    <li><b>Segunda média:</b> repete-se nos 10 treinos e tira-se a média. Esse é o número do quadradinho.</li>
+    <li><b>Médias finais:</b> a linha <code>méd</code> é a média da coluna nos 12 layers, e o resumo é a média das 72 matrizes.</li>
+  </ol>
+  <div class="exemplo">exemplo inventado, com 3 pesos em vez de 10 (matriz com σ0 = 4,000 · 2,000 · 1,000):
+
+  σ0 (original):      4,000     2,000     1,000
+  σ1 (fine-tuned):    4,002     1,999     1,001
+  diferença em %:     0,05%     0,05%     0,10%     →  média = 0,067%   (valor desse treino)
+
+  repetido nos 10 treinos e tirada a média  →  número do quadradinho</div>
+<pre><code>python3 doutorado/experimento1/comparar.py --antes models/dinov2-small/model.safetensors \
+        --depois models/dinov2-small-pets-sS/model.safetensors --saida doutorado/experimento1/resultado_sS.json
+python3 doutorado/experimento1/agregar_etapa.py --etapa 1      # medias sobre as 10 sementes -> etapa1/agregado.json</code></pre>
+</section>
+
+<section class="sec" id="e1-resultados">
+  <h3><span class="n">1.5</span>Resultados da etapa 1</h3>
+  <div class="resumo">
+    <span>Pesos, média das 72: <b>0,019%</b></span><span>Direções, média das 72: <b>1,66%</b></span>
+    <span>Direções ÷ pesos: <b>87×</b></span><span>Concordância entre treinos (cosseno): pesos <b>0,53</b>, direções <b>0,32</b></span>
+  </div>
+  <div class="mapas" id="e1-mapas"></div>
+  <div class="caixa leia"><span class="rot">Como ler os mapas</span><ul>
+    <li><b>Linhas:</b> os 12 layers (0 no começo da rede, 11 no fim). <b>Colunas:</b> as 6 matrizes de cada layer, 4 da atenção e 2 do MLP. <b>Linha <code>méd</code>:</b> a média de cada coluna.</li>
+    <li><b>As duas escalas de cor são diferentes</b>, porque os pesos variam bem menos. Entre os dois mapas, compare os <b>números</b>, e não as cores.</li>
+    <li><b>Concordância entre treinos:</b> o cosseno entre a mudança de um treino e a de outro (0 = nenhuma concordância, 1 = idêntica), calculado em <code>reprodutibilidade_pesos_direcoes.py</code>. É positivo nas 72 matrizes, nas duas partes.</li></ul></div>
+</section>
+
+<section class="sec" id="e1-versoes">
+  <h3><span class="n">1.6</span>Tudo o que foi produzido na etapa 1 (nada foi descartado)</h3>
+  <p>Ao longo da etapa 1 foram feitas várias páginas e análises. <b>Nenhuma foi descartada.</b> Algumas foram sobrescritas no meio do caminho, a pedido de mudanças, e quando isso aconteceu sem cópia elas foram refeitas (marcado na coluna "situação"). As leituras antigas ficam como foram escritas, e a coluna diz quais foram superadas.</p>
+  <div class="rolagem"><table>
+    <thead><tr><th>Página</th><th>O que mostra</th><th>Situação</th></tr></thead><tbody>
+      <tr><td><a href="results.html">results.html</a></td><td>Primeira página de resultados (2 sementes): curvas de treino, medidas por bloco e por tipo, as 72 matrizes uma a uma, achados e ressalvas.</td><td>Original. A leitura do piso de ruído ("razão 0,79×") foi <b>superada</b> (veja 1.8 e a correção em <code>usecase.html</code>).</td></tr>
+      <tr><td><a href="usecase.html">usecase.html</a></td><td>Caso de uso: o que é feito, expectativas, cada artefato explicado, resultados e a correção do piso de ruído.</td><td>Original (2 sementes). A seção de correção está certa; os números são de 2 sementes.</td></tr>
+      <tr><td><a href="concordancia-sementes.html">concordancia-sementes.html</a></td><td>Concordância entre as duas sementes, ponto a ponto, por bloco e por tipo.</td><td>Original (2 sementes). Os números de 10 sementes estão em 1.5.</td></tr>
+      <tr><td><a href="etapa1/paginas/mapa-de-calor-v1-2sementes.html">mapa-de-calor-v1-2sementes.html</a></td><td>Mapa de calor, primeira versão: 4 abas (Concentração, Giro, Deslocamento, Variação dos pesos) e 3 mapas (treino 1, treino 2, piso de ruído).</td><td><b>Regenerada</b> com o gerador e o template originais, a partir dos mesmos JSONs.</td></tr>
+      <tr><td><a href="etapa1/paginas/mapa-de-calor-v2-10sementes.html">mapa-de-calor-v2-10sementes.html</a></td><td>Mapa de calor com 10 sementes: 4 abas, mapas de adaptação, piso de ruído e variação entre sementes, ficha de cada medida.</td><td><b>Reconstruída</b>: foi sobrescrita sem cópia; o conteúdo equivale ao original, o arquivo não é bit a bit igual.</td></tr>
+      <tr><td><a href="mapa-de-calor-detalhado.html">mapa-de-calor-detalhado.html</a></td><td>Mapa de calor com a aba "Pesos × direções" (quadro 2 × 2, com piso de ruído) e as abas Giro, Deslocamento e Variação dos pesos.</td><td>Cópia guardada na hora da simplificação.</td></tr>
+      <tr><td><a href="mapa-de-calor-etapa1.html">mapa-de-calor-etapa1.html</a></td><td>Página simplificada: modelo, dados, SVD, mapas de Pesos e Direções e a conclusão (as seções 1.1, 1.4, 1.5 e 1.7 deste diário).</td><td>Igual a <code>mapa-de-calor.html</code>, que <b>não foi alterado</b>.</td></tr>
+      <tr><td><a href="../transfer-learning-class.html">transfer-learning-class.html</a> e <a href="../../learning/transfer-learning-class.md">.md</a></td><td>Diário de aprendizado: perguntas, erros e acertos do caminho.</td><td>Original.</td></tr>
+      <tr><td><a href="../referencias/index.html">referencias/index.html</a></td><td>Lista de leitura da tese.</td><td>Original.</td></tr>
+    </tbody></table></div>
+  <p style="font-size:13.5px;color:var(--ink3)">Uma versão intermediária do mapa de calor (aba "Pesos × direções" com um terceiro mapa de razão) existiu por poucos minutos e foi trocada, a seu pedido, pelo quadro 2 × 2. Ela não foi guardada.</p>
+
+  <details>
+    <summary style="cursor:pointer;font-weight:650;color:var(--accent);padding:8px 0">Abrir aqui a exploração detalhada (4 medidas, piso de ruído, variação entre sementes)</summary>
+    <iframe src="etapa1/paginas/mapa-de-calor-v2-10sementes.html" loading="lazy" title="Mapa de calor detalhado da etapa 1" style="width:100%;height:1500px;border:1px solid var(--line);border-radius:10px;background:var(--bg)"></iframe>
+  </details>
+
+</section>
+
+<section class="sec" id="e1-conclusao">
+  <h3><span class="n">1.7</span>Conclusão da etapa 1</h3>
+  <div class="caixa ok"><span class="rot">Resposta curta, nesta etapa</span>
+    <p>Em tamanho relativo, mudam mais as <b>direções</b> do que os <b>pesos</b> (1,66% contra 0,019%, cerca de 87 vezes). Mas os pesos mudam de forma mais <b>consistente</b> de um treino para outro (concordância 0,53) do que as direções (0,32).</p></div>
+  <ol>
+    <li><b>As direções mudam mais que os pesos</b> em 72 de 72 matrizes: 1,66% (cerca de 0,95°) contra 0,019%.</li>
+    <li><b>As duas mudanças são pequenas em termos absolutos.</b> O modelo foi de 2% a 94% de acerto com os pesos mudando 0,02% e as direções girando cerca de 1°.</li>
+    <li><b>A mudança é sistemática, e não aleatória.</b> O cosseno entre as mudanças de dois treinos com sementes diferentes é 0,53 nos pesos e 0,32 nas direções, positivo nas 72 matrizes.</li>
+    <li><b>Os dois lados da resposta não coincidem:</b> as direções mudam mais em tamanho, e os pesos mudam mais de forma repetível.</li></ol>
+  <div class="caixa aviso"><span class="rot">O que a etapa 1 ainda não permitia concluir</span><ul>
+    <li><b>Que a mudança seja específica da tarefa.</b> Treinos com os mesmos dados e hiperparâmetros podem concordar por motivos gerais. O controle com rótulos embaralhados não foi feito.</li>
+    <li><b>Que as direções mudem mesmo tanto assim.</b> Quando dois valores singulares vizinhos são quase iguais, a direção correspondente fica mal definida e gira sozinha. Isso acontece em 363 dos 720 pares de valores singulares vizinhos do topo (diferença menor que 2%).</li>
+    <li><b>Que o tamanho da mudança seja comparável.</b> Cada peso é um número e cada direção é um vetor de 384 números. A comparação em % diz qual mudou mais em relação ao próprio tamanho, e não quanto do treino foi gasto em cada parte.</li>
+    <li><b>Que isso valha em geral.</b> Só as 10 direções principais, um único modelo, um único domínio fácil e um único passo de treino.</li></ul></div>
+</section>
+
+<section class="sec" id="e1-fim">
+  <h3><span class="n">1.8</span>Fim da etapa 1: hipótese, observações e decisão</h3>
+  <div class="caixa leia"><span class="rot">Hipótese levantada ao fim da etapa 1</span>
+    <p><b>"Mudanças de tamanho não deveriam ser tão importantes, já que a direção permanece a mesma."</b> A ideia é que, se só o tamanho (σ) muda, a matriz continua olhando para as mesmas direções, e essa mudança seria pouco informativa. Parte dela poderia até ser um artefato do treino.</p></div>
+  <h4>Observações que levaram à decisão</h4>
+  <p>Decompus a mudança dos 10 maiores σ em duas partes (<code>decomposicao_pesos.py --etapa 1</code>): a <b>comum</b>, em que todos os σ mudam juntos na mesma proporção (uma escala geral), e a <b>diferencial</b>, em que cada σ muda de forma diferente dos outros (reponderar as direções).</p>
+  <div class="rolagem"><table>
+    <thead><tr><th>Medida (etapa 1)</th><th class="n">Valor</th></tr></thead><tbody>
+      <tr><td>Parte comum (escala geral), média do módulo</td><td class="n">0,0105%</td></tr>
+      <tr><td>Parte diferencial, média do módulo</td><td class="n">0,0166%</td></tr>
+      <tr><td>Fração da energia da mudança que é escala geral</td><td class="n">24,3%</td></tr>
+      <tr><td>Casos em que os 10 σ mudaram no mesmo sentido</td><td class="n">3,8%</td></tr>
+      <tr><td>Escala geral, média com sinal</td><td class="n">-0,0092%</td></tr>
+      <tr><td>Casos em que a escala geral é positiva</td><td class="n">13,2%</td></tr>
+      <tr><td>Treinos (de 10) que concordam no sentido da escala geral, por matriz</td><td class="n">9,1</td></tr>
+      <tr class="dest"><td>Encolhimento esperado só pelo weight decay do AdamW neste treino</td><td class="n">-0,0088%</td></tr>
+    </tbody></table></div>
+  <ul>
+    <li>A escala geral é quase sempre <b>negativa</b> e os treinos concordam no sentido. O valor observado (-0,0092%) é praticamente igual ao encolhimento que o weight decay produziria sozinho (-0,0088%), calculado com o cronograma real do treino. <b>Essa parte parece efeito do otimizador, e não da tarefa.</b></li>
+    <li>A parte <b>diferencial</b> (75,7% da energia) <b>não</b> é um artefato óbvio: um σ crescer em relação ao outro muda a função que a matriz calcula, e é o que métodos como SVDiff e SVF exploram.</li>
+    <li>Como a escala geral é igual em todas as sementes, ela pode estar <b>inflando a concordância dos pesos</b> (hipótese, ainda não testada).</li></ul>
+  <div class="caixa ok"><span class="rot">Decisão</span>
+    <p>Refazer o treino com <b><code>weight_decay = 0</code></b>, mudando somente isso, e comparar. <b>Uma segunda rodada de treino foi feita</b> com esse ajuste, e está registrada na etapa 2.</p></div>
+</section>
+
+<!-- =============================== ETAPA 2 =============================== -->
+<div class="banner" id="etapa2"><div class="k">Etapa 2</div><h2>weight_decay = 0</h2><p>O mesmo protocolo da etapa 1, mudando somente o weight decay, para testar a hipótese de que a mudança de tamanho dos pesos era em parte um efeito do otimizador.</p></div>
+<div class="repro"><span class="rot">Reproduzir a etapa 2</span>
+<pre><code>bash doutorado/experimento1/reproduzir_etapa2.sh</code></pre>
+<p style="margin:0;font-size:14px">O script roda tudo, em ordem: ambiente, 10 treinos, repetição da semente 0, comparações, concordância, decomposição e agregação. Foi o que gerou os números desta etapa. Logs em <code>doutorado/experimento1/etapa2/logs/</code>.</p></div>
+
+<section class="sec" id="e2-muda">
+  <h3><span class="n">2.1</span>O que muda e o que não muda</h3>
+  <div class="rolagem"><table>
+    <thead><tr><th>Parâmetro</th><th>Etapa 1</th><th>Etapa 2</th></tr></thead><tbody>
+      <tr class="dest"><td><b>weight_decay</b></td><td>0,05</td><td><b>0</b> (corpo e cabeça)</td></tr>
+      <tr><td>Modelo original, dados, preparo das fotos</td><td colspan="2">iguais (DINOv2-Small, Oxford-IIIT Pet, mesmas transformações)</td></tr>
+      <tr><td>Épocas, lote, otimizador, agenda, label smoothing, bf16</td><td colspan="2">iguais (5 épocas, lote 32, AdamW, cosseno, 0,1, bf16)</td></tr>
+      <tr><td>Passos de treino e aquecimento</td><td colspan="2">iguais (<code>1e-5</code> no corpo, <code>1e-3</code> na cabeça, corpo congelado na 1ª época)</td></tr>
+      <tr><td>Sementes</td><td colspan="2">iguais (0 a 9)</td></tr>
+      <tr><td>Pasta dos modelos</td><td><code>models/dinov2-small-pets[-sS]</code></td><td><code>models/etapa2/sS</code></td></tr>
+    </tbody></table></div>
+  <p>O comando da etapa 2 é o mesmo da etapa 1, mais <code>--weight-decay 0</code> e outra pasta de saída:</p>
+<pre><code>python3 -u doutorado/experimento1/treinar.py --semente S --weight-decay 0 --saida models/etapa2/sS</code></pre>
+</section>
+
+<section class="sec" id="e2-repeticao">
+  <h3><span class="n">2.2</span>Verificação de reprodutibilidade do procedimento</h3>
+  <p>Antes de interpretar a etapa 2, treinei a semente 0 uma <b>segunda vez</b> (<code>models/etapa2/s0b</code>) para ver se a mesma semente dá o mesmo modelo.</p>
+  <div class='rolagem'><table><thead><tr><th>Medida</th><th class='n'>Valor</th></tr></thead><tbody><tr><td>Tensores idênticos entre as duas execuções</td><td class='n'>1 de 223</td></tr><tr><td>Maior diferença absoluta em qualquer número do modelo</td><td class='n'>4.98e-04</td></tr><tr><td>Diferença entre as execuções, em % da mudança causada pelo fine-tuning (média das 72 matrizes)</td><td class='n'>20,1%</td></tr><tr><td>Acurácia final, execução 1 e execução 2</td><td class='n'>94,17% e 94,17%</td></tr><tr><td>Acurácia por época, execução 1</td><td class='n'>91,6 · 91,6 · 93,9 · 93,9 · 94,2</td></tr><tr><td>Acurácia por época, execução 2</td><td class='n'>91,6 · 92,0 · 94,0 · 93,9 · 94,2</td></tr></tbody></table></div><p>As duas execuções <b>não</b> deram o mesmo modelo bit a bit (1 de 223 tensores idênticos), mas ficaram muito próximas. A diferença entre elas é, em média, <b>20,1%</b> do tamanho da mudança que o fine-tuning causa nas matrizes. O procedimento é reprodutível em parâmetros e resultado, mas não é determinístico (a GPU não é).</p>
+<pre><code>python3 -u doutorado/experimento1/treinar.py --semente 0 --weight-decay 0 --saida models/etapa2/s0b
+python3 doutorado/experimento1/verificar_repeticao.py       # -> etapa2/repeticao.json</code></pre>
+</section>
+
+<section class="sec" id="e2-treinos">
+  <h3><span class="n">2.3</span>Treinos da etapa 2</h3>
+  <div class='rolagem'><table><thead><tr><th class='n'>Semente</th><th class='n'>Acurácia antes</th><th class='n'>Acurácia depois</th><th class='n'>Minutos de treino</th></tr></thead><tbody><tr><td class='n'>0</td><td class='n'>2,1%</td><td class='n'>94,2%</td><td class='n'>1,4</td></tr><tr><td class='n'>1</td><td class='n'>1,8%</td><td class='n'>94,3%</td><td class='n'>1,4</td></tr><tr><td class='n'>2</td><td class='n'>5,6%</td><td class='n'>94,5%</td><td class='n'>1,4</td></tr><tr><td class='n'>3</td><td class='n'>5,4%</td><td class='n'>93,7%</td><td class='n'>1,5</td></tr><tr><td class='n'>4</td><td class='n'>3,4%</td><td class='n'>94,2%</td><td class='n'>1,5</td></tr><tr><td class='n'>5</td><td class='n'>2,8%</td><td class='n'>93,9%</td><td class='n'>1,5</td></tr><tr><td class='n'>6</td><td class='n'>1,9%</td><td class='n'>94,0%</td><td class='n'>1,4</td></tr><tr><td class='n'>7</td><td class='n'>1,5%</td><td class='n'>94,4%</td><td class='n'>1,4</td></tr><tr><td class='n'>8</td><td class='n'>2,4%</td><td class='n'>94,1%</td><td class='n'>1,4</td></tr><tr><td class='n'>9</td><td class='n'>4,9%</td><td class='n'>94,0%</td><td class='n'>1,4</td></tr><tr class='dest'><td><b>média</b></td><td></td><td class='n'><b>94,13%</b></td><td></td></tr></tbody></table></div>
+  <p style="font-size:13.5px;color:var(--ink3)">Saídas: <code>models/etapa2/sS/{model.safetensors, cabeca.pt, relatorio.json}</code>. Os relatórios desta etapa já registram <code>weight_decay</code>, o comando, as versões e o hash do script.</p>
+<pre><code>python3 doutorado/experimento1/comparar.py --antes models/dinov2-small/model.safetensors \
+        --depois models/etapa2/sS/model.safetensors --saida doutorado/experimento1/etapa2/resultado_sS.json
+python3 doutorado/experimento1/reprodutibilidade_pesos_direcoes.py --etapa 2
+python3 doutorado/experimento1/decomposicao_pesos.py --etapa 2
+python3 doutorado/experimento1/agregar_etapa.py --etapa 2</code></pre>
+</section>
+
+<section class="sec" id="e2-resultados">
+  <h3><span class="n">2.4</span>Resultados da etapa 2</h3>
+  <div class="resumo">
+    <span>Pesos, média das 72: <b>0,017%</b></span><span>Direções, média das 72: <b>1,64%</b></span>
+    <span>Direções ÷ pesos: <b>95×</b></span><span>Concordância entre treinos (cosseno): pesos <b>0,45</b>, direções <b>0,32</b></span>
+  </div>
+  <div class="mapas" id="e2-mapas"></div>
+  <p style="font-size:13.5px;color:var(--ink3)">Mesma leitura dos mapas da etapa 1 (cada parte com a sua escala de cor). A comparação lado a lado, na mesma escala, está em <a href="#e2-comparacao">2.6</a>.</p>
+
+</section>
+
+<section class="sec" id="e2-hipotese">
+  <h3><span class="n">2.5</span>Teste da hipótese: a escala geral dos pesos</h3>
+  <p>A mesma decomposição da etapa 1 (<code>decomposicao_pesos.py --etapa 2</code>), agora sem weight decay:</p>
+  <div class="rolagem"><table>
+    <thead><tr><th>Medida</th><th class="n">Etapa 1 (wd 0,05)</th><th class="n">Etapa 2 (wd 0)</th></tr></thead><tbody>
+      <tr><td>Pesos, média do módulo da mudança</td><td class="n">0,0191%</td><td class="n">0,0173%</td></tr>
+      <tr><td>Parte comum (escala geral), média do módulo</td><td class="n">0,0105%</td><td class="n">0,0067%</td></tr>
+      <tr><td>Parte diferencial, média do módulo</td><td class="n">0,0166%</td><td class="n">0,0166%</td></tr>
+      <tr><td>Fração da energia que é escala geral</td><td class="n">24,3%</td><td class="n">12,1%</td></tr>
+      <tr><td>Casos em que os 10 σ mudaram no mesmo sentido</td><td class="n">3,8%</td><td class="n">0,8%</td></tr>
+      <tr><td>Escala geral, média com sinal</td><td class="n">-0,0092%</td><td class="n">-0,0002%</td></tr>
+      <tr><td>Casos em que a escala geral é positiva</td><td class="n">13,2%</td><td class="n">50,7%</td></tr>
+      <tr><td>Treinos (de 10) que concordam no sentido da escala geral</td><td class="n">9,1</td><td class="n">8,2</td></tr>
+      <tr class="dest"><td>Encolhimento esperado só pelo weight decay</td><td class="n">-0,0088%</td><td class="n">0,0000%</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="sec" id="e2-comparacao">
+  <h3><span class="n">2.6</span>Etapa 1 × etapa 2</h3>
+  <div class="rolagem"><table>
+    <thead><tr><th>Medida</th><th class="n">Etapa 1 (wd 0,05)</th><th class="n">Etapa 2 (wd 0)</th></tr></thead><tbody>
+      <tr><td>Acurácia no teste depois do fine-tuning</td><td class="n">93,8% a 94,7%</td><td class="n">93,7% a 94,5%</td></tr>
+      <tr><td>Pesos, média das 72 matrizes</td><td class="n">0,019%</td><td class="n">0,017%</td></tr>
+      <tr><td>Direções, média das 72 matrizes</td><td class="n">1,66%</td><td class="n">1,64%</td></tr>
+      <tr><td>Direções ÷ pesos</td><td class="n">87×</td><td class="n">95×</td></tr>
+      <tr><td>Concordância entre treinos, pesos (cosseno)</td><td class="n">0,53</td><td class="n">0,45</td></tr>
+      <tr><td>Concordância entre treinos, direções (cosseno)</td><td class="n">0,32</td><td class="n">0,32</td></tr>
+      <tr><td>Matrizes em que as direções mudaram mais que os pesos</td><td class="n">72 de 72</td><td class="n">72 de 72</td></tr>
+    </tbody></table></div>
+  <h4>Concordância entre treinos, por layer</h4>
+  <p>Cosseno médio entre a mudança de um treino e a de outro (45 pares), em cada layer (média das 6 matrizes). 0 = nenhuma concordância, 1 = idêntica.</p>
+  <div class='rolagem'><table><thead><tr><th class='n'>Layer</th><th class='n'>Pesos, etapa 1</th><th class='n'>Pesos, etapa 2</th><th class='n'>Direções, etapa 1</th><th class='n'>Direções, etapa 2</th></tr></thead><tbody><tr><td class='n'>0</td><td class='n'>0,44</td><td class='n'>0,40</td><td class='n'>0,22</td><td class='n'>0,20</td></tr><tr><td class='n'>1</td><td class='n'>0,53</td><td class='n'>0,45</td><td class='n'>0,44</td><td class='n'>0,47</td></tr><tr><td class='n'>2</td><td class='n'>0,65</td><td class='n'>0,53</td><td class='n'>0,20</td><td class='n'>0,22</td></tr><tr><td class='n'>3</td><td class='n'>0,59</td><td class='n'>0,50</td><td class='n'>0,48</td><td class='n'>0,47</td></tr><tr><td class='n'>4</td><td class='n'>0,45</td><td class='n'>0,31</td><td class='n'>0,27</td><td class='n'>0,25</td></tr><tr><td class='n'>5</td><td class='n'>0,52</td><td class='n'>0,44</td><td class='n'>0,24</td><td class='n'>0,23</td></tr><tr><td class='n'>6</td><td class='n'>0,46</td><td class='n'>0,30</td><td class='n'>0,26</td><td class='n'>0,27</td></tr><tr><td class='n'>7</td><td class='n'>0,48</td><td class='n'>0,37</td><td class='n'>0,43</td><td class='n'>0,41</td></tr><tr><td class='n'>8</td><td class='n'>0,49</td><td class='n'>0,45</td><td class='n'>0,27</td><td class='n'>0,28</td></tr><tr><td class='n'>9</td><td class='n'>0,46</td><td class='n'>0,44</td><td class='n'>0,28</td><td class='n'>0,28</td></tr><tr><td class='n'>10</td><td class='n'>0,66</td><td class='n'>0,58</td><td class='n'>0,35</td><td class='n'>0,35</td></tr><tr><td class='n'>11</td><td class='n'>0,67</td><td class='n'>0,58</td><td class='n'>0,43</td><td class='n'>0,43</td></tr></tbody></table></div>
+  <p>Os mapas abaixo usam a <b>mesma escala de cor nas duas etapas</b>, para cada parte, então as cores podem ser comparadas entre a etapa 1 e a 2 (mas não entre pesos e direções).</p>
+  <div class="mapas" id="cmp-pesos"></div>
+  <div class="mapas" id="cmp-direcoes"></div>
+</section>
+
+<section class="sec" id="e2-achados">
+  <h3><span class="n">2.7</span>Achados da etapa 2</h3>
+  <div class="caixa ok"><span class="rot">Resposta curta: a hipótese se confirma em parte</span>
+  <p>Sem weight decay, a <b>escala geral</b> dos pesos desaparece: a média com sinal vai de <b>-0,0092%</b> para <b>-0,0002%</b>, e deixa de ter um sentido único. Essa parte era <b>efeito do otimizador</b>.</p>
+  <p>Mas a parte <b>diferencial</b> (um σ mudando em relação aos outros) fica <b>igual</b>: 0,0166% na etapa 1 e 0,0166% na etapa 2. Então a mudança de tamanho <b>não</b> é só artefato do otimizador: o que sobra sem o weight decay é uma reponderação <b>sistemática e repetível</b> entre treinos (ainda sem prova de que seja específica da tarefa). As <b>direções</b> não mudam com o weight decay.</p></div>
+
+<h4>Achados</h4>
+<ol>
+  <li><b>A escala geral era mesmo efeito do weight decay.</b> A escala geral média com sinal passou de -0,0092% para -0,0002%, e a fração de casos em que ela é positiva foi de 13,2% para 50,7% (sem um efeito sistemático, seria cerca de 50%). A fração da energia da mudança que é escala geral caiu de 24,3% para 12,1%, quase o que o acaso daria com 10 σ independentes (10,0%). Na etapa 1 o valor observado (-0,0092%) batia com o encolhimento previsto pelo cronograma do treino (-0,0088%).</li>
+  <li><b>A parte diferencial dos pesos não mudou:</b> 0,0166% contra 0,0166%. A reponderação dos σ entre si não é efeito do weight decay.</li>
+  <li><b>No total, os pesos mudaram um pouco menos:</b> de 0,0191% para 0,0173% (−9,4%), uma diferença clara frente à variação entre sementes (0,0004% e 0,0003%, t de Welch = 12,6), mas pequena: cerca de um décimo da mudança dos pesos era efeito do otimizador.</li>
+  <li><b>A concentração média caiu</b> de 3,26 para 2,74 (variação entre sementes de ± 0,26 e ± 0,24): sem o weight decay, menos da mudança cai na diagonal da base da SVD, isto é, na parte "valores singulares". É coerente com a escala geral ter saído, mas essa relação não foi testada diretamente. As quatro medidas, com mapas, estão em 2.4 (em <code>resultados.html</code>).</li>
+  <li><b>A concordância entre treinos dos pesos caiu</b> de 0,53 para 0,45, como se suspeitava: a escala geral era igual em todas as sementes e inflava a concordância. Mesmo sem ela, os pesos concordam 0,45: a reponderação é reprodutível.</li>
+  <li><b>As direções não mudaram.</b> A mudança foi de 1,656% para 1,642% (−0,8%, dentro da variação entre sementes, t de Welch = 0,6) e a concordância foi de 0,32 para 0,32. Na matriz inteira, a concordância foi 0,218 na etapa 1 e 0,217 na etapa 2, ou seja, igual.</li>
+  <li><b>A resposta da etapa 1 se mantém, agora sem o efeito do otimizador:</b> em % do valor original, as direções mudam cerca de <b>95 vezes</b> mais que os pesos (eram 87), e os pesos mudam de forma mais repetível (0,45) do que as direções (0,32). A acurácia ficou igual (média 94,15% e 94,13%).</li>
+  <li><b>O procedimento é reprodutível, mas não determinístico.</b> Repetir a semente 0 deu modelos que diferem em média 20% da mudança causada pelo fine-tuning (só 1 de 223 tensores idênticos), contra 125% entre sementes diferentes. O ruído da GPU é pequeno frente à variação entre sementes (cerca de 2,6% da diferença ao quadrado), e a acurácia final foi a mesma nas duas execuções.</li>
+</ol>
+
+<div class="caixa aviso"><span class="rot">O que a etapa 2 ainda não permite concluir</span><ul>
+  <li><b>Que a mudança seja específica da tarefa.</b> A concordância entre treinos mostra que a mudança é sistemática, mas não que ela venha das raças. O controle com <b>rótulos embaralhados</b> continua sem ser feito, e agora, com <code>weight_decay = 0</code>, seria o controle mais limpo.</li>
+  <li><b>Que as direções mudem mesmo tanto assim.</b> A instabilidade de direções com valores singulares vizinhos próximos continua valendo (363 de 720 pares com diferença menor que 2%).</li>
+  <li><b>Que isso valha em geral.</b> Seguem valendo: só as 10 direções principais, um único modelo, um único domínio fácil, um único passo de treino, 10 sementes por etapa (o teste de Welch supõe sementes independentes).</li></ul></div>
+
+<h4>Próximos passos (candidatos a etapa 3)</h4>
+<ol>
+  <li>Treinar com os <b>rótulos embaralhados</b>, com <code>weight_decay = 0</code>, e medir a concordância desse treino com os reais.</li>
+  <li>Repetir tudo em um <b>domínio distante</b>, onde o corpo congelado não basta e a mudança tende a ser maior.</li>
+  <li><b>Teste funcional:</b> devolver ao modelo só a mudança dos pesos, ou só a das direções, e medir a acurácia de cada um.</li></ol>
+
+</section>
+
+<section class="sec" id="anexo">
+  <h2>Anexo: ambiente, arquivos e limitações do registro</h2>
+  <h4>Ambiente</h4>
+  <div class="rolagem"><table><tbody>
+    <tr><th>Python</th><td>3.10.12</td></tr>
+    <tr><th>Pacotes</th><td>torch 2.14.0+cu130 · torchvision 0.29.0+cu130 · transformers 5.5.0 · numpy 2.2.6 · Pillow 12.3.0 · scikit-learn 1.7.2</td></tr>
+    <tr><th>Máquina</th><td>NVIDIA GeForce RTX 3060, driver 580.82.09, 12288 MiB</td></tr>
+    <tr><th>Git</th><td>commit <code>7cbc634ac2</code>; os scripts do experimento ainda não estão versionados (arquivos não versionados: .gitignore, doutorado/, learning/, wisdom/)</td></tr>
+    <tr><th>SHA-256 do modelo original</th><td><code>ae1e99fcefd534ed…</code></td></tr>
+    <tr><th>SHA-256 dos dados</th><td><code>test-00000-of-00001.parquet</code> 0997d4744ee6… · <code>train-00000-of-00001.parquet</code> b9ff432b33c7…</td></tr>
+  </tbody></table></div>
+  <p style="font-size:13.5px;color:var(--ink3)">Registrado por <code>registrar_ambiente.py</code> no início da etapa 2 (<code>etapa2/ambiente.json</code>) e no complemento da etapa 1 (<code>etapa1/ambiente.json</code>). Os pacotes não foram alterados depois do primeiro treino da etapa 1. Os hashes dos scripts estão nesses JSONs.</p>
+  <h4>Arquivos</h4>
+<pre><code>doutorado/experimento1/
+  treinar.py  comparar.py  agregar_etapa.py  decomposicao_pesos.py  reprodutibilidade_pesos_direcoes.py
+  etapas.py   registrar_ambiente.py   baixar_modelo.py   diagnostico_corpo_congelado.py   verificar_repeticao.py
+  reproduzir_etapa1.sh   complementos_etapa1.sh   reproduzir_etapa2.sh
+  construir_diario.py    diario_template.html          &lt;- geram o diario.html (esta página) a partir dos JSONs
+  etapa1/   logs/  paginas/ (v1, v2)  diagnostico.json  decomposicao.json  agregado.json  ambiente.json  ferramentas/
+  etapa2/   logs/  resultado_s0..s9.json  reprodutibilidade.json  decomposicao.json  agregado.json  repeticao.json  ambiente.json
+  resultado*.json  ruido_*.json  reprodutibilidade.json  resultado_10sementes.json     &lt;- resultados da etapa 1 (no lugar original)
+models/  dinov2-small/  dinov2-small-pets[-s1..s9]/  etapa1_tentativa0/  etapa2/s0..s9, s0b/
+data/hf/data/*.parquet</code></pre>
+  <p>Esta página (<code>diario.html</code>) é gerada por <code>python3 doutorado/experimento1/construir_diario.py</code>. O <code>mapa-de-calor.html</code> e as demais páginas da etapa 1 <b>não foram alterados</b>.</p>
+  <h4>O que foi perdido, e o que foi feito a respeito</h4>
+  <ul>
+    <li>Quando o computador reiniciou, o diretório temporário foi limpo. Perderam-se os <b>logs das sementes 0 e 1</b> da etapa 1, o <b>log da tentativa 0</b> e os scripts auxiliares da primeira versão das páginas. Os <code>relatorio.json</code> das sementes 0 e 1 sobreviveram.</li>
+    <li>A <b>tentativa 0</b> e o <b>diagnóstico de 94,8%</b> foram refeitos de forma reproduzível (seção 1.2). Os valores originais continuam registrados ao lado dos novos.</li>
+    <li>Os scripts que sobraram do diretório temporário foram arquivados em <code>etapa1/ferramentas/</code> (não são reexecutáveis diretamente, apontam para caminhos temporários). A versão do <code>treinar.py</code> anterior à etapa 2 está lá também (<code>treinar_ANTES_da_etapa2.py</code>).</li>
+    <li>A página da etapa 1, como estava antes da etapa 2, foi guardada em <code>mapa-de-calor-etapa1.html</code> (igual ao <code>mapa-de-calor.html</code>, que continua intacto). As versões anteriores do mapa de calor estão em 1.6.</li>
+    <li><b>Reprodutibilidade numérica:</b> as sementes fixam a ordem dos dados e a inicialização da cabeça, mas a GPU não é determinística. Veja a seção 2.2 para o tamanho dessa diferença.</li></ul>
+</section>
+
+<footer>Experimento 1 do doutorado. Dados reais gerados pelos scripts desta pasta e embutidos nesta página. Pré-treino do DINOv2 conferido em <a href="https://arxiv.org/abs/2304.07193">arXiv 2304.07193</a> e no <a href="https://www.alphaxiv.org/overview/2304.07193">resumo do artigo</a>.</footer>
+</div>
+
+<script>
+const D1 = {"celulas":[{"b":0,"t":"dense","p":0.03,"d":1.2781},{"b":0,"t":"key","p":0.0337,"d":0.6756},{"b":0,"t":"mlp.fc1","p":0.015,"d":0.9353},{"b":0,"t":"mlp.fc2","p":0.0117,"d":1.3252},{"b":0,"t":"query","p":0.0203,"d":0.7126},{"b":0,"t":"value","p":0.0195,"d":1.4012},{"b":1,"t":"dense","p":0.0211,"d":1.5704},{"b":1,"t":"key","p":0.0247,"d":0.6651},{"b":1,"t":"mlp.fc1","p":0.018,"d":1.7651},{"b":1,"t":"mlp.fc2","p":0.0164,"d":1.3317},{"b":1,"t":"query","p":0.0241,"d":1.5038},{"b":1,"t":"value","p":0.0236,"d":1.9703},{"b":2,"t":"dense","p":0.02,"d":1.1359},{"b":2,"t":"key","p":0.0257,"d":1.1378},{"b":2,"t":"mlp.fc1","p":0.0241,"d":1.6118},{"b":2,"t":"mlp.fc2","p":0.0203,"d":2.0883},{"b":2,"t":"query","p":0.0198,"d":0.8678},{"b":2,"t":"value","p":0.0239,"d":1.1498},{"b":3,"t":"dense","p":0.0215,"d":1.8137},{"b":3,"t":"key","p":0.0277,"d":3.1412},{"b":3,"t":"mlp.fc1","p":0.018,"d":0.9133},{"b":3,"t":"mlp.fc2","p":0.0204,"d":2.8889},{"b":3,"t":"query","p":0.0212,"d":4.7443},{"b":3,"t":"value","p":0.0196,"d":1.535},{"b":4,"t":"dense","p":0.0186,"d":2.1118},{"b":4,"t":"key","p":0.0267,"d":1.9417},{"b":4,"t":"mlp.fc1","p":0.0113,"d":1.1776},{"b":4,"t":"mlp.fc2","p":0.0202,"d":1.8216},{"b":4,"t":"query","p":0.0228,"d":2.3136},{"b":4,"t":"value","p":0.0184,"d":1.4834},{"b":5,"t":"dense","p":0.0179,"d":2.2276},{"b":5,"t":"key","p":0.0188,"d":1.3505},{"b":5,"t":"mlp.fc1","p":0.0127,"d":1.0549},{"b":5,"t":"mlp.fc2","p":0.0265,"d":1.8467},{"b":5,"t":"query","p":0.0225,"d":1.2011},{"b":5,"t":"value","p":0.016,"d":2.2483},{"b":6,"t":"dense","p":0.0159,"d":1.8427},{"b":6,"t":"key","p":0.0291,"d":3.1095},{"b":6,"t":"mlp.fc1","p":0.0112,"d":0.9341},{"b":6,"t":"mlp.fc2","p":0.02,"d":2.6004},{"b":6,"t":"query","p":0.0327,"d":4.0726},{"b":6,"t":"value","p":0.016,"d":2.0331},{"b":7,"t":"dense","p":0.0137,"d":1.5006},{"b":7,"t":"key","p":0.018,"d":1.4593},{"b":7,"t":"mlp.fc1","p":0.012,"d":1.5718},{"b":7,"t":"mlp.fc2","p":0.0189,"d":1.4102},{"b":7,"t":"query","p":0.0187,"d":2.4963},{"b":7,"t":"value","p":0.014,"d":2.8639},{"b":8,"t":"dense","p":0.0128,"d":1.1861},{"b":8,"t":"key","p":0.0145,"d":1.0854},{"b":8,"t":"mlp.fc1","p":0.0199,"d":1.5978},{"b":8,"t":"mlp.fc2","p":0.0216,"d":2.0232},{"b":8,"t":"query","p":0.0123,"d":1.3299},{"b":8,"t":"value","p":0.0139,"d":1.3704},{"b":9,"t":"dense","p":0.0117,"d":1.395},{"b":9,"t":"key","p":0.0144,"d":1.124},{"b":9,"t":"mlp.fc1","p":0.0123,"d":1.4083},{"b":9,"t":"mlp.fc2","p":0.0207,"d":2.2665},{"b":9,"t":"query","p":0.0125,"d":1.1434},{"b":9,"t":"value","p":0.0153,"d":0.8419},{"b":10,"t":"dense","p":0.0144,"d":1.4141},{"b":10,"t":"key","p":0.016,"d":0.9112},{"b":10,"t":"mlp.fc1","p":0.0155,"d":1.9508},{"b":10,"t":"mlp.fc2","p":0.0297,"d":1.9094},{"b":10,"t":"query","p":0.0166,"d":1.143},{"b":10,"t":"value","p":0.0149,"d":1.583},{"b":11,"t":"dense","p":0.0133,"d":1.4919},{"b":11,"t":"key","p":0.0117,"d":0.8782},{"b":11,"t":"mlp.fc1","p":0.0104,"d":0.7353},{"b":11,"t":"mlp.fc2","p":0.0348,"d":1.0716},{"b":11,"t":"query","p":0.0268,"d":2.0438},{"b":11,"t":"value","p":0.015,"d":2.4763}]}, D2 = {"celulas":[{"b":0,"t":"dense","p":0.0256,"d":1.2123},{"b":0,"t":"key","p":0.033,"d":0.6913},{"b":0,"t":"mlp.fc1","p":0.0112,"d":0.9735},{"b":0,"t":"mlp.fc2","p":0.0114,"d":1.3703},{"b":0,"t":"query","p":0.0237,"d":0.7521},{"b":0,"t":"value","p":0.0196,"d":1.4649},{"b":1,"t":"dense","p":0.0215,"d":1.6317},{"b":1,"t":"key","p":0.0164,"d":0.6763},{"b":1,"t":"mlp.fc1","p":0.0139,"d":1.7136},{"b":1,"t":"mlp.fc2","p":0.015,"d":1.2778},{"b":1,"t":"query","p":0.0211,"d":1.4457},{"b":1,"t":"value","p":0.0243,"d":1.9522},{"b":2,"t":"dense","p":0.0174,"d":1.1814},{"b":2,"t":"key","p":0.0231,"d":1.0755},{"b":2,"t":"mlp.fc1","p":0.019,"d":1.5078},{"b":2,"t":"mlp.fc2","p":0.0213,"d":2.0153},{"b":2,"t":"query","p":0.0162,"d":0.8613},{"b":2,"t":"value","p":0.0216,"d":1.1435},{"b":3,"t":"dense","p":0.0194,"d":1.7902},{"b":3,"t":"key","p":0.0242,"d":3.0229},{"b":3,"t":"mlp.fc1","p":0.013,"d":0.9165},{"b":3,"t":"mlp.fc2","p":0.0182,"d":2.9215},{"b":3,"t":"query","p":0.0196,"d":4.3649},{"b":3,"t":"value","p":0.0209,"d":1.5614},{"b":4,"t":"dense","p":0.0161,"d":2.123},{"b":4,"t":"key","p":0.0257,"d":1.9743},{"b":4,"t":"mlp.fc1","p":0.0084,"d":1.2043},{"b":4,"t":"mlp.fc2","p":0.018,"d":1.8153},{"b":4,"t":"query","p":0.0204,"d":2.3316},{"b":4,"t":"value","p":0.0164,"d":1.4994},{"b":5,"t":"dense","p":0.0156,"d":2.2138},{"b":5,"t":"key","p":0.0181,"d":1.3406},{"b":5,"t":"mlp.fc1","p":0.0154,"d":1.0315},{"b":5,"t":"mlp.fc2","p":0.023,"d":1.8651},{"b":5,"t":"query","p":0.0213,"d":1.1922},{"b":5,"t":"value","p":0.013,"d":2.2188},{"b":6,"t":"dense","p":0.0116,"d":1.8389},{"b":6,"t":"key","p":0.0263,"d":2.9878},{"b":6,"t":"mlp.fc1","p":0.0101,"d":0.9219},{"b":6,"t":"mlp.fc2","p":0.0174,"d":2.632},{"b":6,"t":"query","p":0.0288,"d":3.713},{"b":6,"t":"value","p":0.0151,"d":2.078},{"b":7,"t":"dense","p":0.0124,"d":1.5074},{"b":7,"t":"key","p":0.0171,"d":1.4484},{"b":7,"t":"mlp.fc1","p":0.0125,"d":1.5619},{"b":7,"t":"mlp.fc2","p":0.016,"d":1.398},{"b":7,"t":"query","p":0.0169,"d":2.4745},{"b":7,"t":"value","p":0.01,"d":2.9369},{"b":8,"t":"dense","p":0.0102,"d":1.1662},{"b":8,"t":"key","p":0.0153,"d":1.0715},{"b":8,"t":"mlp.fc1","p":0.0199,"d":1.5869},{"b":8,"t":"mlp.fc2","p":0.0201,"d":2.0246},{"b":8,"t":"query","p":0.0135,"d":1.3074},{"b":8,"t":"value","p":0.0118,"d":1.4265},{"b":9,"t":"dense","p":0.0104,"d":1.3572},{"b":9,"t":"key","p":0.0137,"d":1.1081},{"b":9,"t":"mlp.fc1","p":0.0127,"d":1.4066},{"b":9,"t":"mlp.fc2","p":0.0207,"d":2.2544},{"b":9,"t":"query","p":0.0154,"d":1.1416},{"b":9,"t":"value","p":0.0095,"d":0.8397},{"b":10,"t":"dense","p":0.0115,"d":1.3811},{"b":10,"t":"key","p":0.0156,"d":0.909},{"b":10,"t":"mlp.fc1","p":0.0117,"d":2.0207},{"b":10,"t":"mlp.fc2","p":0.0301,"d":1.9132},{"b":10,"t":"query","p":0.0166,"d":1.1449},{"b":10,"t":"value","p":0.0108,"d":1.5689},{"b":11,"t":"dense","p":0.0122,"d":1.5172},{"b":11,"t":"key","p":0.0088,"d":0.876},{"b":11,"t":"mlp.fc1","p":0.0099,"d":0.7423},{"b":11,"t":"mlp.fc2","p":0.0315,"d":1.0912},{"b":11,"t":"query","p":0.0253,"d":2.0556},{"b":11,"t":"value","p":0.0109,"d":2.4948}]};
+const TIPOS = [["query","query"],["key","key"],["value","value"],["dense","dense"],["mlp.fc1","fc1"],["mlp.fc2","fc2"]];
+const media = a => a.reduce((x,y)=>x+y,0)/a.length;
+const fmt = (v,c) => v.toFixed(c).replace(".",",");
+
+function pintar(el, v, mn, mx){
+  const t = mx>mn ? Math.sqrt(Math.max(0,(v-mn)/(mx-mn))) : 0;
+  el.style.background = `color-mix(in srgb, var(--accent) ${Math.round(t*100)}%, var(--card))`;
+  if(t>0.55) el.classList.add("forte");
+}
+function mapa(contId, titulo, sub, D, campo, casas, mnFix, mxFix, un){
+  un = (un === undefined) ? "%" : un;
+  const vals = D.celulas.map(c => c[campo]);
+  const mn = (mnFix===undefined) ? Math.min(...vals) : mnFix, mx = (mxFix===undefined) ? Math.max(...vals) : mxFix;
+  const cel = (b,t) => D.celulas.find(c => c.b===b && c.t===t);
+  const box = document.createElement("div"); box.className="mapa";
+  box.innerHTML = `<h4>${titulo}</h4><p class="sub">${sub}</p>`;
+  const g = document.createElement("div"); g.className="grade";
+  g.appendChild(document.createElement("div"));
+  const gA = document.createElement("div"); gA.className="grupo"; gA.textContent="atenção"; gA.style.gridColumn="span 4";
+  const gM = document.createElement("div"); gM.className="grupo"; gM.textContent="MLP"; gM.style.gridColumn="span 2";
+  g.appendChild(gA); g.appendChild(gM); g.appendChild(document.createElement("div"));
+  for(const [,nm] of TIPOS){ const c=document.createElement("div"); c.className="cab"; c.textContent=nm; g.appendChild(c); }
+  for(let b=0;b<12;b++){
+    const l=document.createElement("div"); l.className="lin"; l.textContent=b; g.appendChild(l);
+    for(const [tp,nm] of TIPOS){
+      const v = cel(b,tp)[campo]; const c=document.createElement("div");
+      c.className="cel"; c.textContent=fmt(v,casas); c.title=`layer ${b} · ${nm}: ${fmt(v,casas+1)}${un}`;
+      pintar(c,v,mn,mx); g.appendChild(c);
+    }
+  }
+  const lm=document.createElement("div"); lm.className="lin med"; lm.textContent="méd"; lm.style.marginTop="6px"; g.appendChild(lm);
+  for(const [tp,nm] of TIPOS){
+    const v = media(D.celulas.filter(c=>c.t===tp).map(c=>c[campo]));
+    const c=document.createElement("div"); c.className="cel med"; c.style.marginTop="6px";
+    c.textContent=fmt(v,casas); c.title=`média de ${nm}: ${fmt(v,casas+1)}${un}`; pintar(c,v,mn,mx); g.appendChild(c);
+  }
+  box.appendChild(g);
+  const leg = document.createElement("div"); leg.className="leg";
+  const dg = document.createElement("div"); dg.className="degraus";
+  for(const t of [0,0.25,0.5,0.75,1]){
+    const val = mn + t*t*(mx-mn);
+    const d=document.createElement("div"); d.className="deg";
+    d.innerHTML = `<i style="background:color-mix(in srgb, var(--accent) ${Math.round(t*100)}%, var(--card))"></i>${fmt(val,casas)}${un}`;
+    dg.appendChild(d);
+  }
+  leg.appendChild(dg); box.appendChild(leg);
+  document.getElementById(contId).appendChild(box);
+}
+const SUBP = "SVD: σ (valores singulares). Média das diferenças dos 10 maiores, em % do original";
+const SUBD = "SVD: U (vetores singulares). Média dos giros das 10 principais, em % do original";
+mapa("e1-mapas","Etapa 1 · Pesos",SUBP,D1,"p",3);   mapa("e1-mapas","Etapa 1 · Direções",SUBD,D1,"d",2);
+mapa("e2-mapas","Etapa 2 · Pesos",SUBP,D2,"p",3);   mapa("e2-mapas","Etapa 2 · Direções",SUBD,D2,"d",2);
+const lim = campo => { const v = D1.celulas.map(c=>c[campo]).concat(D2.celulas.map(c=>c[campo])); return [Math.min(...v), Math.max(...v)]; };
+const [pmn,pmx] = lim("p"), [dmn,dmx] = lim("d");
+mapa("cmp-pesos","Pesos · etapa 1 (wd 0,05)","mesma escala nas duas etapas",D1,"p",3,pmn,pmx);
+mapa("cmp-pesos","Pesos · etapa 2 (wd 0)","mesma escala nas duas etapas",D2,"p",3,pmn,pmx);
+mapa("cmp-direcoes","Direções · etapa 1 (wd 0,05)","mesma escala nas duas etapas",D1,"d",2,dmn,dmx);
+mapa("cmp-direcoes","Direções · etapa 2 (wd 0)","mesma escala nas duas etapas",D2,"d",2,dmn,dmx);
+
+</script>
+</body>
+</html>

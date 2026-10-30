@@ -1,0 +1,58 @@
+{
+ "gpu": "NVIDIA GeForce RTX 3060",
+ "batch_size": 32,
+ "steps": 30,
+ "warmup_steps": 5,
+ "torch": "2.14.0+cu130",
+ "preloaded_photos_mb": 918.8,
+ "rows": [
+  {
+   "variant": "congelado_72",
+   "trainable_numbers": 825992,
+   "frozen_numbers": 21233664,
+   "trainable_in_72_matrices": 0,
+   "weights_mb": 84.2,
+   "gradients_mb": 3.1,
+   "optimizer_state_mb": 6.3,
+   "peak_training_mb": 1241.1,
+   "seconds_per_training_step": 0.1002,
+   "seconds_per_eval_batch_64": 0.0714
+  },
+  {
+   "variant": "so_sigma",
+   "trainable_numbers": 853640,
+   "frozen_numbers": 0,
+   "trainable_in_72_matrices": 27648,
+   "weights_mb": 141.7,
+   "gradients_mb": 3.3,
+   "optimizer_state_mb": 6.5,
+   "peak_training_mb": 1894.3,
+   "seconds_per_training_step": 0.1229,
+   "seconds_per_eval_batch_64": 0.0743
+  },
+  {
+   "variant": "so_rotacao",
+   "trainable_numbers": 2153096,
+   "frozen_numbers": 0,
+   "trainable_in_72_matrices": 1327104,
+   "weights_mb": 106.1,
+   "gradients_mb": 8.2,
+   "optimizer_state_mb": 16.4,
+   "peak_training_mb": 1893.1,
+   "seconds_per_training_step": 0.1972,
+   "seconds_per_eval_batch_64": 0.1065
+  },
+  {
+   "variant": "completo",
+   "trainable_numbers": 22059656,
+   "frozen_numbers": 0,
+   "trainable_in_72_matrices": 21233664,
+   "weights_mb": 101.0,
+   "gradients_mb": 84.1,
+   "optimizer_state_mb": 168.3,
+   "peak_training_mb": 2055.6,
+   "seconds_per_training_step": 0.1225,
+   "seconds_per_eval_batch_64": 0.0714
+  }
+ ]
+}

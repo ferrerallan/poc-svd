@@ -1,0 +1,21 @@
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8926.52it/s]
+{"completo": 72.99, "so_sigma": 51.23, "so_direcoes": 72.92, "direcoes_eq": 52.68, "nenhuma": 51.13, "fracao_energia_sigma_media_pct": 0.243, "acuracia_relatorio": 72.99, "semente": 0}
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8791.35it/s]
+{"completo": 72.92, "so_sigma": 46.06, "so_direcoes": 72.99, "direcoes_eq": 47.5, "nenhuma": 46.09, "fracao_energia_sigma_media_pct": 0.238, "acuracia_relatorio": 72.92, "semente": 1}
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8298.18it/s]
+{"completo": 72.64, "so_sigma": 48.73, "so_direcoes": 72.54, "direcoes_eq": 50.56, "nenhuma": 48.84, "fracao_energia_sigma_media_pct": 0.25, "acuracia_relatorio": 72.64, "semente": 2}
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8391.24it/s]
+{"completo": 73.42, "so_sigma": 49.86, "so_direcoes": 73.35, "direcoes_eq": 51.76, "nenhuma": 49.86, "fracao_energia_sigma_media_pct": 0.248, "acuracia_relatorio": 73.42, "semente": 3}
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 7881.77it/s]
+{"completo": 72.89, "so_sigma": 44.79, "so_direcoes": 72.68, "direcoes_eq": 46.83, "nenhuma": 44.82, "fracao_energia_sigma_media_pct": 0.245, "acuracia_relatorio": 72.89, "semente": 4}
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8342.44it/s]
+{"completo": 73.63, "so_sigma": 51.48, "so_direcoes": 73.59, "direcoes_eq": 52.96, "nenhuma": 51.41, "fracao_energia_sigma_media_pct": 0.264, "acuracia_relatorio": 73.63, "semente": 5}
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8047.99it/s]
+{"completo": 73.27, "so_sigma": 46.09, "so_direcoes": 73.27, "direcoes_eq": 48.13, "nenhuma": 46.09, "fracao_energia_sigma_media_pct": 0.29, "acuracia_relatorio": 73.27, "semente": 6}
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 7986.63it/s]
+{"completo": 71.87, "so_sigma": 50.92, "so_direcoes": 71.97, "direcoes_eq": 52.11, "nenhuma": 50.92, "fracao_energia_sigma_media_pct": 0.275, "acuracia_relatorio": 71.87, "semente": 7}
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9206.91it/s]
+{"completo": 72.64, "so_sigma": 45.67, "so_direcoes": 72.82, "direcoes_eq": 47.99, "nenhuma": 45.49, "fracao_energia_sigma_media_pct": 0.266, "acuracia_relatorio": 72.64, "semente": 8}
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8605.64it/s]
+{"completo": 72.18, "so_sigma": 50.11, "so_direcoes": 72.11, "direcoes_eq": 51.69, "nenhuma": 50.04, "fracao_energia_sigma_media_pct": 0.259, "acuracia_relatorio": 72.18, "semente": 9}
+media: {"completo": 72.845, "so_sigma": 48.494, "so_direcoes": 72.824, "direcoes_eq": 50.221000000000004, "nenhuma": 48.469}

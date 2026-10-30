@@ -1,0 +1,22 @@
+{
+  "tensores_total": 223,
+  "tensores_identicos": 1,
+  "diferenca_maxima_absoluta": 0.0004980587400496006,
+  "diferenca_relativa_a_mudanca_do_treino_media": 0.20097791496664286,
+  "acuracia_execucao_1": 94.17,
+  "acuracia_execucao_2": 94.17,
+  "acuracias_por_epoca_1": [
+    91.58,
+    91.63,
+    93.89,
+    93.89,
+    94.17
+  ],
+  "acuracias_por_epoca_2": [
+    91.58,
+    92.01,
+    94.0,
+    93.92,
+    94.17
+  ]
+}

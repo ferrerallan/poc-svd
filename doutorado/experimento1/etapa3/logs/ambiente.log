@@ -1,0 +1,18 @@
+ambiente registrado em doutorado/experimento1/etapa3/ambiente.json
+{
+  "python": "3.10.12",
+  "pacotes": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "PIL": "12.3.0",
+    "sklearn": "1.7.2",
+    "torch": "2.14.0+cu130",
+    "torchvision": "0.29.0+cu130",
+    "transformers": "5.5.0",
+    "safetensors": "0.7.0",
+    "huggingface_hub": "1.9.2"
+  },
+  "gpu": "NVIDIA GeForce RTX 3060",
+  "driver_nvidia": "580.82.09",
+  "git_commit": "7cbc634ac284601738b5943d07453057ef67ed1a"
+}

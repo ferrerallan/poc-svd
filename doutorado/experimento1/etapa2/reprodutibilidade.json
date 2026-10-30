@@ -1,0 +1,434 @@
+[
+  {
+    "bloco": 0,
+    "tipo": "key",
+    "cos_pesos": 0.7245908154381646,
+    "cos_direcoes": 0.33624909958905647
+  },
+  {
+    "bloco": 0,
+    "tipo": "query",
+    "cos_pesos": 0.300441592766179,
+    "cos_direcoes": 0.3568564396765497
+  },
+  {
+    "bloco": 0,
+    "tipo": "value",
+    "cos_pesos": -0.013175963382754062,
+    "cos_direcoes": 0.029491481391919983
+  },
+  {
+    "bloco": 0,
+    "tipo": "dense",
+    "cos_pesos": 0.5786824103858735,
+    "cos_direcoes": 0.34504445182780424
+  },
+  {
+    "bloco": 0,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.44733536402798363,
+    "cos_direcoes": 0.0019696310227219427
+  },
+  {
+    "bloco": 0,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.3863051792761932,
+    "cos_direcoes": 0.15572124504380755
+  },
+  {
+    "bloco": 1,
+    "tipo": "key",
+    "cos_pesos": 0.5941594792736902,
+    "cos_direcoes": 0.5071483301619689
+  },
+  {
+    "bloco": 1,
+    "tipo": "query",
+    "cos_pesos": 0.6987783001528846,
+    "cos_direcoes": 0.9392498056093852
+  },
+  {
+    "bloco": 1,
+    "tipo": "value",
+    "cos_pesos": 0.37569564720615745,
+    "cos_direcoes": 0.40202345301707587
+  },
+  {
+    "bloco": 1,
+    "tipo": "dense",
+    "cos_pesos": 0.5316107109189033,
+    "cos_direcoes": 0.35529869250539275
+  },
+  {
+    "bloco": 1,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.3243531911737389,
+    "cos_direcoes": 0.04971940778195858
+  },
+  {
+    "bloco": 1,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.19033828162484698,
+    "cos_direcoes": 0.5400080263614655
+  },
+  {
+    "bloco": 2,
+    "tipo": "key",
+    "cos_pesos": 0.48915584997998346,
+    "cos_direcoes": 0.17483869679272174
+  },
+  {
+    "bloco": 2,
+    "tipo": "query",
+    "cos_pesos": 0.4950533217026128,
+    "cos_direcoes": 0.20082365217515163
+  },
+  {
+    "bloco": 2,
+    "tipo": "value",
+    "cos_pesos": 0.5246899965736601,
+    "cos_direcoes": 0.2601932403528028
+  },
+  {
+    "bloco": 2,
+    "tipo": "dense",
+    "cos_pesos": 0.5974000517822181,
+    "cos_direcoes": 0.22097892004530878
+  },
+  {
+    "bloco": 2,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.6273639116022321,
+    "cos_direcoes": 0.1140163912023935
+  },
+  {
+    "bloco": 2,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.47283214585234723,
+    "cos_direcoes": 0.34516385623978246
+  },
+  {
+    "bloco": 3,
+    "tipo": "key",
+    "cos_pesos": 0.6694348740908834,
+    "cos_direcoes": 0.29002778803308804
+  },
+  {
+    "bloco": 3,
+    "tipo": "query",
+    "cos_pesos": 0.30259604735506906,
+    "cos_direcoes": 0.941332815753089
+  },
+  {
+    "bloco": 3,
+    "tipo": "value",
+    "cos_pesos": 0.44538770533270305,
+    "cos_direcoes": 0.17285427794041525
+  },
+  {
+    "bloco": 3,
+    "tipo": "dense",
+    "cos_pesos": 0.649126238293118,
+    "cos_direcoes": 0.4502760620580779
+  },
+  {
+    "bloco": 3,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.4680948507713361,
+    "cos_direcoes": 0.4035607314772076
+  },
+  {
+    "bloco": 3,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.4482223956121339,
+    "cos_direcoes": 0.5475428017580675
+  },
+  {
+    "bloco": 4,
+    "tipo": "key",
+    "cos_pesos": 0.42482200496726563,
+    "cos_direcoes": 0.1893475772295561
+  },
+  {
+    "bloco": 4,
+    "tipo": "query",
+    "cos_pesos": 0.03249450425306956,
+    "cos_direcoes": 0.3111310966933767
+  },
+  {
+    "bloco": 4,
+    "tipo": "value",
+    "cos_pesos": 0.2713958217038049,
+    "cos_direcoes": 0.2742067497637537
+  },
+  {
+    "bloco": 4,
+    "tipo": "dense",
+    "cos_pesos": 0.3993344381865528,
+    "cos_direcoes": 0.26308235072841246
+  },
+  {
+    "bloco": 4,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.05547316122489671,
+    "cos_direcoes": 0.13208165185319054
+  },
+  {
+    "bloco": 4,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.6701078606976403,
+    "cos_direcoes": 0.32600600936760504
+  },
+  {
+    "bloco": 5,
+    "tipo": "key",
+    "cos_pesos": 0.16777501723004712,
+    "cos_direcoes": 0.12646564427349302
+  },
+  {
+    "bloco": 5,
+    "tipo": "query",
+    "cos_pesos": 0.44542413420147364,
+    "cos_direcoes": 0.08033053522101707
+  },
+  {
+    "bloco": 5,
+    "tipo": "value",
+    "cos_pesos": 0.2747475156198359,
+    "cos_direcoes": 0.3436124366190698
+  },
+  {
+    "bloco": 5,
+    "tipo": "dense",
+    "cos_pesos": 0.35543724741372795,
+    "cos_direcoes": 0.08052979379426688
+  },
+  {
+    "bloco": 5,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.7451577676667107,
+    "cos_direcoes": 0.31329769980576305
+  },
+  {
+    "bloco": 5,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.6715138581064012,
+    "cos_direcoes": 0.43654117600785364
+  },
+  {
+    "bloco": 6,
+    "tipo": "key",
+    "cos_pesos": 0.37312967603405317,
+    "cos_direcoes": 0.28150105537691467
+  },
+  {
+    "bloco": 6,
+    "tipo": "query",
+    "cos_pesos": 0.4528622398359908,
+    "cos_direcoes": 0.1645883313483662
+  },
+  {
+    "bloco": 6,
+    "tipo": "value",
+    "cos_pesos": 0.17870738382140797,
+    "cos_direcoes": 0.16692166088355911
+  },
+  {
+    "bloco": 6,
+    "tipo": "dense",
+    "cos_pesos": 0.24699772544619109,
+    "cos_direcoes": 0.223385911496977
+  },
+  {
+    "bloco": 6,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.23734044993503225,
+    "cos_direcoes": 0.2244111095658607
+  },
+  {
+    "bloco": 6,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.31545935791606705,
+    "cos_direcoes": 0.5409296170497934
+  },
+  {
+    "bloco": 7,
+    "tipo": "key",
+    "cos_pesos": 0.2889218525236679,
+    "cos_direcoes": 0.43886835287428566
+  },
+  {
+    "bloco": 7,
+    "tipo": "query",
+    "cos_pesos": 0.33416916469318997,
+    "cos_direcoes": 0.14949852453751697
+  },
+  {
+    "bloco": 7,
+    "tipo": "value",
+    "cos_pesos": 0.14150502598947948,
+    "cos_direcoes": 0.2944320924580097
+  },
+  {
+    "bloco": 7,
+    "tipo": "dense",
+    "cos_pesos": 0.5604199298553997,
+    "cos_direcoes": 0.28256481001476963
+  },
+  {
+    "bloco": 7,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.321061783325341,
+    "cos_direcoes": 0.5119789255989923
+  },
+  {
+    "bloco": 7,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.5772008989420202,
+    "cos_direcoes": 0.7586578898959689
+  },
+  {
+    "bloco": 8,
+    "tipo": "key",
+    "cos_pesos": 0.4297739076117674,
+    "cos_direcoes": 0.2669290318360759
+  },
+  {
+    "bloco": 8,
+    "tipo": "query",
+    "cos_pesos": 0.43040027416880344,
+    "cos_direcoes": 0.2562426089826557
+  },
+  {
+    "bloco": 8,
+    "tipo": "value",
+    "cos_pesos": 0.3358855657176011,
+    "cos_direcoes": 0.16338264106048478
+  },
+  {
+    "bloco": 8,
+    "tipo": "dense",
+    "cos_pesos": 0.3576282671135333,
+    "cos_direcoes": 0.18633918557316065
+  },
+  {
+    "bloco": 8,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.6614501575628916,
+    "cos_direcoes": 0.38670754087054066
+  },
+  {
+    "bloco": 8,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.4738050358266466,
+    "cos_direcoes": 0.4302128819991291
+  },
+  {
+    "bloco": 9,
+    "tipo": "key",
+    "cos_pesos": 0.23526054650752082,
+    "cos_direcoes": 0.041330961257012355
+  },
+  {
+    "bloco": 9,
+    "tipo": "query",
+    "cos_pesos": 0.5305841786786913,
+    "cos_direcoes": 0.3564922461958809
+  },
+  {
+    "bloco": 9,
+    "tipo": "value",
+    "cos_pesos": 0.4455949693090386,
+    "cos_direcoes": 0.34522446137335566
+  },
+  {
+    "bloco": 9,
+    "tipo": "dense",
+    "cos_pesos": 0.4192557860165834,
+    "cos_direcoes": 0.23122307397425174
+  },
+  {
+    "bloco": 9,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.3245724539091397,
+    "cos_direcoes": 0.3413976016609619
+  },
+  {
+    "bloco": 9,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.7076330271032122,
+    "cos_direcoes": 0.3387300293478701
+  },
+  {
+    "bloco": 10,
+    "tipo": "key",
+    "cos_pesos": 0.34058848702245287,
+    "cos_direcoes": 0.2384593101321823
+  },
+  {
+    "bloco": 10,
+    "tipo": "query",
+    "cos_pesos": 0.4153090062137279,
+    "cos_direcoes": 0.3030878146334241
+  },
+  {
+    "bloco": 10,
+    "tipo": "value",
+    "cos_pesos": 0.5905511988533868,
+    "cos_direcoes": 0.3856724285003212
+  },
+  {
+    "bloco": 10,
+    "tipo": "dense",
+    "cos_pesos": 0.6360320574707455,
+    "cos_direcoes": 0.35255583114922046
+  },
+  {
+    "bloco": 10,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.596635972128974,
+    "cos_direcoes": 0.5553871798846457
+  },
+  {
+    "bloco": 10,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.8898756159676446,
+    "cos_direcoes": 0.25584550800008904
+  },
+  {
+    "bloco": 11,
+    "tipo": "key",
+    "cos_pesos": 0.24120344552728865,
+    "cos_direcoes": 0.5782200906011793
+  },
+  {
+    "bloco": 11,
+    "tipo": "query",
+    "cos_pesos": 0.8891415463553535,
+    "cos_direcoes": 0.634294678684738
+  },
+  {
+    "bloco": 11,
+    "tipo": "value",
+    "cos_pesos": 0.27549468105038005,
+    "cos_direcoes": 0.45475737837453684
+  },
+  {
+    "bloco": 11,
+    "tipo": "dense",
+    "cos_pesos": 0.6358780569500393,
+    "cos_direcoes": 0.265406072864102
+  },
+  {
+    "bloco": 11,
+    "tipo": "mlp.fc1",
+    "cos_pesos": 0.46789351316789785,
+    "cos_direcoes": 0.4611714677678214
+  },
+  {
+    "bloco": 11,
+    "tipo": "mlp.fc2",
+    "cos_pesos": 0.9714905964003668,
+    "cos_direcoes": 0.19338788448108568
+  }
+]

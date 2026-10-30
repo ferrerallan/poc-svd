@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transfer Learning do Zero</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#fff; --ink:#1a1a1c; --ink2:#52535b; --ink3:#86868f;
+  --line:#e5e3de; --accent:#7a4bd0; --accent-bg:#f3edfd; --accent-l:#efe7fc;
+  --voce:#1a6fb5; --voce-bg:#e9f2fa;
+  --ok:#1d6b4a; --ok-bg:#e9f5ee; --ruim:#b23b3b; --ruim-bg:#fbeceb;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#141418; --card:#1d1d23; --ink:#ecebf1; --ink2:#a8a7b3; --ink3:#7c7b87;
+    --line:#2e2e36; --accent:#b699f5; --accent-bg:#26203a; --accent-l:#2b2443;
+    --voce:#7cb8ea; --voce-bg:#1a2733;
+    --ok:#7bcea5; --ok-bg:#1c2f26; --ruim:#e58b83; --ruim-bg:#33211f;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16.5px/1.7 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px 100px}
+
+header{padding:60px 0 10px;text-align:center}
+.selo{display:inline-block;font:600 11px/1 var(--mono);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);background:var(--accent-bg);
+  padding:8px 14px;border-radius:999px}
+h1{font-size:40px;line-height:1.1;margin:20px 0 14px;letter-spacing:-.025em}
+.sub{font-size:18px;color:var(--ink2);margin:0 auto;max-width:56ch}
+.ficha{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:26px 0 8px;
+  font:12.5px/1 var(--mono);color:var(--ink3)}
+.ficha span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 13px}
+
+.arco{stroke:var(--line);stroke-width:2}
+.no{fill:var(--accent)}
+.non{fill:#fff;font:700 10px var(--mono)}
+.nol{fill:var(--ink3);font:10.5px var(--mono)}
+.mapa{margin:34px 0 10px;overflow-x:auto}
+.mapa svg{display:block;width:100%;min-width:660px;height:auto}
+
+.ep{margin:0 0 10px;padding:46px 0 0;border-top:1px solid var(--line)}
+.ep:first-of-type{border-top:0}
+.epnum{font:700 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.ep h2{font-size:27px;line-height:1.2;margin:12px 0 6px;letter-spacing:-.02em}
+.epsub{color:var(--ink3);font-size:14px;margin:0 0 24px;font-family:var(--mono)}
+
+.fala{display:grid;grid-template-columns:76px 1fr;gap:14px;margin:0 0 16px;align-items:start}
+.quem{font:700 10.5px/1.5 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  padding-top:11px;text-align:right}
+.quem.v{color:var(--voce)} .quem.o{color:var(--ink3)}
+.bolha{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 16px}
+.bolha.v{background:var(--voce-bg);border-color:transparent}
+.bolha>:last-child{margin-bottom:0}
+.bolha p{margin:0 0 10px}
+.bolha.v p{font-weight:500}
+
+p{margin:0 0 15px;max-width:68ch}
+ul,ol.l{margin:0 0 15px;padding-left:22px;max-width:68ch}
+li{margin:6px 0}
+code{font:13.5px/1.45 var(--mono);background:var(--accent-bg);border-radius:4px;padding:1.5px 5px}
+pre{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:13px 16px;overflow-x:auto;margin:0 0 16px}
+pre code{background:none;padding:0;font-size:13px;line-height:1.65}
+a{color:var(--accent)}
+b{font-weight:650}
+
+.caixa{border-radius:11px;padding:16px 19px;margin:20px 0}
+.caixa>:last-child{margin-bottom:0}
+.caixa h4{margin:0 0 9px;font-size:15px}
+.caixa .rot{font:700 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  display:block;margin-bottom:9px}
+.analogia{background:var(--accent-bg)} .analogia .rot{color:var(--accent)}
+.fica{background:var(--ok-bg)} .fica .rot{color:var(--ok)}
+.erro{background:var(--ruim-bg)} .erro .rot{color:var(--ruim)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:11px;margin:20px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+.kpi .v{font:700 24px/1.1 var(--mono);letter-spacing:-.02em}
+.kpi .k{font-size:12px;color:var(--ink3);margin-top:5px;line-height:1.45}
+.kpi.ok .v{color:var(--ok)} .kpi.ruim .v{color:var(--ruim)} .kpi.acc .v{color:var(--accent)}
+
+.chart{background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:10px 8px 4px;margin:18px 0 8px;overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:480px;height:auto}
+.g{stroke:var(--line);stroke-width:1}
+.gl{fill:var(--ink3);font:10.5px var(--mono)}
+.bar{fill:var(--accent);opacity:.8}
+.barr{fill:var(--ruim);opacity:.85}
+.cap{font-size:13px;color:var(--ink3);margin:-2px 0 18px;max-width:70ch}
+
+.scroll{overflow-x:auto;margin:0 0 16px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+.scroll table{min-width:460px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);white-space:nowrap}
+td.num,th.num{text-align:right;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+tr.morreu td{color:var(--ink3);text-decoration:line-through}
+tr.viveu td{background:var(--ok-bg)}
+
+footer{padding:34px 0 0;color:var(--ink3);font-size:13.5px;border-top:1px solid var(--line);margin-top:50px}
+@media (max-width:620px){
+  h1{font-size:29px} header{padding-top:38px}
+  .fala{grid-template-columns:1fr;gap:5px}
+  .quem{text-align:left;padding-top:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="selo">Diário de aprendizado · Doutorado</span>
+  <h1>Transfer Learning do Zero</h1>
+  <p class="sub">A jornada completa de uma tarde: de "o que é um modelo treinado?" até
+  derrubar os próprios achados com um experimento de controle.</p>
+  <div class="ficha">
+    <span>8 episódios</span>
+    <span>1 modelo quebrado</span>
+    <span>5 achados, 4 mortos</span>
+    <span>RTX 3060</span>
+  </div>
+</header>
+
+<div class="mapa"><svg viewBox="0 0 820 110" role="img" aria-label="arco dos oito episodios"><line x1="40" y1="46" x2="780" y2="46" class="arco"/><circle cx="40.0" cy="46" r="9" class="no"/><text x="40.0" y="51" class="non" text-anchor="middle">1</text><text x="40.0" y="76" class="nol" text-anchor="middle">o problema</text><circle cx="145.7" cy="46" r="9" class="no"/><text x="145.7" y="51" class="non" text-anchor="middle">2</text><text x="145.7" y="76" class="nol" text-anchor="middle">calma</text><circle cx="251.4" cy="46" r="9" class="no"/><text x="251.4" y="51" class="non" text-anchor="middle">3</text><text x="251.4" y="76" class="nol" text-anchor="middle">pra que serve</text><circle cx="357.1" cy="46" r="9" class="no"/><text x="357.1" y="51" class="non" text-anchor="middle">4</text><text x="357.1" y="76" class="nol" text-anchor="middle">o que tem dentro</text><circle cx="462.9" cy="46" r="9" class="no"/><text x="462.9" y="51" class="non" text-anchor="middle">5</text><text x="462.9" y="76" class="nol" text-anchor="middle">384 perguntas</text><circle cx="568.6" cy="46" r="9" class="no"/><text x="568.6" y="51" class="non" text-anchor="middle">6</text><text x="568.6" y="76" class="nol" text-anchor="middle">a lupa</text><circle cx="674.3" cy="46" r="9" class="no"/><text x="674.3" y="51" class="non" text-anchor="middle">7</text><text x="674.3" y="76" class="nol" text-anchor="middle">o erro</text><circle cx="780.0" cy="46" r="9" class="no"/><text x="780.0" y="51" class="non" text-anchor="middle">8</text><text x="780.0" y="76" class="nol" text-anchor="middle">o piso</text></svg></div>
+
+<!-- ============ EP 1 ============ -->
+<article class="ep">
+  <div class="epnum">Episódio 1</div>
+  <h2>O problema de verdade</h2>
+  <p class="epsub">onde a POC de imagem revela que era só aquecimento</p>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Até aqui eu fiz somente testes com SVD e conceito para poder
+    entender. Meu problema real é tentar usar SVD no processo de transfer learning de
+    foundation models: descobrir quais são as coisas que mais mudam — os pesos ou os vetores."</p></div>
+  </div>
+
+  <p>O repositório tinha uma POC simples: uma imagem em tons de cinza quebrada em camadas por
+  SVD. Parecia o trabalho. Era o aquecimento.</p>
+
+  <p>A pergunta real é de doutorado: quando um foundation model se especializa numa tarefa
+  nova, o que muda nos pesos dele?</p>
+
+  <div class="caixa analogia">
+    <span class="rot">A pergunta, em uma frase</span>
+    <p>O modelo <b>reorganiza as ferramentas que já tinha</b>, ou <b>compra ferramenta nova</b>?</p>
+  </div>
+
+  <p>E o produto não é um método novo de adaptação. É um <b>framework de orientação</b>: dizer
+  para quem vem depois onde vale a pena mexer, e economizar semanas de GPU.</p>
+
+  <div class="caixa fica">
+    <span class="rot">O que ficou</span>
+    <p>A pergunta já tem resposta parcial na literatura — FSGAN, SVDiff, SVF e OFT já apostaram
+    em um lado ou no outro, e cada um funcionou. Então a contribuição não pode ser "descobrir
+    quem muda mais". Tem que ser <b>um jeito padronizado de medir</b>.</p>
+  </div>
+</article>
+
+<!-- ============ EP 2 ============ -->
+<article class="ep">
+  <div class="epnum">Episódio 2</div>
+  <h2>"Calma"</h2>
+  <p class="epsub">onde o aluno corrige o orientador, duas vezes</p>
+
+  <p>A primeira resposta veio com decomposição matricial, tabela de datasets, protocolo de
+  treino e cinco controles metodológicos. Tudo de uma vez.</p>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Calma. Memorize isso: estou no início e você precisa usar
+    linguagem simples. Nunca me dê um monte de instruções de uma vez."</p></div>
+  </div>
+
+  <p>Mudou o formato. Mas ainda não o suficiente — três conceitos novos numa mensagem curta
+  continuam sendo três conceitos novos.</p>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Tá indo muito rápido. Precisa esperar eu confirmar entendimento
+    de cada trecho."</p></div>
+  </div>
+
+  <div class="caixa fica">
+    <span class="rot">O que ficou</span>
+    <p>O pedaço certo é <b>um conceito por vez</b>. Explicar, parar, esperar. Esse episódio não
+    é sobre SVD, mas é o que tornou todos os outros possíveis.</p>
+  </div>
+</article>
+
+<!-- ============ EP 3 ============ -->
+<article class="ep">
+  <div class="epnum">Episódio 3</div>
+  <h2>"Mas pra que serve isso?"</h2>
+  <p class="epsub">onde a pergunta mais básica era a que faltava</p>
+
+  <p>Vieram várias perguntas seguidas, e todas apontavam para o mesmo buraco:</p>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v">
+      <p>"Não está claro o que você está me propondo nesta POC."</p>
+      <p>"Mas eu preciso fornecer imagens?"</p>
+      <p>"Ainda não está claro então o objetivo do transfer learning."</p>
+    </div>
+  </div>
+
+  <p>A resposta tinha ficado presa no "como" sem nunca ter dito o "por quê".</p>
+
+  <div class="caixa analogia">
+    <span class="rot">O objetivo, enfim</span>
+    <p>Transfer learning serve para <b>não começar do zero</b>.</p>
+  </div>
+
+  <div class="scroll"><table>
+    <thead><tr><th></th><th class="num">Do zero</th><th class="num">Transfer learning</th></tr></thead>
+    <tbody>
+      <tr><td>Fotos necessárias</td><td class="num">milhões</td><td class="num">3.680</td></tr>
+      <tr><td>Tempo</td><td class="num">dias</td><td class="num">minutos</td></tr>
+      <tr><td>Acerto</td><td class="num">~20%</td><td class="num">~90%</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Enxergar é quase tudo o mesmo trabalho, seja para reconhecer um carro ou um Beagle. Borda
+  é borda, pelo é pelo. O que muda de tarefa para tarefa é só o final.</p>
+
+  <div class="caixa fica">
+    <span class="rot">O que ficou</span>
+    <p>E a sua tese é a pergunta seguinte: <b>quanto da parte grande e comum precisou ser
+    mexido?</b> Todo mundo faz transfer learning e ninguém sabe responder isso direito.</p>
+  </div>
+</article>
+
+<!-- ============ EP 4 ============ -->
+<article class="ep">
+  <div class="epnum">Episódio 4</div>
+  <h2>O que tem dentro de um modelo</h2>
+  <p class="epsub">onde 85 MB de números encontram 547 bytes de receita</p>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Eu ainda estou confuso sobre a composição do que é um modelo
+    treinado. O que eu tenho baixado no dinov2-small?"</p></div>
+  </div>
+
+  <div class="caixa analogia">
+    <span class="rot">A virada</span>
+    <p>Um modelo <b>não é um programa</b>. Não tem código, não tem lógica, não roda.</p>
+    <p>É um monte de números mais um papelzinho dizendo como organizá-los. Você não comprou um
+    bolo pronto: recebeu os <b>ingredientes já pesados</b> e a <b>receita</b>. O cozinheiro
+    (PyTorch) já morava na sua cozinha.</p>
+  </div>
+
+<pre><code>model.safetensors         85 MB    os números (223 tabelas)
+config.json              547 B    a receita
+preprocessor_config.json 436 B    como preparar a foto
+README.md                  3 KB   texto para humano</code></pre>
+
+  <p>O detalhe que impressiona: a receita inteira cabe em meio KB.</p>
+
+<pre><code>"hidden_size": 384          a bitola
+"num_hidden_layers": 12     os 12 blocos
+"patch_size": 14            o quadradinho de 14x14
+"num_channels": 3           as 3 cores</code></pre>
+
+  <p>Esse arquivinho descreve a estrutura inteira. O PyTorch lê, monta a estrutura vazia, e
+  depois preenche com os 22 milhões de números do <code>safetensors</code>. É ali que mora
+  tudo o que o modelo aprendeu com 142 milhões de fotos.</p>
+
+  <div class="caixa fica">
+    <span class="rot">O que ficou</span>
+    <p>Houve também a confusão entre <b>223</b> e <b>256</b>: 223 são as tabelas do modelo
+    (fica no disco, nunca muda), 256 são os pedaços em que a foto é cortada (muda a cada foto).
+    O manual e o caso. <b>Sua tese mede o manual.</b></p>
+  </div>
+</article>
+
+<!-- ============ EP 5 ============ -->
+<article class="ep">
+  <div class="epnum">Episódio 5</div>
+  <h2>As 384 perguntas</h2>
+  <p class="epsub">onde a foto vira números e o aluno pega duas simplificações no flagra</p>
+
+  <p>O modelo corta a foto em 256 quadradinhos de 14×14 pixels. Para cada um, faz 384
+  perguntas: "tem risca em pé?", "é escuro embaixo?", "tem muito vermelho?". Cada resposta é
+  um número.</p>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"384 perguntas. De onde veio este número 384?"</p></div>
+  </div>
+  <div class="fala">
+    <div class="quem o">Orientador</div>
+    <div class="bolha"><p>Alguém escolheu. É a <b>bitola</b> do modelo: quantos números ele usa
+    para descrever cada pedacinho. No Small é 384, no Large é 1024.</p></div>
+  </div>
+
+  <p>Depois veio a melhor intuição do dia:</p>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Estas perguntas são sempre em relação ao restante da imagem?"</p></div>
+  </div>
+
+  <div class="caixa analogia">
+    <span class="rot">A resposta</span>
+    <p>Nessa primeira etapa, não. Imagine <b>256 pessoas em salas fechadas</b>, cada uma com um
+    pedacinho da foto, preenchendo um formulário de 384 campos. Nenhuma sabe que juntas estão
+    olhando um gato.</p>
+    <p>Mas o instinto estava certo: no passo seguinte elas <b>se juntam numa roda e conversam</b>.
+    Essa conversa é a <b>atenção</b>, e é de onde vem o nome Transformer.</p>
+  </div>
+
+  <p>Na roda entram dois personagens a mais, que estavam visíveis na árvore do arquivo desde o
+  começo:</p>
+
+  <ul>
+    <li><b>O secretário</b> (<code>cls_token</code>) — uma cadeira a mais, que não recebeu
+    pedaço nenhum da foto. Ele só escuta as 12 rodadas e anota. No fim, é a ele que você
+    pergunta "o que era essa foto?"</li>
+    <li><b>Os carimbos de posição</b> (<code>position_embeddings</code>) — sem eles, os 256
+    pedaços chegam como um monte picotado, e ninguém sabe qual veio de onde.</li>
+  </ul>
+
+  <p>E depois da conversa, cada pedacinho vai pensar sozinho: é o <b>MLP</b>, as matrizes
+  <code>fc1</code> e <code>fc2</code>.</p>
+
+  <div class="caixa analogia">
+    <span class="rot">Atenção × MLP</span>
+    <p>Você vai a uma reunião e <b>escuta</b> todo mundo. Sai com informação solta na cabeça —
+    isso é a atenção. Depois volta para sua mesa e <b>pensa</b>: "juntando tudo o que ouvi, a
+    conclusão é essa" — isso é o MLP.</p>
+    <p>Sem o segundo passo, você só acumulou fofoca.</p>
+  </div>
+
+  <h4>O flagrante</h4>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Estes 384 são realmente números ou arrays?"</p></div>
+  </div>
+
+  <p>A frase "você dá uma foto, ele devolve 384 números" estava simplificada. Rodando de
+  verdade com a <code>entrada.png</code> do próprio repositório:</p>
+
+<pre><code>foto original:       (336, 296)
+depois de preparada: (1, 3, 224, 224)
+saída completa:      (1, 257, 384)   &lt;- uma TABELA
+só o secretário:     (384,)          &lt;- aí sim, uma lista</code></pre>
+
+  <p>257 = 256 quadradinhos + 1 secretário. Cada um entrega a própria folha de 384 campos.</p>
+
+  <div class="caixa fica">
+    <span class="rot">O que ficou</span>
+    <p>E o segundo flagrante: os 384 da entrada <b>não são os mesmos 384 da saída</b>. A
+    quantidade é a mesma, o significado não. Na entrada são riscas e cores; depois de 12
+    rodadas, são coisas como "isso faz parte de uma orelha". 384 é o tamanho do formulário,
+    não o conteúdo dele.</p>
+  </div>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Ele aprendeu a enxergar coisas mas não sabe o que são?"</p></div>
+  </div>
+  <div class="fala">
+    <div class="quem o">Orientador</div>
+    <div class="bolha"><p>Exatamente. Ele sabe <b>distinguir</b> e <b>agrupar</b>. Não sabe
+    <b>nomear</b>. Juntou todos os Beagles num canto do espaço numérico, só que o canto não tem
+    placa.</p></div>
+  </div>
+</article>
+
+<!-- ============ EP 6 ============ -->
+<article class="ep">
+  <div class="epnum">Episódio 6</div>
+  <h2>A lupa</h2>
+  <p class="epsub">onde a SVD deixa de ser matemática e vira instrumento</p>
+
+  <div class="caixa analogia">
+    <span class="rot">O armário</span>
+    <p>Cada matriz do modelo é um <b>armário com 384 ferramentas</b>. A SVD abre o armário e
+    mostra duas listas:</p>
+    <ul>
+      <li><b>os vetores singulares</b> = quais ferramentas existem</li>
+      <li><b>os valores singulares</b> = o quanto cada uma é usada</li>
+    </ul>
+    <p>Você abre antes do treino, abre depois, e compara. Se só mudou o uso, mudaram os
+    valores. Se apareceu ferramenta nova, mudaram os vetores.</p>
+  </div>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"As ferramentas são as perguntas?"</p></div>
+  </div>
+  <div class="fala">
+    <div class="quem o">Orientador</div>
+    <div class="bolha"><p>Quase. As perguntas são as <b>linhas</b> da tabela. As ferramentas da
+    SVD são os <b>temas por trás</b> das perguntas — porque muitas das 384 perguntas são
+    variações da mesma coisa.</p></div>
+  </div>
+
+  <p>Rodando na matriz <code>query</code> do bloco 0 do DINOv2:</p>
+
+<pre><code>sigma_1     4,79        1º valor:       25,8% de tudo
+sigma_2     1,91        10 primeiros:   51,9%
+sigma_3     1,85        50 primeiros:   82,6%
+...                     100 primeiros:  96,2%
+sigma_384   0,0000022</code></pre>
+
+  <p>Metade do que essa camada faz está em 10 direções, de 384 possíveis.</p>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Me explique o que é o sigma neste caso."</p></div>
+  </div>
+
+  <div class="caixa analogia">
+    <span class="rot">O equalizador</span>
+    <p>Sigma é <b>o quanto a matriz amplifica naquela direção</b>. Pense num equalizador de som
+    com 384 controles deslizantes: o <b>vetor</b> diz qual faixa é aquele controle, o
+    <b>sigma</b> diz a que altura ele está.</p>
+  </div>
+
+  <h4>O segundo flagrante</h4>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Ok, mas nesta lista sabendo só o sigma e não a direção que está
+    falando."</p></div>
+  </div>
+
+  <p>Correto. O sigma diz <b>o quanto</b>, nunca <b>o quê</b>. A direção estava no <code>U</code>,
+  que ainda não tinha sido mostrado. Impressa, ela é isto:</p>
+
+<pre><code>[-0.0417, 0.0444, 0.0583, -0.0510, -0.0678, -0.0314, ...]
+
+384 números, entre -0,12 e +0,12
+soma dos quadrados = 1,0000</code></pre>
+
+  <p>Sem nome, sem legenda, sem nada. Toda direção da SVD tem comprimento exatamente 1 — é uma
+  seta padronizada, muda só para onde aponta. A força foi toda extraída para o sigma.</p>
+
+  <div class="caixa analogia">
+    <span class="rot">Voltando ao equalizador</span>
+    <p>Você sabe a altura de cada controle. Mas <b>as faixas não têm etiqueta</b>. Ninguém
+    escreveu "grave" ou "agudo" embaixo.</p>
+  </div>
+
+  <h4>A pergunta mais afiada do dia</h4>
+
+  <div class="fala">
+    <div class="quem v">Você</div>
+    <div class="bolha v"><p>"Não dá pra saber os critérios que ele usou."</p></div>
+  </div>
+
+  <div class="caixa fica">
+    <span class="rot">O que ficou</span>
+    <p>Está certo: ninguém escreveu esses critérios. Mas eles estão <b>gravados nos pesos</b>,
+    e a SVD os separa: os vetores são <i>quais</i> critérios, os sigmas são <i>quanto pesa</i>
+    cada um.</p>
+    <p>Essa objeção é exatamente o motivo de a SVD ser a lente certa para a tese. Ela saiu da
+    sua desconfiança, não da teoria.</p>
+  </div>
+
+  <h4>A armadilha do sinal</h4>
+  <p>Para medir se uma direção girou, mede-se o ângulo entre a seta de antes e a de depois. Mas
+  uma direção e a mesma direção invertida são, para a matemática, idênticas — a SVD devolve
+  qualquer uma das duas, sem critério.</p>
+
+  <div class="caixa analogia">
+    <span class="rot">A faixa da estrada</span>
+    <p>Você pode dizer que ela vai de norte para sul ou de sul para norte. É a mesma faixa. Se
+    num dia você anota uma coisa e no outro dia a outra, parece que a estrada girou 180° — mas
+    quem mudou foi a sua anotação.</p>
+    <p>Conserto: usar o valor absoluto do cosseno. Uma linha de código. O perigo não é a
+    dificuldade, é não saber que o problema existe.</p>
+  </div>
+</article>
+
+<!-- ============ EP 7 ============ -->
+<article class="ep">
+  <div class="epnum">Episódio 7</div>
+  <h2>O experimento que destruiu o modelo</h2>
+  <p class="epsub">onde o orientador erra feio e o erro vira a melhor aula</p>
+
+  <p>Montagem: DINOv2-Small, 37 raças de cachorro e gato, Oxford-IIIT Pet, fine-tuning
+  completo. A checagem de sanidade passou — 2,1% antes de treinar, que é 1 em 37.</p>
+
+  <p>E aí:</p>
+
+<pre><code>época 1/5   acurácia 4.1%
+época 2/5   acurácia 5.2%
+época 3/5   acurácia 9.7%</code></pre>
+
+  <div class="caixa erro">
+    <span class="rot">O que deu errado</span>
+    <p>A cabeça nasce aleatória, chuta, erra feio e gera um erro enorme. Esse erro volta para o
+    corpo com força total, <b>antes de a cabeça aprender a ler</b>.</p>
+    <p>É um especialista com 20 anos de estudo colocado para trabalhar com um estagiário no
+    primeiro dia. O estagiário erra tudo, o chefe culpa o especialista, e o especialista muda
+    todo o método dele por causa do erro de um novato.</p>
+  </div>
+
+  <p>O diagnóstico: congelar o corpo por completo e treinar só uma regressão logística sobre os
+  384 números do secretário.</p>
+
+  <div class="grid">
+    <div class="kpi ok"><div class="v">94,8%</div><div class="k">corpo congelado,<br>só a cabeça</div></div>
+    <div class="kpi ruim"><div class="v">9,7%</div><div class="k">corpo destravado,<br>3 épocas</div></div>
+  </div>
+
+  <p>Os 94,8% provaram que o corpo estava intacto e os dados, corretos. <b>O problema era o
+  método de treino.</b> Destravar o corpo tinha piorado o modelo em 85 pontos.</p>
+
+  <p>Conserto, duas linhas: congelar o corpo na primeira época e baixar o passo de
+  <code>5e-5</code> para <code>1e-5</code>. Resultado:</p>
+
+<pre><code>época 1/5  corpo travado   acurácia 91.6%
+época 2/5  corpo solto     acurácia 91.9%
+época 3/5  corpo solto     acurácia 93.9%
+época 4/5  corpo solto     acurácia 93.8%
+época 5/5  corpo solto     acurácia 94.2%     1,6 min de treino</code></pre>
+
+  <div class="caixa fica">
+    <span class="rot">Por que esse erro importa para a tese</span>
+    <p>Se a SVD tivesse sido medida no modelo quebrado, os pesos teriam mudado muito — e a
+    conclusão seria besteira, porque aquilo era <b>destruição</b>, não especialização.</p>
+    <p>Regra que nasceu daqui: <b>toda medição de peso precisa ser reportada junto com a
+    acurácia final.</b></p>
+  </div>
+
+  <h4>Os outros tropeços do caminho</h4>
+  <ul>
+    <li>O servidor de Oxford entregava o dataset a <b>70 KB/s</b> — 2 horas de espera. O mesmo
+    arquivo no espelho do HuggingFace: <b>21 MB/s</b>, 300 vezes mais rápido.</li>
+    <li>Um <code>head -40</code> matou o script de comparação antes de ele salvar o resultado.</li>
+    <li>Um <code>global</code> mal colocado quebrou o script de treino na segunda rodada.</li>
+    <li>Passar a pasta em vez do arquivo <code>.safetensors</code> deu um erro de sistema
+    críptico, "No such device".</li>
+  </ul>
+  <p>Nenhum deles é interessante sozinho. Juntos mostram a proporção real do trabalho: o
+  conceito é uma fração do tempo.</p>
+</article>
+
+<!-- ============ EP 8 ============ -->
+<article class="ep">
+  <div class="epnum">Episódio 8</div>
+  <h2>O piso de ruído</h2>
+  <p class="epsub">onde quatro dos cinco achados morrem, e é a melhor notícia do dia</p>
+
+  <p>Com o modelo treinado, as 72 matrizes foram comparadas antes e depois. Saíram cinco
+  achados, e eles pareciam bons:</p>
+
+  <div class="grid">
+    <div class="kpi acc"><div class="v">0,52%</div><div class="k">deslocamento médio<br>das 72 matrizes</div></div>
+    <div class="kpi acc"><div class="v">0,96°</div><div class="k">giro médio das<br>direções principais</div></div>
+    <div class="kpi ok"><div class="v">94,2%</div><div class="k">acurácia final</div></div>
+  </div>
+
+  <p>A narrativa estava pronta: especializar um foundation model é um ajuste fino, não uma
+  reforma; o meio da rede muda mais que as pontas; a mudança é quase toda rotação.</p>
+
+  <p>Faltava uma coisa só. Treinar <b>de novo</b>, mudando apenas a semente aleatória, e medir
+  a diferença entre os dois modelos treinados. Nenhum aprendizado novo ali, só o acaso do
+  treino. Esse número é o zero da régua.</p>
+
+  <div class="chart"><svg viewBox="0 0 560 230" role="img" aria-label="giro das direcoes comparado ao piso de ruido"><line x1="52" y1="184.0" x2="540" y2="184.0" class="g"/><text x="45" y="187.5" class="gl" text-anchor="end">0.00°</text><line x1="52" y1="150.4" x2="540" y2="150.4" class="g"/><text x="45" y="153.9" class="gl" text-anchor="end">0.25°</text><line x1="52" y1="116.8" x2="540" y2="116.8" class="g"/><text x="45" y="120.3" class="gl" text-anchor="end">0.50°</text><line x1="52" y1="83.2" x2="540" y2="83.2" class="g"/><text x="45" y="86.7" class="gl" text-anchor="end">0.75°</text><line x1="52" y1="49.6" x2="540" y2="49.6" class="g"/><text x="45" y="53.1" class="gl" text-anchor="end">1.00°</text><line x1="52" y1="16.0" x2="540" y2="16.0" class="g"/><text x="45" y="19.5" class="gl" text-anchor="end">1.25°</text><rect x="84.5" y="54.4" width="97.6" height="129.6" class="bar"/><text x="133.3" y="48.4" class="gl" text-anchor="middle">0.964</text><text x="133.3" y="201" class="gl" text-anchor="middle">adaptação</text><text x="133.3" y="214" class="gl" text-anchor="middle">semente 0</text><rect x="247.2" y="52.2" width="97.6" height="131.8" class="bar"/><text x="296.0" y="46.2" class="gl" text-anchor="middle">0.981</text><text x="296.0" y="201" class="gl" text-anchor="middle">adaptação</text><text x="296.0" y="214" class="gl" text-anchor="middle">semente 1</text><rect x="409.9" y="40.3" width="97.6" height="143.7" class="barr"/><text x="458.7" y="34.3" class="gl" text-anchor="middle">1.069</text><text x="458.7" y="201" class="gl" text-anchor="middle">PISO DE RUÍDO</text></svg></div>
+  <p class="cap">Giro médio das direções principais. As duas primeiras barras são o efeito do
+  treino. A terceira é a diferença entre dois modelos igualmente bons, treinados na mesma
+  tarefa — ou seja, puro acaso.</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th></th><th class="num">Desloc.</th><th class="num">Giro</th><th class="num">Var. σ</th><th class="num">Concentr.</th></tr></thead>
+    <tbody>
+      <tr><td>adaptação (semente 0)</td><td class="num">0,516%</td><td class="num">0,964°</td><td class="num">0,019%</td><td class="num">3,30</td></tr>
+      <tr><td>adaptação (semente 1)</td><td class="num">0,529%</td><td class="num">0,981°</td><td class="num">0,019%</td><td class="num">3,14</td></tr>
+      <tr><td><b>PISO DE RUÍDO</b></td><td class="num"><b>0,651%</b></td><td class="num"><b>1,069°</b></td><td class="num"><b>0,018%</b></td><td class="num"><b>2,16</b></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="caixa erro">
+    <span class="rot">O veredito</span>
+    <p>O deslocamento entre os dois modelos treinados é <b>maior</b> que o deslocamento causado
+    pelo treino. Razão sinal/ruído: <b>0,79x</b>.</p>
+    <p>Aqueles 0,5% apresentados como "o que a especialização fez" <b>não são efeito da
+    especialização</b>.</p>
+  </div>
+
+  <div class="scroll"><table>
+    <thead><tr><th>Achado</th><th class="num">vs ruído</th><th>Situação</th></tr></thead>
+    <tbody>
+      <tr><td>A mudança é minúscula</td><td class="num">—</td><td>sobrevive, mas era o óbvio</td></tr>
+      <tr class="morreu"><td>Os valores singulares não mudaram</td><td class="num">1,08x</td><td>empate com o acaso</td></tr>
+      <tr class="morreu"><td>Quase tudo é rotação</td><td class="num">0,90x</td><td>abaixo do acaso</td></tr>
+      <tr class="morreu"><td>O meio da rede muda mais</td><td class="num">—</td><td>provavelmente ruído</td></tr>
+      <tr class="viveu"><td><b>O MLP se comporta diferente</b></td><td class="num"><b>1,95x</b></td><td><b>sobreviveu</b></td></tr>
+    </tbody>
+  </table></div>
+
+  <p>O único sinal claramente acima do acaso:</p>
+
+<pre><code>tipo        adaptação    ruído    razão
+mlp.fc2        8,11       4,16    1,95x   &lt;-- sobreviveu
+mlp.fc1        5,78       4,06    1,42x
+query          1,94       1,44    1,35x
+dense          1,09       1,01    1,08x</code></pre>
+
+  <p>E repare: os dois maiores são <code>fc1</code> e <code>fc2</code> — justamente o MLP,
+  aquela parte onde cada pedacinho "pensa sozinho" depois da conversa.</p>
+
+  <div class="caixa fica">
+    <span class="rot">O que ficou</span>
+    <p>Sem controle, a medição apontava cinco achados. Com controle, sobra um — e esse um vale
+    muito mais que os cinco, porque agora tem com o que ser comparado.</p>
+    <p>Esse é o experimento funcionando como devia. A diferença entre <b>um resultado</b> e
+    <b>um achado</b> é exatamente esse segundo treino de um minuto e meio.</p>
+  </div>
+</article>
+
+<!-- ============ FECHAMENTO ============ -->
+<article class="ep">
+  <div class="epnum">Encerramento</div>
+  <h2>O que a jornada ensinou</h2>
+
+  <h4>Sobre o conteúdo</h4>
+  <ul>
+    <li>Um modelo treinado é <b>números + receita</b>, não um programa.</li>
+    <li>Ele aprende a <b>enxergar</b> sem aprender a <b>nomear</b>. Nomear é barato.</li>
+    <li>A SVD separa <b>quais critérios</b> de <b>quanto pesa cada um</b> — e é por isso que
+    ela é a lente certa para a pergunta da tese.</li>
+    <li>Especializar um foundation model mexe muito pouco nos pesos.</li>
+  </ul>
+
+  <h4>Sobre o método</h4>
+  <ul>
+    <li><b>Medir sem controle é contar história.</b> O piso de ruído é o que separa resultado
+    de achado.</li>
+    <li>Um experimento que falha e é diagnosticado ensina mais que um que dá certo de primeira.</li>
+    <li>Toda medida de peso precisa vir acompanhada da acurácia — senão não dá para distinguir
+    adaptação de destruição.</li>
+    <li>As perguntas que pareciam básicas ("de onde veio o 384?", "são números ou arrays?",
+    "não dá pra saber os critérios") foram as que mais mudaram o rumo.</li>
+  </ul>
+
+  <h4>O que vem a seguir</h4>
+  <ol class="l">
+    <li><b>Teste funcional.</b> Devolver ao modelo só a parte diagonal do deslocamento, depois
+    só a rotação, e medir a acurácia de cada um. Transforma geometria em causa.</li>
+    <li><b>Domínio distante.</b> Repetir tudo com imagem médica, e comparar o mapa de
+    concentração com o de raça de pet.</li>
+    <li><b>A segunda armadilha</b>, ainda não enfrentada: valores singulares colados tornam as
+    direções instáveis — elas giram sozinhas sem nada ter sido aprendido.</li>
+  </ol>
+</article>
+
+<footer>
+  Jornada de 28 de setembro de 2026, em uma RTX 3060 12 GB. Todos os números vieram de
+  execuções reais registradas em <code>doutorado/experimento1/</code>. As falas marcadas como
+  suas são citações do que você escreveu. Nada aqui é estimativa.
+</footer>
+
+</div>
+</body>
+</html>

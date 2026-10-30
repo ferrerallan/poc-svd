@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SVD e transfer learning, explicado do zero</title>
+<style>
+:root{--bg:#fbfbfd;--card:#ffffff;--tx:#1a1a1c;--mut:#5f5f69;--bd:#dedee6;--ac:#6b46c1;--acbg:#efe9fb;--ok:#1d7a54;--okbg:#e3f4ec;--warn:#9a5b0c;--warnbg:#fdf0dc;--code:#f0f0f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141417;--card:#1d1d22;--tx:#ececf0;--mut:#a3a3ae;--bd:#34343d;--ac:#b79cf5;--acbg:#2a2340;--ok:#6fd0a2;--okbg:#17302a;--warn:#f0b867;--warnbg:#3a2c14;--code:#26262d}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 80px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .3em}
+h2{font-size:1.5rem;margin:2.4em 0 .5em;padding-top:.6em;border-top:2px solid var(--bd)}
+h3{font-size:1.15rem;margin:1.6em 0 .4em;color:var(--ac)}
+p{margin:.7em 0}
+.lead{font-size:1.1rem;color:var(--mut)}
+code{background:var(--code);padding:.1em .35em;border-radius:5px;font-size:.92em}
+.box{background:var(--card);border:1px solid var(--bd);border-left:5px solid var(--ac);border-radius:10px;padding:12px 16px;margin:1em 0}
+.box.ok{border-left-color:var(--ok);background:var(--okbg)}
+.box.warn{border-left-color:var(--warn);background:var(--warnbg)}
+.box.term{background:var(--acbg)}
+.box b.t{display:block;margin-bottom:.2em}
+figure{margin:1.4em 0;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}
+figure .img{background:#fff;border-radius:8px;padding:6px;text-align:center}
+figure img{max-width:100%;height:auto}
+figcaption{font-size:.93rem;color:var(--mut);padding:8px 6px 2px}
+figcaption b{color:var(--tx)}
+nav.toc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 18px;margin:1.4em 0}
+nav.toc ol{margin:.3em 0;padding-left:1.3em;columns:2;column-gap:2em}
+nav.toc a{color:var(--ac);text-decoration:none}
+table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.95rem;background:var(--card)}
+th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--acbg)}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl{overflow-x:auto}
+dl dt{font-weight:700;margin-top:.9em;color:var(--ac)}
+dl dd{margin:.1em 0 0 0}
+details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 14px;margin:.7em 0}
+details summary{cursor:pointer;font-weight:600}
+.ex{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem}
+footer{margin-top:3em;color:var(--mut);font-size:.9rem}
+a{color:var(--ac)}
+@media (max-width:640px){nav.toc ol{columns:1}h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>SVD e transfer learning, explicado do zero</h1>
+<p class="lead">Este texto reúne tudo o que foi explicado até aqui, em linguagem simples. Cada termo novo é explicado no momento em que aparece e também no glossário no final. As figuras foram geradas por um script do projeto (<code>artigo/gerar_imagens.py</code>) e usam a foto real do projeto e os números reais do exemplo.</p>
+
+<nav class="toc">
+<b>Roteiro</b>
+<ol>
+<li><a href="#objetivo">O que a tese quer descobrir</a></li>
+<li><a href="#matriz">Foto, matriz e SVD</a></li>
+<li><a href="#modelo">Modelos fundacionais e o DINOv2</a></li>
+<li><a href="#papers">Os artigos: Transformer e ViT</a></li>
+<li><a href="#entrada">Da foto aos tokens</a></li>
+<li><a href="#bloco">Dentro de um bloco</a></li>
+<li><a href="#atencao">Atenção passo a passo (com números)</a></li>
+<li><a href="#72">As 72 matrizes</a></li>
+<li><a href="#ft">Fine-tuning e o par (W0, W1)</a></li>
+<li><a href="#exp">O que o experimento 1 mostrou</a></li>
+<li><a href="#duvidas">Perguntas que costumam travar</a></li>
+<li><a href="#gloss">Glossário</a></li>
+<li><a href="#fontes">Fontes</a></li>
+</ol>
+</nav>
+
+<!-- =================================================== 1 -->
+<h2 id="objetivo">1. O que a tese quer descobrir</h2>
+<p>Hoje, quase todo modelo de inteligência artificial para imagens ou texto começa de um <b>modelo já treinado</b> por uma grande empresa e depois é <b>ajustado</b> para uma tarefa específica. Esse ajuste é o <b>transfer learning</b> (aprendizado por transferência): o que o modelo aprendeu em uma tarefa é reaproveitado em outra.</p>
+<p>A pergunta da tese é: <b>quando o modelo é ajustado, o que muda mais?</b></p>
+<ul>
+<li>Os <b>pesos</b>, isto é, a intensidade com que cada padrão é amplificado (os valores singulares σ, explicados na seção 2);</li>
+<li>ou as <b>direções</b>, isto é, quais padrões o modelo usa (os vetores singulares U e V)?</li>
+</ul>
+<p>Saber isso permite montar um guia para <b>economizar tempo de treino</b>: se só os pesos mudam, basta treinar poucos números; se as direções mudam, é preciso treinar mais.</p>
+<div class="box term"><b class="t">Termos desta seção</b>
+<b>Modelo</b>: um programa cheio de números ajustáveis. <b>Pesos (parâmetros)</b>: esses números ajustáveis. <b>Treinar</b>: ajustar os pesos até o modelo acertar uma tarefa. <b>Fine-tuning</b>: continuar treinando um modelo já treinado, com dados da nova tarefa. <b>Foundation model (modelo fundacional)</b>: um modelo grande, treinado de forma geral, feito para ser reaproveitado em muitas tarefas.</div>
+
+<!-- =================================================== 2 -->
+<h2 id="matriz">2. Foto, matriz e SVD</h2>
+
+<h3>2.1 Uma foto é uma tabela de números</h3>
+<p>Uma <b>matriz</b> é uma tabela de números com linhas e colunas. Uma foto em tons de cinza é uma matriz: cada <b>pixel</b> (ponto da imagem) é um número de 0 (preto) a 255 (branco). Nossa foto de teste tem 296 linhas e 336 colunas, ou seja, 99.456 números.</p>
+<figure><div class="img"><img src="images/01_foto_vira_matriz.png" alt="Foto em tons de cinza com zoom mostrando os números de cada pixel"></div>
+<figcaption><b>Figura 1.</b> Para o computador, a foto é só uma matriz de números. O zoom mostra um pedaço de 8 × 8 pixels.</figcaption></figure>
+<p>Os pesos de um modelo também são matrizes. Por isso o mesmo truque matemático serve para os dois.</p>
+
+<h3>2.2 SVD: quebrar uma matriz em camadas</h3>
+<p>A <b>SVD</b> (<i>Singular Value Decomposition</i>, decomposição em valores singulares) escreve qualquer matriz W como um produto de três matrizes:</p>
+<p class="ex" style="text-align:center">W = U · Σ · Vᵀ</p>
+<ul>
+<li><b>Σ (sigma)</b> guarda os <b>valores singulares σ₁ ≥ σ₂ ≥ …</b>: números positivos que dizem <b>quanto peso</b> cada camada tem.</li>
+<li>As colunas de <b>U</b> e <b>V</b> são os <b>vetores singulares</b>: dizem <b>qual padrão</b> cada camada representa (U do lado das linhas, V do lado das colunas). Eles formam direções perpendiculares entre si.</li>
+</ul>
+<p>Outra forma de ler: W é a soma de camadas simples, <b>σᵢ · uᵢ · vᵢᵀ</b>. Cada camada é um padrão de listras (u vezes v). A primeira camada é a mais importante, a segunda vem depois, e assim por diante.</p>
+<figure><div class="img"><img src="images/02_svd_camadas.png" alt="Camadas da SVD de uma foto e somas parciais"></div>
+<figcaption><b>Figura 2.</b> Linha de cima: algumas camadas da foto, cada uma com seu peso σ. Linha de baixo: somando as primeiras N camadas a foto vai aparecendo. Com 35 camadas (22% dos números) já reconhecemos tudo.</figcaption></figure>
+<div class="box term"><b class="t">Energia e posto</b>
+<b>Energia</b> de uma camada é σ² (o peso ao quadrado); a energia total é a soma de todas. A porcentagem de energia diz quanto da matriz as primeiras camadas já explicam. <b>Posto (rank)</b> é o número de camadas usadas; aproximar com “posto N” é guardar só as N primeiras. O <b>teorema de Eckart–Young</b> (1936) garante que, para qualquer N, somar as N primeiras camadas da SVD é a <b>melhor aproximação possível</b> com N camadas (a que erra menos).</div>
+
+<h3>2.3 O que significam σ e as direções, em desenho</h3>
+<p>Imagine a matriz como uma máquina que pega um círculo de pontos e o deforma em uma elipse. Os <b>eixos da elipse</b> são as direções; o <b>comprimento</b> de cada eixo é o peso σ.</p>
+<figure><div class="img"><img src="images/03_svd_geometria.png" alt="Elipse mostrando mudança de peso versus mudança de direção"></div>
+<figcaption><b>Figura 3.</b> À esquerda, a matriz original. No meio, só o peso σ₁ aumentou: os eixos apontam para o mesmo lado, mas um ficou mais comprido. À direita, só a direção girou: os comprimentos são os mesmos, mas os eixos apontam para outro lado.</figcaption></figure>
+<p>Esta é a pergunta da tese, em miniatura: depois do fine-tuning, a elipse ficou <b>mais esticada</b> (σ mudou) ou <b>girou</b> (U e V mudaram)?</p>
+<div class="box warn"><b class="t">Uma armadilha técnica: o sinal</b>
+A SVD não é única no sinal: pode-se trocar uₖ e vₖ por −uₖ e −vₖ ao mesmo tempo e a matriz é a mesma. Por isso, ao comparar direções de dois modelos, é preciso alinhar os sinais antes. Foi um erro que corrigimos no começo do experimento.</div>
+
+<!-- =================================================== 3 -->
+<h2 id="modelo">3. Modelos fundacionais e o DINOv2</h2>
+<h3>3.1 O modelo que estudamos</h3>
+<p><b>DINOv2-Small</b> é um modelo de visão publicado pela Meta em 2023 (Oquab et al., arXiv 2304.07193). Ele recebe uma foto e devolve números que descrevem o conteúdo dela. Dados do exemplar que usamos:</p>
+<div class="tbl"><table>
+<tr><th>Característica</th><th>Valor</th><th>O que significa</th></tr>
+<tr><td>Tipo</td><td>Vision Transformer (ViT)</td><td>Arquitetura que trata a foto como uma sequência de pedaços (seção 5).</td></tr>
+<tr><td>Pesos</td><td>22,1 milhões</td><td>Quantidade de números ajustáveis. O “Small” é o menor da família.</td></tr>
+<tr><td>Layers (camadas ou blocos)</td><td>12</td><td>Blocos iguais empilhados.</td></tr>
+<tr><td>Hidden size (bitola)</td><td>384</td><td>Cada pedaço da foto é representado por 384 números.</td></tr>
+<tr><td>Cabeças de atenção</td><td>6</td><td>Seis “conversas” em paralelo dentro de cada bloco (seção 7).</td></tr>
+<tr><td>Patch</td><td>14 × 14 pixels</td><td>Tamanho de cada pedaço em que a foto é cortada.</td></tr>
+<tr><td>mlp_ratio</td><td>4</td><td>Dentro do MLP o vetor cresce 4 vezes (384 → 1536) e volta.</td></tr>
+<tr><td>Cabeça de classificação</td><td>nenhuma</td><td>Vem só com o “corpo”; a cabeça é colocada depois (seção 9).</td></tr>
+</table></div>
+<h3>3.2 Como ele foi treinado: sem rótulos</h3>
+<p>O DINOv2 foi treinado de forma <b>auto-supervisionada</b>: ninguém disse a ele “isto é um gato”. Ele viu cerca de <b>142 milhões de imagens</b> (conjunto chamado <b>LVD-142M</b>, selecionado automaticamente da internet) e aprendeu a fazer com que fotos parecidas produzissem números parecidos. O resultado é um modelo que <b>enxerga estrutura</b> (formas, texturas, objetos) sem saber o nome das coisas. Nomes são acrescentados depois, no fine-tuning.</p>
+<div class="box term"><b class="t">Termos</b>
+<b>Rótulo</b>: a resposta certa de uma foto (por exemplo, “beagle”). <b>Auto-supervisionado</b>: treino sem rótulos, em que o modelo cria seus próprios exercícios a partir dos dados. <b>Pré-treino</b>: esse treino geral inicial. <b>safetensors</b>: formato de arquivo que guarda os pesos como tabelas nomeadas (o nosso tem 85 MB e 223 tabelas, uma por grupo de pesos). <b>config.json</b>: arquivo que descreve o desenho do modelo (12 layers, bitola 384 e assim por diante).</div>
+
+<!-- =================================================== 4 -->
+<h2 id="papers">4. Os artigos: Transformer e ViT</h2>
+<figure><div class="img"><img src="images/14_linha_do_tempo.png" alt="Linha do tempo de 1936 até a tese"></div>
+<figcaption><b>Figura 4.</b> De onde cada ideia veio.</figcaption></figure>
+
+<h3>4.1 “Attention Is All You Need” (2017)</h3>
+<p>Este é o artigo que criou o <b>Transformer</b>: Vaswani e colegas (Google), apresentado na conferência NeurIPS em 2017 (arXiv 1706.03762). Até então, modelos de texto liam as palavras uma por vez, em ordem (as chamadas redes recorrentes), o que era lento. O artigo mostrou que dava para <b>abandonar a leitura em sequência</b> (e também as convoluções) e usar <b>apenas atenção</b>: cada palavra olha todas as outras ao mesmo tempo e decide em quais prestar atenção. Isso permite treinar em paralelo, de forma muito mais rápida. O artigo testou a ideia em tradução de idiomas e superou os melhores modelos da época.</p>
+<p>O modelo original tinha 6 blocos, 8 cabeças de atenção e bitola 512. O desenho do bloco (atenção + MLP, com conexões residuais e normalização) é o que ainda usamos hoje, em versões maiores ou menores.</p>
+<h3>4.2 Vision Transformer, ViT (2020)</h3>
+<p>“An Image Is Worth 16×16 Words”, de Dosovitskiy e colegas (ICLR 2021, arXiv 2010.11929). A ideia: <b>cortar a foto em pedaços quadrados (patches), tratar cada pedaço como se fosse uma “palavra”</b> e usar o Transformer sem mudanças grandes. O DINOv2 é um ViT, só que treinado de outro jeito (auto-supervisionado, com muito mais dados).</p>
+<div class="box term"><b class="t">Outros nomes citados</b>
+<b>BERT</b> (Google, 2018) e <b>GPT</b> (OpenAI): Transformers para texto, o primeiro para entender e o segundo para gerar. <b>Llama</b> (Meta, 2023): família aberta de modelos de linguagem; usa uma variante do MLP chamada <b>SwiGLU</b> (Shazeer, 2020), com três matrizes em vez de duas. <b>CNN</b> (rede convolucional): arquitetura anterior para imagens, que usa filtros pequenos deslizando pela foto; seus pesos são tabelas de 4 dimensões, e não matrizes simples.</div>
+
+<!-- =================================================== 5 -->
+<h2 id="entrada">5. Da foto aos tokens</h2>
+<figure><div class="img"><img src="images/04_dinov2_visao_geral.png" alt="Visão geral do DINOv2: foto, patches, tokens, 12 blocos, CLS, cabeça"></div>
+<figcaption><b>Figura 5.</b> O caminho completo. A parte tracejada à esquerda é o corpo (pré-treinado); a cabeça é nova e nasce aleatória.</figcaption></figure>
+
+<h3>5.1 Patches</h3>
+<p>O modelo recebe a foto com tamanho fixo de <b>224 × 224 pixels</b> (fotos de outro tamanho são redimensionadas antes). Ela é cortada em quadradinhos de 14 × 14: 224 ÷ 14 = 16, então são 16 × 16 = <b>256 patches</b>. Cada patch tem 14 × 14 pixels × 3 cores (vermelho, verde, azul) = <b>588 números</b>.</p>
+<h3>5.2 Token</h3>
+<p>Uma matriz aprendida (588 × 384) <b>traduz</b> cada patch em um vetor de <b>384 números</b>. Esse vetor é o <b>token</b>. Diferença importante: <b>patch é o pedaço cru da foto; token é o patch já traduzido para a linguagem do modelo</b>, e que será atualizado bloco após bloco.</p>
+<figure><div class="img"><img src="images/08_foto_em_patches.png" alt="Foto cortada em patches, um patch ampliado, tradução em token"></div>
+<figcaption><b>Figura 6.</b> Um patch (quadrado vermelho) vira 588 números e depois 384 números pela matriz de tradução.</figcaption></figure>
+<h3>5.3 Posição e CLS</h3>
+<p><b>Posição.</b> A atenção, sozinha, não sabe onde cada patch estava: se embaralharmos os patches, ela dá o mesmo resultado (testamos: sem posição, a saída ficou idêntica, similaridade 1,0000; com posição, caiu para 0,48). Para o modelo saber “quem está em cima, quem está embaixo”, soma-se a cada token um <b>vetor de posição</b>, tirado de uma tabela aprendida (<b>position embedding</b>) com uma linha por posição. A tabela do DINOv2 tem 1370 linhas (um CLS mais 37 × 37 posições); para fotos de 224 × 224 ela é redimensionada (interpolada) para 16 × 16.</p>
+<p><b>CLS.</b> Além dos 256 tokens de patches, existe <b>um token extra, o CLS</b>, que não vem de nenhum pedaço da foto. Ele começa igual para toda foto e, ao passar pelos blocos, vai absorvendo informação de todos os patches. No final, o CLS é <b>o resumo da imagem</b>, e é ele que a cabeça de classificação lê. Total: <b>257 tokens × 384 números</b>.</p>
+<figure><div class="img"><img src="images/09_patch_vs_token.png" alt="Como o patch vira token e muda a cada bloco"></div>
+<figcaption><b>Figura 7.</b> “O token é o patch no final das contas?” Sim, no começo. Depois ele deixa de ser só o pedaço da foto: a cada bloco recebe informação dos outros e é reescrito.</figcaption></figure>
+
+<!-- =================================================== 6 -->
+<h2 id="bloco">6. Dentro de um bloco</h2>
+<p>Cada um dos 12 blocos (também chamados <b>layers</b>) faz duas coisas, sempre nesta ordem:</p>
+<ol>
+<li><b>Atenção</b>: os tokens <b>conversam</b>. Cada token olha os outros e <b>troca informação</b>.</li>
+<li><b>MLP</b> (<i>multilayer perceptron</i>, “rede de camadas densas”): cada token é <b>reescrito sozinho</b>, sem olhar nenhum outro.</li>
+</ol>
+<figure><div class="img"><img src="images/06_bloco_transformer.png" alt="Um bloco Transformer com atenção e MLP e suas matrizes"></div>
+<figcaption><b>Figura 8.</b> Um bloco. A saída tem o mesmo formato da entrada; por isso 12 blocos podem ser empilhados.</figcaption></figure>
+<figure><div class="img"><img src="images/07_atencao_vs_mlp.png" alt="Atenção mistura tokens; MLP trata cada token sozinho"></div>
+<figcaption><b>Figura 9.</b> Diferença central. Na atenção, cada token depois depende de todos os de antes. No MLP, cada token depois depende só de si mesmo.</figcaption></figure>
+<p><b>Que informação é trocada entre os tokens?</b> Pedaços do conteúdo dos vetores. Por exemplo, um patch de “pata” fica sabendo que existe “focinho” e “orelha pontuda” em outros patches; assim ele passa a representar “parte de um cachorro”, e não só “pelo marrom”.</p>
+<h3>6.1 O MLP: fc1 e fc2</h3>
+<p>O MLP tem duas matrizes. <b>fc1</b> (<i>fully connected 1</i>, 1536 × 384) <b>expande</b> o token de 384 para 1536 números; depois uma função chamada <b>GELU</b> aplica uma dobra não linear (zera de forma suave o que é negativo; sem isso duas matrizes seguidas valeriam só uma); <b>fc2</b> (384 × 1536) <b>comprime</b> de volta para 384. Como a expansão é de 4 vezes, o ajuste diz <code>mlp_ratio = 4</code>. O MLP concentra cerca de 2/3 dos pesos de cada bloco.</p>
+<div class="box term"><b class="t">Mais três ingredientes do bloco</b>
+<b>Conexão residual</b>: a saída de cada etapa é <i>somada</i> à entrada, em vez de substituí-la; assim o token antigo não se perde e o treino fica estável. <b>LayerNorm</b>: ajusta cada token para ter média e escala padrão antes de cada etapa. <b>LayerScale</b>: um pequeno multiplicador aprendido que controla quanto cada etapa pode somar ao token. Nenhum dos três é uma das 72 matrizes que estudamos.</div>
+
+<!-- =================================================== 7 -->
+<h2 id="atencao">7. Atenção passo a passo (com números)</h2>
+<p>Como cada patch escolhe com quem trocar informação? Usando três vetores, chamados <b>query</b> (consulta), <b>key</b> (chave) e <b>value</b> (valor):</p>
+<ul>
+<li><b>query</b>: o que o token <i>procura</i>;</li>
+<li><b>key</b>: o que o token <i>oferece</i> para ser encontrado;</li>
+<li><b>value</b>: o conteúdo que o token <i>entrega</i> a quem prestar atenção nele.</li>
+</ul>
+<p>Os três saem do mesmo token, multiplicado por três matrizes diferentes: <b>Wq, Wk e Wv</b>. Essas matrizes são <b>fixas depois do treino</b>: são as mesmas para qualquer foto (começam aleatórias e são ajustadas no pré-treino). O que muda de foto para foto são os tokens que entram.</p>
+<h3>7.1 Um exemplo pequeno</h3>
+<p>Três tokens com 2 números cada: <span class="ex">A = [1, 0]</span>, <span class="ex">B = [0, 1]</span>, <span class="ex">C = [1, 1]</span>, e as matrizes <span class="ex">Wq = [[2,0],[0,1]]</span>, <span class="ex">Wk = [[1,0],[0,2]]</span>, <span class="ex">Wv = [[1,1],[0,1]]</span>. (Números inventados só para ser possível fazer a conta à mão.)</p>
+<figure><div class="img"><img src="images/10_qkv_de_onde_vem.png" alt="De cada token saem query, key e value por três matrizes"></div>
+<figcaption><b>Figura 10.</b> De onde vêm os vetores [1,1], [0,1] e [1,2] que aparecem no cálculo: são os <b>values</b> de A, B e C, isto é, cada token multiplicado por Wv.</figcaption></figure>
+<h3>7.2 Recalculando o token A</h3>
+<ol>
+<li><b>Afinidade</b>: multiplica-se a query de A pela key de cada token (produto escalar: multiplica posição por posição e soma). Resultado: 2, 0 e 2.</li>
+<li><b>Softmax</b>: função que transforma números quaisquer em pesos positivos que somam 1: aqui 0,47, 0,06 e 0,47. Quanto maior a afinidade, maior o peso.</li>
+<li><b>Mistura</b>: o novo A é a soma dos values, cada um multiplicado pelo seu peso: 0,47·[1,1] + 0,06·[0,1] + 0,47·[1,2] = [0,94 ; 1,47].</li>
+</ol>
+<figure><div class="img"><img src="images/11_atencao_recalcula_token.png" alt="Cálculo do novo A em três passos"></div>
+<figcaption><b>Figura 11.</b> O mesmo cálculo desenhado. (Nas figuras, o decimal usa ponto.) Fazendo o mesmo para B e C: B novo = [0.53 ; 1.47] e C novo = [0.89 ; 1.79].</figcaption></figure>
+<figure><div class="img"><img src="images/12_pesos_e_cabecas.png" alt="Tabela de pesos de atenção e as seis cabeças"></div>
+<figcaption><b>Figura 12.</b> À esquerda, os pesos de atenção do exemplo: cada linha mostra com quem aquele token “conversou” (C presta 79% de atenção em si mesmo). À direita, o que acontece no modelo real.</figcaption></figure>
+<div class="box warn"><b class="t">Duas simplificações do exemplo</b>
+No modelo real o produto query·key é dividido por √64 = 8 antes do softmax (para os números não explodirem), e há bias nas matrizes. Deixamos de fora para a conta caber na cabeça.</div>
+<h3>7.3 As seis cabeças</h3>
+<p>No DINOv2-Small os 384 números do token são divididos em <b>6 fatias de 64</b>. Cada fatia faz a sua própria atenção, com seus próprios pesos: são as <b>6 cabeças de atenção</b>. Uma cabeça pode olhar para vizinhos próximos, outra para formas semelhantes, e assim por diante. No fim, os resultados das 6 são colados de volta e passam pela matriz de saída, a <b>dense</b>.</p>
+
+<!-- =================================================== 8 -->
+<h2 id="72">8. As 72 matrizes</h2>
+<p>As matrizes de pesos que a SVD analisa são estas, em cada um dos 12 blocos:</p>
+<div class="tbl"><table>
+<tr><th>Matriz</th><th>Parte</th><th>Formato</th><th>Papel</th></tr>
+<tr><td>query</td><td>atenção</td><td class="n">384 × 384</td><td>gera “o que procuro”</td></tr>
+<tr><td>key</td><td>atenção</td><td class="n">384 × 384</td><td>gera “o que ofereço”</td></tr>
+<tr><td>value</td><td>atenção</td><td class="n">384 × 384</td><td>gera “o que entrego”</td></tr>
+<tr><td>dense</td><td>atenção</td><td class="n">384 × 384</td><td>junta as 6 cabeças</td></tr>
+<tr><td>fc1</td><td>MLP</td><td class="n">1536 × 384</td><td>expande o token</td></tr>
+<tr><td>fc2</td><td>MLP</td><td class="n">384 × 1536</td><td>comprime o token</td></tr>
+</table></div>
+<figure><div class="img"><img src="images/05_as_72_matrizes.png" alt="Grade de 12 layers por 6 matrizes"></div>
+<figcaption><b>Figura 13.</b> 12 layers × 6 matrizes = 72 matrizes, cada uma com sua própria SVD.</figcaption></figure>
+<p>Juntas, as 72 têm 21.233.664 pesos, quase tudo dos 22,1 milhões do modelo. O restante são bias (um número somado ao final de uma conta), parâmetros das normalizações, LayerScale e as tabelas de embedding (patches e posição). Cada matriz de atenção tem 147.456 pesos e cada uma do MLP 589.824.</p>
+<p><b>O número 6 é específico deste modelo.</b> Outros desenhos agrupam diferente: alguns juntam query, key e value em uma única matriz grande (<i>fused qkv</i>); modelos como o Llama têm 3 matrizes no MLP (SwiGLU); e redes convolucionais têm filtros de 4 dimensões, que precisam ser achatados em matriz antes da SVD. A ideia do experimento vale para todos; a lista de matrizes é que muda.</p>
+
+<!-- =================================================== 9 -->
+<h2 id="ft">9. Fine-tuning e o par (W0, W1)</h2>
+<h3>9.1 Corpo e cabeça</h3>
+<p>O <b>corpo</b> é tudo o que transforma a foto em números úteis (patches, 12 blocos, CLS): no DINOv2 ele vem pré-treinado. A <b>cabeça</b> é uma pequena matriz final (384 → número de classes) que lê o CLS e decide a resposta. O DINOv2 original <b>não tem cabeça</b>; ao especializar o modelo, colocamos uma nova, que nasce com números aleatórios.</p>
+<h3>9.2 Congelado ou livre</h3>
+<p>Há duas formas de usar o modelo em uma tarefa nova. <b>Corpo congelado</b> (<i>linear probe</i>): só a cabeça treina; o corpo fica como está. <b>Fine-tuning</b>: o corpo também treina, e seus pesos mudam. Só no segundo caso existe algo para medir: <b>o par (W0, W1)</b> de cada matriz, ou seja, antes e depois.</p>
+<figure><div class="img"><img src="images/13_finetuning_par_w0_w1.png" alt="Modelo pré-treinado, treino com pets, modelo especializado e o par W0,W1"></div>
+<figcaption><b>Figura 14.</b> O dado da tese é a diferença entre W0 e W1 nas 72 matrizes. O classificador de raças é descartável.</figcaption></figure>
+<h3>9.3 A tarefa de calibração: raças de pet</h3>
+<p>No experimento 1 usamos o <b>Oxford-IIIT Pet</b>: fotos de cães e gatos de 37 raças (3.680 fotos de treino e 3.669 de teste). A tarefa é fácil e próxima do que o DINOv2 já sabe, de propósito: ela serve para <b>calibrar a régua</b>, isto é, aprender quanto uma mudança pequena parece, antes de medir um caso difícil. Depois repetimos o procedimento em um domínio distante, imagens de lesões de pele.</p>
+
+<!-- =================================================== 10 -->
+<h2 id="exp">10. O que o experimento 1 mostrou</h2>
+<p>O experimento foi feito em <b>etapas numeradas</b>, cada uma com seus scripts, logs e dados em pasta própria, e nada de uma etapa foi sobrescrito pela seguinte. Tudo está em <code>doutorado/experimento1/resultados.html</code>. Em cada etapa, rodamos <b>10 treinos</b> que diferem só na <b>semente</b> (número que decide a parte aleatória: inicialização da cabeça e ordem das fotos), para saber o que é efeito real e o que é acaso.</p>
+
+<h3>10.1 Como medimos “quanto mudou”</h3>
+<ul>
+<li><b>Mudança dos pesos</b>: para cada uma das 72 matrizes, comparamos W0 com W1 e calculamos a diferença percentual; depois fazemos a <b>média das diferenças</b> sobre as matrizes (e sobre as sementes).</li>
+<li><b>Mudança das direções</b>: medimos o <b>ângulo entre subespaços</b> (o espaço formado pelas primeiras direções singulares antes e depois). Ângulo 0° = mesmas direções; 90° = totalmente diferentes. Essa régua tratou um problema: comparar vetor a vetor engana, porque direções com σ quase igual podem trocar de lugar sem que nada mude de verdade.</li>
+<li><b>Ruído de referência</b>: mudar pesos com ruído aleatório também “muda” as direções; por isso comparamos com isso para saber o que é sinal.</li>
+</ul>
+
+<h3>10.2 Resumo das etapas</h3>
+<div class="tbl"><table>
+<tr><th>Etapa</th><th>O que mudou</th><th>O que se achou</th></tr>
+<tr><td>1</td><td>Fine-tuning em pets com weight decay 0,05 (<b>weight decay</b>: força que encolhe os pesos a cada passo do treino).</td><td>Os pesos mudam cerca de 0,5%. Com corpo congelado a acurácia nos pets já era 94,8%, contra 94,1% com fine-tuning livre: tarefa fácil demais para o corpo precisar mudar.</td></tr>
+<tr><td>2</td><td>Mesmo treino com weight decay 0.</td><td>O encolhimento uniforme dos σ sumiu (−0,0092% medido contra −0,0088% previsto): ele era efeito do otimizador, não da tarefa. Mudanças de tamanho puras não devem contar como aprendizado.</td></tr>
+<tr><td>3</td><td>Domínio de pele; régua corrigida; teste funcional; controle com rótulos embaralhados.</td><td>Corpo congelado 56,6%; livre 72,8%. A razão “mudança das direções ÷ dos pesos” é estrutural (ruído isotrópico já dá cerca de 112 vezes), então não prova nada sozinha. No <b>transplante</b> (colocar no modelo original só uma parte da mudança), a parte direções recupera o ganho e a parte σ recupera 0%. Controle: a similaridade entre as mudanças de dois treinos com rótulos reais foi 0,253 e entre real e embaralhado 0,034, logo a mudança é sinal e não acaso.</td></tr>
+<tr><td>4</td><td>Fine-tuning <b>restrito</b>: só σ, só rotação das direções, ou as 72 matrizes congeladas (bias, normalizações e cabeça treinam).</td><td>72 congeladas 60,3%; <b>só σ 70,3%</b> (recupera 80% do ganho com 27.648 parâmetros, 0,13% das 72 matrizes); só rotação 71,3%; completo 72,8%. Para chegar lá, o σ teve que mudar cerca de 200 vezes mais que no treino livre.</td></tr>
+</table></div>
+<div class="box ok"><b class="t">Leitura honesta até aqui</b>
+A função aprendida mora principalmente nas <b>direções</b>; ainda assim, treinar apenas os valores σ (poucos números) já recupera a maior parte do ganho, só que forçando mudanças muito maiores nos σ do que o treino livre faria. Isso sugere que existem atalhos de treino baratos, e é a hipótese que a tese vai testar em mais domínios. Várias conclusões iniciais foram corrigidas no caminho; os erros e as correções estão documentados nas páginas de cada etapa.</div>
+
+<!-- =================================================== 11 -->
+<h2 id="duvidas">11. Perguntas que costumam travar</h2>
+<details><summary>Os patches são analisados, e não a foto inteira?</summary><p>Os dois. A foto entra como 256 patches; depois, pela atenção, cada patch recebe informação dos outros, de modo que no fim cada token já “conhece” a foto inteira.</p></details>
+<details><summary>Sempre 256 patches? A tabela de posição tem sempre o mesmo tamanho?</summary><p>Com fotos de 224 × 224, sim. A tabela guardada tem 1370 linhas (resolução maior); para 224 × 224 ela é redimensionada para 16 × 16 posições mais o CLS. Se usarmos fotos de outro tamanho, o número de patches muda.</p></details>
+<details><summary>As matrizes query e key são fixas? De onde vieram?</summary><p>Depois do treino, sim: são as mesmas para qualquer foto. Começaram com números aleatórios e foram ajustadas no pré-treino. O que varia por foto são os tokens e, por isso, as queries, keys e values.</p></details>
+<details><summary>Por que o token fica com 384 números e não 588?</summary><p>384 é a bitola escolhida para o modelo Small (modelos maiores usam 768, 1024…). A matriz de tradução 588 → 384 aprende a guardar o que importa do patch.</p></details>
+<details><summary>Qual a diferença entre atenção e MLP, em uma frase?</summary><p>Atenção mistura informação entre tokens; MLP reescreve cada token sozinho. Em um bloco, primeiro conversam, depois cada um pensa.</p></details>
+<details><summary>Por que não basta olhar o tamanho das mudanças nos pesos?</summary><p>Porque uma mudança pequena em muitos pesos pode ser só efeito do otimizador (como o weight decay) ou ruído, e porque a mesma quantidade de mudança em direções diferentes tem efeitos diferentes na função. Por isso medimos separadamente σ e direções e checamos com testes funcionais.</p></details>
+
+<!-- =================================================== 12 -->
+<h2 id="gloss">12. Glossário</h2>
+<dl>
+<dt>Acurácia</dt><dd>Porcentagem de fotos de teste que o modelo acerta.</dd>
+<dt>Ângulo entre subespaços</dt><dd>Medida de quanto duas famílias de direções diferem (0° igual, 90° totalmente diferente).</dd>
+<dt>Atenção</dt><dd>Operação em que cada token calcula pesos sobre os outros e mistura os values deles (seção 7).</dd>
+<dt>Auto-supervisionado</dt><dd>Treino sem rótulos humanos.</dd>
+<dt>Bias</dt><dd>Número somado ao resultado de uma conta; fora das 72 matrizes.</dd>
+<dt>Bitola (hidden size)</dt><dd>Quantidade de números por token: 384.</dd>
+<dt>Cabeça (de classificação)</dt><dd>Matriz final que lê o CLS e escolhe a classe.</dd>
+<dt>Cabeça de atenção</dt><dd>Uma das 6 atenções paralelas dentro do bloco, cada uma com fatia de 64 números.</dd>
+<dt>CLS</dt><dd>Token extra que resume a foto.</dd>
+<dt>Congelar</dt><dd>Impedir que um conjunto de pesos mude durante o treino.</dd>
+<dt>Conexão residual</dt><dd>Somar a saída de uma etapa à sua entrada.</dd>
+<dt>Corpo</dt><dd>Parte do modelo que transforma a foto em números úteis.</dd>
+<dt>Direções (vetores singulares)</dt><dd>Colunas de U e V; dizem qual padrão cada camada da SVD representa.</dd>
+<dt>Eckart–Young</dt><dd>Teorema: as N primeiras camadas da SVD são a melhor aproximação de posto N.</dd>
+<dt>Embedding</dt><dd>Tabela aprendida que converte algo (patch, posição) em vetor.</dd>
+<dt>Energia</dt><dd>Soma dos σ² das camadas; mede quanto da matriz elas explicam.</dd>
+<dt>Época</dt><dd>Uma passada completa pelas fotos de treino.</dd>
+<dt>Fine-tuning</dt><dd>Continuar treinando um modelo pronto em uma nova tarefa.</dd>
+<dt>Foundation model</dt><dd>Modelo grande de uso geral, reaproveitável.</dd>
+<dt>GELU</dt><dd>Função que dobra os números de forma suave entre fc1 e fc2.</dd>
+<dt>Key / Query / Value</dt><dd>Os três vetores da atenção: o que se oferece, o que se procura e o que se entrega.</dd>
+<dt>Layer (bloco)</dt><dd>Unidade repetida do Transformer: atenção + MLP.</dd>
+<dt>LayerNorm / LayerScale</dt><dd>Normalização do token e multiplicador aprendido de cada etapa.</dd>
+<dt>Learning rate (taxa de aprendizado)</dt><dd>Tamanho de cada passo de ajuste dos pesos; <b>warm-up</b> é começar com passos bem pequenos e aumentar.</dd>
+<dt>Matriz</dt><dd>Tabela de números.</dd>
+<dt>MLP</dt><dd>Duas matrizes (fc1, fc2) que reescrevem cada token sozinho.</dd>
+<dt>Patch</dt><dd>Pedaço quadrado de 14 × 14 pixels da foto.</dd>
+<dt>Peso (parâmetro)</dt><dd>Número ajustável do modelo.</dd>
+<dt>Posição (position embedding)</dt><dd>Vetor somado ao token para informar onde o patch estava.</dd>
+<dt>Posto (rank)</dt><dd>Número de camadas da SVD usadas.</dd>
+<dt>Pré-treino</dt><dd>Treino geral e inicial do modelo.</dd>
+<dt>Rótulo</dt><dd>Resposta certa de uma foto.</dd>
+<dt>Semente</dt><dd>Número que fixa a parte aleatória de um treino.</dd>
+<dt>Softmax</dt><dd>Converte números em pesos positivos que somam 1.</dd>
+<dt>SVD</dt><dd>Decomposição W = U Σ Vᵀ.</dd>
+<dt>Token</dt><dd>Vetor de 384 números que representa um patch (ou o CLS) dentro do modelo.</dd>
+<dt>Transfer learning</dt><dd>Reaproveitar o que um modelo aprendeu em outra tarefa.</dd>
+<dt>Transformer</dt><dd>Arquitetura baseada em atenção, criada em 2017.</dd>
+<dt>Valores singulares σ</dt><dd>Pesos das camadas da SVD, do maior para o menor.</dd>
+<dt>ViT</dt><dd>Vision Transformer: Transformer aplicado a patches de imagem.</dd>
+<dt>Weight decay</dt><dd>Força que encolhe levemente todos os pesos a cada passo.</dd>
+</dl>
+
+<!-- =================================================== 13 -->
+<h2 id="fontes">13. Fontes</h2>
+<ul>
+<li>Vaswani et al. (2017). <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a>. NeurIPS.</li>
+<li>Dosovitskiy et al. (2021). <a href="https://arxiv.org/abs/2010.11929">An Image Is Worth 16x16 Words</a>. ICLR.</li>
+<li>Oquab et al. (2023). <a href="https://arxiv.org/abs/2304.07193">DINOv2: Learning Robust Visual Features without Supervision</a>.</li>
+<li>Eckart &amp; Young (1936). The approximation of one matrix by another of lower rank. Psychometrika.</li>
+<li>Parkhi et al. (2012). Cats and Dogs (Oxford-IIIT Pet). CVPR.</li>
+<li>Shazeer (2020). <a href="https://arxiv.org/abs/2002.05202">GLU Variants Improve Transformer</a> (SwiGLU).</li>
+<li>Dados e códigos do projeto: <code>doutorado/experimento1/resultados.html</code>, <code>learning/aprendizados.md</code>, <code>artigo/gerar_imagens.py</code>.</li>
+</ul>
+<footer>Reprodução das figuras: <code>python3 artigo/gerar_imagens.py</code> (matplotlib, Pillow, numpy).</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+ "treino": 3680,
+ "teste": 3669,
+ "racas": 37,
+ "racas_gato": 12,
+ "racas_cao": 25,
+ "treino_min_por_raca": 93,
+ "treino_max_por_raca": 100,
+ "teste_min_por_raca": 88,
+ "teste_max_por_raca": 100,
+ "largura_min_med_max": [
+  114,
+  500,
+  3264
+ ],
+ "altura_min_med_max": [
+  103,
+  375,
+  2606
+ ],
+ "fotos_em_treino_e_teste": 0
+}

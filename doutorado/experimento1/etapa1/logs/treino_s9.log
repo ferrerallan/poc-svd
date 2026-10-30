@@ -1,0 +1,25 @@
+1) baixando e preparando os dados...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+   treino: 3680 fotos | teste: 3669 fotos
+   classes: 37
+
+2) montando o modelo...
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9608.40it/s]
+   acuracia antes de treinar: 4.9%  (cabeca aleatoria)
+
+3) treinando...
+   (o corpo fica congelado nas primeiras 1 epoca(s),
+    para a cabeca aprender a ler antes de poder empurrar o corpo)
+   epoca 1/5  corpo travado  perda 1.377  acuracia 91.8%
+   epoca 2/5  corpo solto   perda 0.985  acuracia 91.9%
+   epoca 3/5  corpo solto   perda 0.836  acuracia 94.1%
+   epoca 4/5  corpo solto   perda 0.785  acuracia 93.9%
+   epoca 5/5  corpo solto   perda 0.765  acuracia 94.1%
+
+4) salvando o 'depois' em models/dinov2-small-pets-s9/ ...
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  8.54it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  8.52it/s]
+
+PRONTO em 1.4 min
+  acuracia: 4.9%  ->  94.1%
+  o 'antes'  continua intocado em models/dinov2-small/
+  o 'depois' esta em models/dinov2-small-pets-s9/

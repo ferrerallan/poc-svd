@@ -1,0 +1,224 @@
+{
+ "draws_per_seed": 2,
+ "random_base_seed": 5000,
+ "rows": [
+  {
+   "seed": 0,
+   "nenhuma": 51.13,
+   "so_sigma": 51.23,
+   "energy_fraction_sigma_pct": 0.24326529455720447,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 51.2,
+     "fatia_aleatoria_eq": 50.99,
+     "energy_fraction_random_pct": 0.19814246803030577
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 51.13,
+     "fatia_aleatoria_eq": 51.41,
+     "energy_fraction_random_pct": 0.19437742707345426
+    }
+   ]
+  },
+  {
+   "seed": 1,
+   "nenhuma": 46.09,
+   "so_sigma": 46.06,
+   "energy_fraction_sigma_pct": 0.2381976556433882,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 46.23,
+     "fatia_aleatoria_eq": 46.16,
+     "energy_fraction_random_pct": 0.19603064995155567
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 46.13,
+     "fatia_aleatoria_eq": 46.3,
+     "energy_fraction_random_pct": 0.19601456078817137
+    }
+   ]
+  },
+  {
+   "seed": 2,
+   "nenhuma": 48.84,
+   "so_sigma": 48.73,
+   "energy_fraction_sigma_pct": 0.25007522530763204,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 48.94,
+     "fatia_aleatoria_eq": 48.77,
+     "energy_fraction_random_pct": 0.19381173996306542
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 48.98,
+     "fatia_aleatoria_eq": 48.94,
+     "energy_fraction_random_pct": 0.1961129818583787
+    }
+   ]
+  },
+  {
+   "seed": 3,
+   "nenhuma": 49.86,
+   "so_sigma": 49.86,
+   "energy_fraction_sigma_pct": 0.24777734110506977,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 49.86,
+     "fatia_aleatoria_eq": 49.86,
+     "energy_fraction_random_pct": 0.19752460009638323
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 49.93,
+     "fatia_aleatoria_eq": 49.82,
+     "energy_fraction_random_pct": 0.19948283491733795
+    }
+   ]
+  },
+  {
+   "seed": 4,
+   "nenhuma": 44.82,
+   "so_sigma": 44.79,
+   "energy_fraction_sigma_pct": 0.24473402332255823,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 44.89,
+     "fatia_aleatoria_eq": 44.86,
+     "energy_fraction_random_pct": 0.19506638006229576
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 45.0,
+     "fatia_aleatoria_eq": 44.75,
+     "energy_fraction_random_pct": 0.1958821930101193
+    }
+   ]
+  },
+  {
+   "seed": 5,
+   "nenhuma": 51.41,
+   "so_sigma": 51.48,
+   "energy_fraction_sigma_pct": 0.2635986007387853,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 51.41,
+     "fatia_aleatoria_eq": 51.41,
+     "energy_fraction_random_pct": 0.19480565266955335
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 51.3,
+     "fatia_aleatoria_eq": 51.34,
+     "energy_fraction_random_pct": 0.19515313494290848
+    }
+   ]
+  },
+  {
+   "seed": 6,
+   "nenhuma": 46.09,
+   "so_sigma": 46.09,
+   "energy_fraction_sigma_pct": 0.2901323409686382,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 46.06,
+     "fatia_aleatoria_eq": 46.02,
+     "energy_fraction_random_pct": 0.19344380772155192
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 46.16,
+     "fatia_aleatoria_eq": 46.09,
+     "energy_fraction_random_pct": 0.2002963585255202
+    }
+   ]
+  },
+  {
+   "seed": 7,
+   "nenhuma": 50.92,
+   "so_sigma": 50.92,
+   "energy_fraction_sigma_pct": 0.2745024859905243,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 50.95,
+     "fatia_aleatoria_eq": 50.88,
+     "energy_fraction_random_pct": 0.19286269242810603
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 50.99,
+     "fatia_aleatoria_eq": 50.88,
+     "energy_fraction_random_pct": 0.19653948450771472
+    }
+   ]
+  },
+  {
+   "seed": 8,
+   "nenhuma": 45.49,
+   "so_sigma": 45.67,
+   "energy_fraction_sigma_pct": 0.2657043821980349,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 45.56,
+     "fatia_aleatoria_eq": 45.6,
+     "energy_fraction_random_pct": 0.19356471004559556
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 45.77,
+     "fatia_aleatoria_eq": 45.7,
+     "energy_fraction_random_pct": 0.19536120954499994
+    }
+   ]
+  },
+  {
+   "seed": 9,
+   "nenhuma": 50.04,
+   "so_sigma": 50.11,
+   "energy_fraction_sigma_pct": 0.25937274977978736,
+   "draws": [
+    {
+     "draw": 0,
+     "fatia_aleatoria": 50.21,
+     "fatia_aleatoria_eq": 50.04,
+     "energy_fraction_random_pct": 0.19112039751942372
+    },
+    {
+     "draw": 1,
+     "fatia_aleatoria": 49.75,
+     "fatia_aleatoria_eq": 49.93,
+     "energy_fraction_random_pct": 0.1963868157569474
+    }
+   ]
+  }
+ ],
+ "summary": {
+  "nenhuma": 48.469,
+  "so_sigma": 48.494,
+  "fatia_aleatoria": {
+   "mean": 48.5225,
+   "std": 2.4611740352073737,
+   "min": 44.89,
+   "max": 51.41
+  },
+  "fatia_aleatoria_eq": {
+   "mean": 48.4875,
+   "std": 2.4776769149218874,
+   "min": 44.75,
+   "max": 51.41
+  },
+  "energy_fraction_sigma_pct": 0.2577360099611623,
+  "energy_fraction_random_pct": 0.19559900497066943
+ }
+}

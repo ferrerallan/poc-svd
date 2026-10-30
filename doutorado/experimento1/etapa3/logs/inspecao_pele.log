@@ -1,0 +1,17 @@
+classes (from the parquet metadata): ['AK', 'BCC', 'BKL', 'DF', 'MEL', 'NV', 'SCC', 'VASC']
+label  name  train  test
+    0    AK   1600   400
+    1   BCC   1600   400
+    2   BKL   1600   400
+    3    DF    880   220
+    4   MEL   1600   400
+    5    NV   1600   400
+    6   SCC   1600   400
+    7  VASC    880   220
+total train 11360, test 2840
+sub-sample used in training (class: photos): {'AK': 515, 'BCC': 526, 'BKL': 532, 'DF': 283, 'MEL': 515, 'NV': 518, 'SCC': 500, 'VASC': 291}
+largest class in the test file: 14.08%
+image sizes: {'224x224 RGB': 14200}
+exact duplicates: inside train 18; test photos also in train 2
+near duplicates: inside train 88; test photos with a train photo of the same fingerprint 20 (same label in 13); this check misses rotated, flipped or cropped copies
+written: doutorado/experimento1/etapa3/inspecao_pele.json and artigo/images/19_pele_exemplos.png

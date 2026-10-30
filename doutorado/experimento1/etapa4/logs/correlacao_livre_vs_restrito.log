@@ -1,0 +1,103 @@
+encoder.layer.0.attention.attention.query.weight cos sigma +0.002 (free-free -0.062, delta-delta +0.137)  cos dir +0.056 (free-free +0.066, rot-rot +0.217)
+encoder.layer.0.attention.attention.key.weight   cos sigma +0.001 (free-free +0.022, delta-delta +0.174)  cos dir +0.105 (free-free +0.098, rot-rot +0.141)
+encoder.layer.0.attention.attention.value.weight cos sigma +0.003 (free-free +0.084, delta-delta +0.213)  cos dir +0.120 (free-free +0.119, rot-rot +0.114)
+encoder.layer.0.attention.output.dense.weight    cos sigma +0.075 (free-free +0.204, delta-delta +0.229)  cos dir +0.110 (free-free +0.113, rot-rot +0.193)
+encoder.layer.0.mlp.fc1.weight                   cos sigma +0.164 (free-free +0.124, delta-delta +0.219)  cos dir +0.125 (free-free +0.076, rot-rot +0.125)
+encoder.layer.0.mlp.fc2.weight                   cos sigma +0.327 (free-free +0.333, delta-delta +0.270)  cos dir +0.083 (free-free +0.241, rot-rot +0.293)
+encoder.layer.1.attention.attention.query.weight cos sigma +0.045 (free-free +0.058, delta-delta +0.181)  cos dir +0.094 (free-free +0.084, rot-rot +0.226)
+encoder.layer.1.attention.attention.key.weight   cos sigma +0.018 (free-free -0.059, delta-delta +0.176)  cos dir +0.107 (free-free +0.086, rot-rot +0.218)
+encoder.layer.1.attention.attention.value.weight cos sigma +0.025 (free-free +0.099, delta-delta +0.156)  cos dir +0.096 (free-free +0.105, rot-rot +0.098)
+encoder.layer.1.attention.output.dense.weight    cos sigma +0.073 (free-free -0.004, delta-delta +0.164)  cos dir +0.108 (free-free +0.090, rot-rot +0.124)
+encoder.layer.1.mlp.fc1.weight                   cos sigma +0.318 (free-free +0.122, delta-delta +0.145)  cos dir +0.124 (free-free +0.099, rot-rot +0.122)
+encoder.layer.1.mlp.fc2.weight                   cos sigma +0.399 (free-free +0.171, delta-delta +0.205)  cos dir +0.077 (free-free +0.147, rot-rot +0.230)
+encoder.layer.2.attention.attention.query.weight cos sigma +0.031 (free-free -0.031, delta-delta +0.232)  cos dir +0.130 (free-free +0.167, rot-rot +0.305)
+encoder.layer.2.attention.attention.key.weight   cos sigma +0.023 (free-free +0.018, delta-delta +0.304)  cos dir +0.132 (free-free +0.176, rot-rot +0.313)
+encoder.layer.2.attention.attention.value.weight cos sigma +0.082 (free-free +0.023, delta-delta +0.252)  cos dir +0.124 (free-free +0.220, rot-rot +0.243)
+encoder.layer.2.attention.output.dense.weight    cos sigma +0.058 (free-free -0.021, delta-delta +0.254)  cos dir +0.121 (free-free +0.197, rot-rot +0.226)
+encoder.layer.2.mlp.fc1.weight                   cos sigma +0.410 (free-free +0.255, delta-delta +0.276)  cos dir +0.135 (free-free +0.177, rot-rot +0.211)
+encoder.layer.2.mlp.fc2.weight                   cos sigma +0.407 (free-free +0.253, delta-delta +0.339)  cos dir +0.084 (free-free +0.244, rot-rot +0.334)
+encoder.layer.3.attention.attention.query.weight cos sigma +0.023 (free-free +0.597, delta-delta +0.327)  cos dir +0.128 (free-free +0.243, rot-rot +0.371)
+encoder.layer.3.attention.attention.key.weight   cos sigma +0.017 (free-free +0.228, delta-delta +0.347)  cos dir +0.140 (free-free +0.237, rot-rot +0.360)
+encoder.layer.3.attention.attention.value.weight cos sigma +0.095 (free-free +0.516, delta-delta +0.292)  cos dir +0.136 (free-free +0.266, rot-rot +0.302)
+encoder.layer.3.attention.output.dense.weight    cos sigma +0.020 (free-free -0.058, delta-delta +0.358)  cos dir +0.125 (free-free +0.278, rot-rot +0.320)
+encoder.layer.3.mlp.fc1.weight                   cos sigma +0.400 (free-free +0.255, delta-delta +0.333)  cos dir +0.130 (free-free +0.228, rot-rot +0.263)
+encoder.layer.3.mlp.fc2.weight                   cos sigma +0.445 (free-free +0.279, delta-delta +0.309)  cos dir +0.080 (free-free +0.297, rot-rot +0.381)
+encoder.layer.4.attention.attention.query.weight cos sigma +0.014 (free-free -0.027, delta-delta +0.279)  cos dir +0.130 (free-free +0.207, rot-rot +0.249)
+encoder.layer.4.attention.attention.key.weight   cos sigma +0.016 (free-free +0.605, delta-delta +0.265)  cos dir +0.141 (free-free +0.220, rot-rot +0.237)
+encoder.layer.4.attention.attention.value.weight cos sigma +0.138 (free-free +0.308, delta-delta +0.324)  cos dir +0.138 (free-free +0.290, rot-rot +0.289)
+encoder.layer.4.attention.output.dense.weight    cos sigma +0.136 (free-free +0.103, delta-delta +0.311)  cos dir +0.132 (free-free +0.283, rot-rot +0.311)
+encoder.layer.4.mlp.fc1.weight                   cos sigma +0.410 (free-free +0.231, delta-delta +0.240)  cos dir +0.130 (free-free +0.238, rot-rot +0.276)
+encoder.layer.4.mlp.fc2.weight                   cos sigma +0.520 (free-free +0.340, delta-delta +0.348)  cos dir +0.078 (free-free +0.307, rot-rot +0.344)
+encoder.layer.5.attention.attention.query.weight cos sigma +0.035 (free-free +0.055, delta-delta +0.269)  cos dir +0.156 (free-free +0.217, rot-rot +0.284)
+encoder.layer.5.attention.attention.key.weight   cos sigma +0.027 (free-free +0.592, delta-delta +0.288)  cos dir +0.146 (free-free +0.240, rot-rot +0.276)
+encoder.layer.5.attention.attention.value.weight cos sigma +0.033 (free-free +0.072, delta-delta +0.322)  cos dir +0.136 (free-free +0.295, rot-rot +0.311)
+encoder.layer.5.attention.output.dense.weight    cos sigma +0.096 (free-free +0.415, delta-delta +0.308)  cos dir +0.136 (free-free +0.300, rot-rot +0.330)
+encoder.layer.5.mlp.fc1.weight                   cos sigma +0.455 (free-free +0.294, delta-delta +0.356)  cos dir +0.143 (free-free +0.285, rot-rot +0.340)
+encoder.layer.5.mlp.fc2.weight                   cos sigma +0.566 (free-free +0.381, delta-delta +0.367)  cos dir +0.085 (free-free +0.337, rot-rot +0.371)
+encoder.layer.6.attention.attention.query.weight cos sigma +0.065 (free-free +0.119, delta-delta +0.461)  cos dir +0.164 (free-free +0.377, rot-rot +0.402)
+encoder.layer.6.attention.attention.key.weight   cos sigma +0.036 (free-free -0.060, delta-delta +0.438)  cos dir +0.166 (free-free +0.376, rot-rot +0.404)
+encoder.layer.6.attention.attention.value.weight cos sigma +0.084 (free-free +0.331, delta-delta +0.338)  cos dir +0.169 (free-free +0.343, rot-rot +0.362)
+encoder.layer.6.attention.output.dense.weight    cos sigma +0.088 (free-free +0.057, delta-delta +0.361)  cos dir +0.126 (free-free +0.345, rot-rot +0.377)
+encoder.layer.6.mlp.fc1.weight                   cos sigma +0.456 (free-free +0.282, delta-delta +0.379)  cos dir +0.143 (free-free +0.302, rot-rot +0.341)
+encoder.layer.6.mlp.fc2.weight                   cos sigma +0.529 (free-free +0.311, delta-delta +0.367)  cos dir +0.086 (free-free +0.353, rot-rot +0.372)
+encoder.layer.7.attention.attention.query.weight cos sigma +0.040 (free-free +0.041, delta-delta +0.304)  cos dir +0.151 (free-free +0.293, rot-rot +0.335)
+encoder.layer.7.attention.attention.key.weight   cos sigma +0.046 (free-free +0.076, delta-delta +0.354)  cos dir +0.142 (free-free +0.303, rot-rot +0.334)
+encoder.layer.7.attention.attention.value.weight cos sigma +0.054 (free-free +0.607, delta-delta +0.361)  cos dir +0.148 (free-free +0.310, rot-rot +0.327)
+encoder.layer.7.attention.output.dense.weight    cos sigma +0.102 (free-free +0.478, delta-delta +0.342)  cos dir +0.141 (free-free +0.315, rot-rot +0.354)
+encoder.layer.7.mlp.fc1.weight                   cos sigma +0.482 (free-free +0.401, delta-delta +0.354)  cos dir +0.148 (free-free +0.291, rot-rot +0.334)
+encoder.layer.7.mlp.fc2.weight                   cos sigma +0.521 (free-free +0.435, delta-delta +0.356)  cos dir +0.093 (free-free +0.326, rot-rot +0.351)
+encoder.layer.8.attention.attention.query.weight cos sigma +0.115 (free-free +0.335, delta-delta +0.346)  cos dir +0.155 (free-free +0.296, rot-rot +0.321)
+encoder.layer.8.attention.attention.key.weight   cos sigma +0.083 (free-free +0.066, delta-delta +0.336)  cos dir +0.149 (free-free +0.304, rot-rot +0.321)
+encoder.layer.8.attention.attention.value.weight cos sigma +0.068 (free-free -0.066, delta-delta +0.338)  cos dir +0.161 (free-free +0.308, rot-rot +0.339)
+encoder.layer.8.attention.output.dense.weight    cos sigma +0.179 (free-free +0.251, delta-delta +0.326)  cos dir +0.133 (free-free +0.325, rot-rot +0.366)
+encoder.layer.8.mlp.fc1.weight                   cos sigma +0.500 (free-free +0.272, delta-delta +0.353)  cos dir +0.145 (free-free +0.280, rot-rot +0.328)
+encoder.layer.8.mlp.fc2.weight                   cos sigma +0.515 (free-free +0.415, delta-delta +0.350)  cos dir +0.110 (free-free +0.345, rot-rot +0.386)
+encoder.layer.9.attention.attention.query.weight cos sigma +0.081 (free-free +0.096, delta-delta +0.404)  cos dir +0.148 (free-free +0.339, rot-rot +0.368)
+encoder.layer.9.attention.attention.key.weight   cos sigma +0.061 (free-free -0.090, delta-delta +0.374)  cos dir +0.149 (free-free +0.340, rot-rot +0.371)
+encoder.layer.9.attention.attention.value.weight cos sigma +0.164 (free-free +0.303, delta-delta +0.313)  cos dir +0.141 (free-free +0.275, rot-rot +0.300)
+encoder.layer.9.attention.output.dense.weight    cos sigma +0.088 (free-free +0.291, delta-delta +0.298)  cos dir +0.133 (free-free +0.279, rot-rot +0.317)
+encoder.layer.9.mlp.fc1.weight                   cos sigma +0.477 (free-free +0.276, delta-delta +0.337)  cos dir +0.143 (free-free +0.260, rot-rot +0.304)
+encoder.layer.9.mlp.fc2.weight                   cos sigma +0.536 (free-free +0.388, delta-delta +0.303)  cos dir +0.092 (free-free +0.308, rot-rot +0.343)
+encoder.layer.10.attention.attention.query.weight cos sigma +0.127 (free-free +0.201, delta-delta +0.461)  cos dir +0.154 (free-free +0.337, rot-rot +0.341)
+encoder.layer.10.attention.attention.key.weight  cos sigma +0.084 (free-free +0.307, delta-delta +0.429)  cos dir +0.143 (free-free +0.337, rot-rot +0.344)
+encoder.layer.10.attention.attention.value.weight cos sigma +0.125 (free-free +0.195, delta-delta +0.235)  cos dir +0.167 (free-free +0.253, rot-rot +0.281)
+encoder.layer.10.attention.output.dense.weight   cos sigma +0.176 (free-free -0.018, delta-delta +0.254)  cos dir +0.135 (free-free +0.260, rot-rot +0.287)
+encoder.layer.10.mlp.fc1.weight                  cos sigma +0.531 (free-free +0.233, delta-delta +0.257)  cos dir +0.142 (free-free +0.231, rot-rot +0.278)
+encoder.layer.10.mlp.fc2.weight                  cos sigma +0.227 (free-free +0.949, delta-delta +0.248)  cos dir +0.096 (free-free +0.363, rot-rot +0.345)
+encoder.layer.11.attention.attention.query.weight cos sigma +0.071 (free-free -0.054, delta-delta +0.496)  cos dir +0.171 (free-free +0.401, rot-rot +0.508)
+encoder.layer.11.attention.attention.key.weight  cos sigma +0.068 (free-free +0.375, delta-delta +0.545)  cos dir +0.129 (free-free +0.355, rot-rot +0.481)
+encoder.layer.11.attention.attention.value.weight cos sigma +0.066 (free-free +0.580, delta-delta +0.195)  cos dir +0.157 (free-free +0.197, rot-rot +0.197)
+encoder.layer.11.attention.output.dense.weight   cos sigma +0.118 (free-free +0.505, delta-delta +0.203)  cos dir +0.145 (free-free +0.182, rot-rot +0.192)
+encoder.layer.11.mlp.fc1.weight                  cos sigma +0.513 (free-free +0.150, delta-delta +0.143)  cos dir +0.150 (free-free +0.118, rot-rot +0.126)
+encoder.layer.11.mlp.fc2.weight                  cos sigma +0.550 (free-free +0.246, delta-delta +0.159)  cos dir +0.090 (free-free +0.288, rot-rot +0.241)
+
+SUMMARY (mean over 72 matrices)
+  cos_sigma_paired: 0.1935
+  cos_sigma_other_seeds: 0.0795
+  cos_sigma_top10_paired: 0.5048
+  cos_sigma_top10_other_seeds: 0.2816
+  cos_free_free_sigma_top10: 0.4068
+  cos_delta_delta_top10: 0.3620
+  cos_free_free_sigma: 0.2230
+  cos_delta_delta: 0.3012
+  sign_agreement_sigma: 0.6651
+  cos_direction_paired: 0.1283
+  cos_direction_other_seeds: 0.0485
+  cos_free_free_direction: 0.2526
+  cos_rot_rot: 0.2962
+  free_sigma_mean_abs_pct: 0.2284
+  delta_mean_abs_pct: 7.5998
+  free_offdiag_rel: 0.0054
+  rot_change_rel: 0.0222
+   query: cos_sigma_paired=0.054  cos_sigma_other_seeds=0.024  cos_sigma_top10_paired=0.440  cos_direction_paired=0.136  free_sigma_mean_abs_pct=0.292  delta_mean_abs_pct=8.601  free_offdiag_rel=0.005  rot_change_rel=0.027
+     key: cos_sigma_paired=0.040  cos_sigma_other_seeds=0.013  cos_sigma_top10_paired=0.465  cos_direction_paired=0.138  free_sigma_mean_abs_pct=0.429  delta_mean_abs_pct=8.257  free_offdiag_rel=0.005  rot_change_rel=0.028
+   value: cos_sigma_paired=0.078  cos_sigma_other_seeds=0.030  cos_sigma_top10_paired=0.547  cos_direction_paired=0.141  free_sigma_mean_abs_pct=0.390  delta_mean_abs_pct=7.261  free_offdiag_rel=0.006  rot_change_rel=0.021
+   dense: cos_sigma_paired=0.101  cos_sigma_other_seeds=0.039  cos_sigma_top10_paired=0.576  cos_direction_paired=0.129  free_sigma_mean_abs_pct=0.227  delta_mean_abs_pct=7.501  free_offdiag_rel=0.006  rot_change_rel=0.020
+     fc1: cos_sigma_paired=0.426  cos_sigma_other_seeds=0.165  cos_sigma_top10_paired=0.538  cos_direction_paired=0.138  free_sigma_mean_abs_pct=0.015  delta_mean_abs_pct=7.377  free_offdiag_rel=0.006  rot_change_rel=0.021
+     fc2: cos_sigma_paired=0.462  cos_sigma_other_seeds=0.206  cos_sigma_top10_paired=0.463  cos_direction_paired=0.088  free_sigma_mean_abs_pct=0.016  delta_mean_abs_pct=6.603  free_offdiag_rel=0.006  rot_change_rel=0.016
+  chance_cosine_sd_384: 0.0510
+  spearman_magnitude_sigma: 0.4320
+  spearman_magnitude_direction: -0.3806
+  matrices_cos_sigma_above_0_3: 22
+  matrices_cos_sigma_below_minus_0_3: 0
+written: doutorado/experimento1/etapa4/correlacao_livre_vs_restrito.json

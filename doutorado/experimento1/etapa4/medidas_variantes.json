@@ -1,0 +1,222 @@
+{
+ "completo": {
+  "n_modelos": 10,
+  "acuracia": {
+   "media": 72.845,
+   "dp": 0.5408891856111638,
+   "por_semente": [
+    72.99,
+    72.92,
+    72.64,
+    73.42,
+    72.89,
+    73.63,
+    73.27,
+    71.87,
+    72.64,
+    72.18
+   ]
+  },
+  "acuracia_treino_final": 81.554,
+  "params_restritos": null,
+  "lr_restrito": null,
+  "minutos": 1.48,
+  "desloc_pct": {
+   "media": 0.5448378037221523,
+   "dp": 0.005264700555403089
+  },
+  "sigma_top10_abs_pct": {
+   "media": 0.017521264453534968,
+   "dp": 0.0006759832408726564
+  },
+  "sigma_todos_abs_pct": {
+   "media": 0.2001960149563173,
+   "dp": 0.019439415145977343
+  },
+  "sigma_top10_max_abs_pct": {
+   "media": 0.05064059603986001,
+   "dp": 0.002296006111899269
+  },
+  "sub10_graus": {
+   "media": 0.39557587763087615,
+   "dp": 0.005840926525970428
+  },
+  "sub50_graus": {
+   "media": 0.3702200498431921,
+   "dp": 0.006400419641266101
+  },
+  "direcoes_preservadas": {
+   "media": 0.9910359215405252,
+   "dp": 0.00023758988818046566
+  },
+  "sigma_max_abs_pct": {
+   "media": 39.209897425700746,
+   "dp": 6.574466219442795
+  }
+ },
+ "congelado_72": {
+  "n_modelos": 10,
+  "acuracia": {
+   "media": 60.313,
+   "dp": 0.6017760750016944,
+   "por_semente": [
+    59.33,
+    60.14,
+    60.0,
+    60.39,
+    60.85,
+    61.23,
+    60.49,
+    61.02,
+    59.68,
+    60.0
+   ]
+  },
+  "acuracia_treino_final": 64.626,
+  "params_restritos": 0,
+  "lr_restrito": null,
+  "minutos": 1.1,
+  "desloc_pct": {
+   "media": 0.0,
+   "dp": 0.0
+  },
+  "sigma_top10_abs_pct": {
+   "media": 0.0,
+   "dp": 0.0
+  },
+  "sigma_todos_abs_pct": {
+   "media": 0.0,
+   "dp": 0.0
+  },
+  "sigma_top10_max_abs_pct": {
+   "media": 0.0,
+   "dp": 0.0
+  },
+  "sub10_graus": {
+   "media": 0.01953991179147528,
+   "dp": 0.0
+  },
+  "sub50_graus": {
+   "media": 0.016773310376771003,
+   "dp": 0.0
+  },
+  "direcoes_preservadas": {
+   "media": 1.000000009106265,
+   "dp": 0.0
+  },
+  "sigma_max_abs_pct": {
+   "media": 0.0,
+   "dp": 0.0
+  }
+ },
+ "so_sigma": {
+  "n_modelos": 10,
+  "acuracia": {
+   "media": 70.30199999999999,
+   "dp": 0.6312034361264018,
+   "por_semente": [
+    70.21,
+    70.14,
+    70.42,
+    69.58,
+    71.13,
+    70.63,
+    71.13,
+    69.08,
+    70.21,
+    70.49
+   ]
+  },
+  "acuracia_treino_final": 76.656,
+  "params_restritos": 27648,
+  "lr_restrito": 0.01,
+  "minutos": 1.25,
+  "desloc_pct": {
+   "media": 9.276983343685666,
+   "dp": 0.07751633063005477
+  },
+  "sigma_top10_abs_pct": {
+   "media": 3.6876010329514326,
+   "dp": 0.20305608294791969
+  },
+  "sigma_todos_abs_pct": {
+   "media": 2.169250753811664,
+   "dp": 0.027190960017652963
+  },
+  "sigma_top10_max_abs_pct": {
+   "media": 8.754266650519437,
+   "dp": 0.3625968134981069
+  },
+  "sub10_graus": {
+   "media": 21.799505787950086,
+   "dp": 1.1940550745094107
+  },
+  "sub50_graus": {
+   "media": 13.871512164672216,
+   "dp": 0.41251477268177267
+  },
+  "direcoes_preservadas": {
+   "media": 0.9999645847413275,
+   "dp": 1.2309312723949677e-05
+  },
+  "sigma_max_abs_pct": {
+   "media": 16.340897856280208,
+   "dp": 0.3829033995705471
+  }
+ },
+ "so_rotacao": {
+  "n_modelos": 10,
+  "acuracia": {
+   "media": 71.257,
+   "dp": 0.5566976039307362,
+   "por_semente": [
+    71.76,
+    70.99,
+    71.13,
+    71.02,
+    71.83,
+    72.25,
+    71.16,
+    70.7,
+    71.34,
+    70.39
+   ]
+  },
+  "acuracia_treino_final": 78.595,
+  "params_restritos": 1327104,
+  "lr_restrito": 0.0001,
+  "minutos": 2.0,
+  "desloc_pct": {
+   "media": 2.217287558467231,
+   "dp": 0.025941277465224646
+  },
+  "sigma_top10_abs_pct": {
+   "media": 2.9902806222281697e-05,
+   "dp": 9.770451384166085e-07
+  },
+  "sigma_todos_abs_pct": {
+   "media": 0.0001133976847277217,
+   "dp": 1.2482928026338644e-05
+  },
+  "sigma_top10_max_abs_pct": {
+   "media": 7.479264266289458e-05,
+   "dp": 3.448301710187886e-06
+  },
+  "sub10_graus": {
+   "media": 1.339947920706537,
+   "dp": 0.014589287429026548
+  },
+  "sub50_graus": {
+   "media": 1.0975215871300963,
+   "dp": 0.00965090538508359
+  },
+  "direcoes_preservadas": {
+   "media": 0.9997820956839455,
+   "dp": 3.8332913592255826e-06
+  },
+  "sigma_max_abs_pct": {
+   "media": 0.020863075784660623,
+   "dp": 0.004110754210083621
+  }
+ }
+}

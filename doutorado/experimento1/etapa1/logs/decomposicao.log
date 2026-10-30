@@ -1,0 +1,16 @@
+{
+  "etapa": 1,
+  "weight_decay": 0.05,
+  "topo": 10,
+  "n_matrizes": 72,
+  "n_treinos": 10,
+  "total_abs_pct": 0.0191,
+  "comum_abs_pct": 0.01052,
+  "diferencial_abs_pct": 0.01663,
+  "fracao_energia_comum_pct": 24.32,
+  "mesmo_sentido_pct": 3.75,
+  "comum_media_com_sinal_pct": -0.00921,
+  "comum_positiva_pct": 13.19,
+  "consistencia_media_de_10_treinos": 9.1,
+  "encolhimento_esperado_weight_decay_pct": -0.00883
+}

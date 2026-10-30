@@ -1,101 +1,48 @@
-# poc-svd
+# poc-svd: SVD no estudo de transfer learning
 
-A POC of **SVD (Singular Value Decomposition)** applied to an image.
+Pesquisa de doutorado sobre **o que muda mais quando um modelo de visão é ajustado a uma tarefa nova: os pesos (valores singulares σ) ou as direções (vetores singulares U e V)**. O repositório conta a história dessa pesquisa, etapa por etapa.
 
-The idea: a grayscale image is just a matrix of numbers. SVD breaks that matrix
-apart into a stack of **layers** ordered by importance. Adding up the first `N`
-layers already gets you almost the whole image back — using far fewer numbers
-than the original.
+**Comece por [`artigo/index.html`](artigo/index.html).** Ele explica os conceitos, resume cada etapa e lista, para cada uma, os scripts usados e os dados produzidos (seção 11).
 
-## What the script does
+## As etapas
 
-[svd_imagem.py](svd_imagem.py) reads `entrada.png`, converts it to grayscale
-and, for the first `NUM_LAYERS` layers:
+| Etapa | Pasta | Pergunta |
+| --- | --- | --- |
+| 0 | [`doutorado/experimento0/`](doutorado/experimento0/) | Uma foto é uma matriz: quantas camadas de SVD bastam para reconhecê-la? |
+| 1 | [`doutorado/experimento1/etapa1/`](doutorado/experimento1/etapa1/) | No fine-tuning do DINOv2-Small em raças de pet, mudam mais os σ ou as direções? |
+| 2 | [`doutorado/experimento1/etapa2/`](doutorado/experimento1/etapa2/) | Parte da mudança era efeito do weight decay? |
+| 3 | [`doutorado/experimento1/etapa3/`](doutorado/experimento1/etapa3/) | E num domínio distante (lesões de pele), com régua corrigida e controles? |
+| 4 | [`doutorado/experimento1/etapa4/`](doutorado/experimento1/etapa4/) | Treinar só σ ou só a rotação das direções basta para aprender? |
 
-1. saves **each layer on its own** in two formats:
-   - `layer_NN.png` — a visible version, just to see the pattern
-   - `layer_NN.npy` — the raw numbers (with the weight/sigma baked in), useful to add up later
-2. saves the **reconstruction** of the `N` layers summed together as `reconstructed.png`
-3. prints a compression report to the terminal
+Cada etapa tem os seus `scripts/`, os seus JSON, os seus `logs/` e uma receita `reproduce_etapaN.sh`. O código usado por mais de uma etapa fica em [`doutorado/experimento1/common/`](doutorado/experimento1/common/). O diário completo está em [`doutorado/experimento1/resultados.html`](doutorado/experimento1/resultados.html).
 
-The larger `NUM_LAYERS` is, the closer the reconstruction gets to the original.
+## Estrutura
 
-## Requirements
+```
+artigo/        o artigo, as figuras e o verificador (check_repo.py)
+doutorado/     as etapas, a lista de leitura e a jornada de aprendizado
+learning/      resumos técnicos do que foi aprendido
+plannings/     planos e revisões de mudanças no repositório
+models/        pesos de todos os treinos (fora do git, cerca de 7 GB)
+data/          datasets baixados (fora do git)
+```
+
+## Como rodar
+
+Sempre a partir da raiz do repositório.
 
 ```bash
-pip install numpy pillow
+python3 doutorado/experimento0/svd_image.py          # etapa 0
+bash doutorado/experimento1/etapa3/reproduce_etapa3.sh   # etapas 3 e 4 são idempotentes
+python3 artigo/check_repo.py                          # confere rastreabilidade, padrão dos comentários e idioma
 ```
 
-## Running it
+As receitas das etapas 1 e 2 retreinam os modelos e sobrescrevem `models/`; leia o cabeçalho antes de rodar.
 
-```bash
-python svd_imagem.py
-```
+## Convenções
 
-Shape of the terminal output (with the 336 × 296 `entrada.png` and 35 layers):
+- **Código em inglês, páginas em português.** Chaves dos JSON e nomes de pastas de dados e modelos seguem os nomes originais, porque os dados das etapas são congelados.
+- **Padrão dos scripts:** docstring de 3 linhas (`what?`, `why?`, `how?`) em toda função e classe, e corpo de função dividido em regiões numeradas.
+- **Nada é sobrescrito:** cada etapa guarda em `base/` cópias congeladas das páginas da anterior.
 
-```
-image:             336 x 296  (99,456 numbers)
-layers generated:  35 of 296
-reconstruction:    22,155 numbers (22.3% of the original)
-image captured:    <depends on the image>%
-everything saved:  saida/
-```
-
-In other words: at this setting the reconstruction keeps only **22.3% of the
-numbers** in the original image.
-
-## Configuration
-
-The three variables live at the top of [svd_imagem.py:25-27](svd_imagem.py#L25-L27):
-
-| Variable     | Default         | What it is                                              |
-| ------------ | --------------- | ------------------------------------------------------- |
-| `IMAGE_PATH` | `"entrada.png"` | input image (any format Pillow can open)                |
-| `NUM_LAYERS` | `35`            | how many layers to generate (capped at `min(height, width)`) |
-| `OUTPUT_DIR` | `"saida"`       | folder where everything gets saved                      |
-
-## Layout
-
-```
-.
-├── svd_imagem.py       # the whole script
-├── entrada.png         # input image
-├── saida/
-│   ├── layer_01.png    # layer 1 on its own (visualization)
-│   ├── layer_01.npy    # layer 1 on its own (raw numbers)
-│   ├── ...
-│   └── reconstructed.png
-└── README.md
-```
-
-## How it works
-
-SVD decomposes the image matrix `W` into `W = U · Σ · Vᵀ`. Each layer `i` is the
-outer product of a column of `U` with a row of `Vᵀ`, scaled by the weight `σᵢ`:
-
-```python
-layer_i = σᵢ * np.outer(U[:, i], Vt[i])
-```
-
-The `σ` weights come out sorted largest to smallest — which is why layer 1
-carries the "skeleton" of the image and the later ones only add fine detail.
-
-Summing the first `N` layers is the same as the truncated matrix multiplication:
-
-```python
-reconstructed = (U[:, :N] * σ[:N]) @ Vt[:N, :]
-```
-
-### About the layer PNGs
-
-A single layer has **both negative and positive** values. To turn it into an
-image, the script centers zero on mid gray (128) and rescales by the largest
-absolute value ([`to_visible_image`](svd_imagem.py#L55-L62)). That's **for
-visualization only** — the real numbers only survive in the `.npy` files.
-
-## Report metrics
-
-- **reconstruction** — each layer costs `height + width + 1` numbers (one column
-  of `U`, one row of `Vᵀ` and one `σ`), against `height × width` for the full image
-- **image captured** — the retained "energy", `Σσᵢ² (used) / Σσᵢ² (all)`
+Requisitos: Python 3.10, PyTorch com CUDA, `transformers`, `safetensors`, `scikit-learn`, `pandas`, `matplotlib`, `Pillow`.

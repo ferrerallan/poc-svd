@@ -1,0 +1,21 @@
+total steps 575 (115 per epoch); body tensors 223
+
+EPOCH 1 (frozen), 115 steps
+  body tensors with grad None: 223 of 223
+  body tensors changed: 0 of 223
+  head weight change (norm of difference / norm of start): 0.50
+
+EPOCH 2 (released), first 10 steps
+  step size at release (step 116): body 9.045e-06, head 9.045e-04
+  after 1 step: body tensors changed 222 of 223
+  tensors still unchanged: ['embeddings.mask_token'] (never used when the model classifies photos, so it gets no gradient)
+  after 10 steps: changed 222 of 223; median change of the 72 matrices 1.73e-03, largest 2.56e-03
+
+STEP SIZE along the 575 steps (cosine schedule, same for frozen and released)
+  step   1: body 1.000e-05   head 1.000e-03
+  step 115: body 9.061e-06   head 9.061e-04
+  step 116: body 9.045e-06   head 9.045e-04
+  step 345: body 3.481e-06   head 3.481e-04
+  step 575: body 7.463e-11   head 7.463e-09
+
+written: doutorado/experimento1/etapa1/estudos/congelar_soltar.json

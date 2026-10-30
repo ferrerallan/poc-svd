@@ -1,0 +1,14 @@
+EXAMPLE 1 (session 8): one step on the head
+  scores [0.5, 1.0]  probabilities [0.3775, 0.6225]
+  loss 0.974; gradient rows [[-0.6225, -1.2449], [0.6225, 1.2449]]
+  new head [[0.5622, 0.1245], [-0.0622, 0.3755]]
+  loss after step 1: 0.634; after step 2: 0.440; hand gradient == autograd: True
+
+EXAMPLE 2 (session 9): one step on a body matrix, head fixed
+  CLS before [1.0, 2.0]; loss 0.974
+  gradient on the CLS [-0.31123, 0.31123]
+  gradient on W [[-0.31123, -0.31123], [0.31123, 0.31123]]
+  new W [[1.03112, 0.03112], [-0.03112, 1.96888]]; new CLS [1.0622, 1.9378]
+  loss after the step: 0.936; hand gradient == autograd: True
+
+written: doutorado/experimento1/etapa1/estudos/exemplos_gradiente.json

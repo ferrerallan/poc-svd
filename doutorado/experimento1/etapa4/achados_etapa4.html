@@ -1,0 +1,30 @@
+<div class="caixa ok"><span class="rot">Resposta curta da etapa 4</span>
+  <p><b>Quando o treino só pode mudar os σ, ele aprende a tarefa quase inteira.</b> Com as 72 matrizes congeladas o modelo chega a [[A_CONG]]%; com σ livre (e as direções fixas), a <b>[[A_SIG]]%</b>; com só rotação (σ fixos), a <b>[[A_ROT]]%</b>; completo, a [[A_COMP]]%. Só σ recupera <b>[[A_SIG_REC]]%</b> do ganho das 72 matrizes com <b>[[A_P_SIG]] parâmetros</b> (0,13% dos 21,2 M), e só rotação recupera [[A_ROT_REC]]% com [[A_P_ROT]].</p>
+  <p>Mas, para isso, o treino restrito a σ precisou mudar os valores singulares <b>cerca de 200 vezes mais</b> do que o treino livre os muda (|Δσ/σ| médio nos 10 maiores: [[A_SIG_S10]]% contra [[A_COMP_S10]]%), deslocando as matrizes [[A_SIG_DESL]]% contra [[A_COMP_DESL]]% do completo. Juntando com a etapa 3: <b>a reponderação dos σ tem capacidade para carregar a especialização; o treino livre simplesmente não a usa, porque girar direções é o caminho mais curto</b>.</p></div>
+
+<h4>Achados</h4>
+<ol>
+  <li><b>Capacidade: só σ chega a [[A_SIG]]% ± [[A_SIG_DP]], contra [[A_CONG]]% com as 72 congeladas.</b> Diferença pareada por semente de [[A_SIG_D]] pontos (t = [[A_SIG_T]], maior em [[A_SIG_P]]/10 sementes). Isso contradiz a leitura ingênua da etapa 3 ("a parte σ não carrega função"): a parte σ <i>do treino livre</i> não carrega, mas σ <i>como espaço de adaptação</i> carrega [[A_SIG_REC]]% do ganho. É o mesmo resultado qualitativo de SVDiff e SVF, agora medido no mesmo domínio e protocolo das outras variantes.</li>
+  <li><b>Preferência: o treino livre não passa por esse caminho.</b> Para chegar a [[A_SIG]]%, só σ muda os 10 maiores valores singulares em [[A_SIG_S10]]% (máximo médio por matriz [[A_SIG_SMAX]]%) e desloca as matrizes [[A_SIG_DESL]]%; o completo chega a [[A_COMP]]% mudando σ em [[A_COMP_S10]]% e deslocando [[A_COMP_DESL]]%. Em distância percorrida nos pesos, o caminho por σ é ~17 vezes mais longo. Com passo pequeno e poucas atualizações, o gradiente segue o caminho curto, que gira direções.</li>
+  <li><b>Só rotação fica entre σ e completo:</b> [[A_ROT]]% ± [[A_ROT_DP]], [[A_RS_D]] ponto acima de só σ (t = [[A_RS_T]]) e [[A_CR_D]] abaixo do completo (t = [[A_CR_T]]), com deslocamento [[A_ROT_DESL]]% e giro de subespaço top-10 de [[A_ROT_SUB10]]° (completo: [[A_COMP_SUB10]]°). Girar sozinho também é suficiente para a maior parte da adaptação, e com menos distância que σ, mas com mais parâmetros ([[A_P_ROT]]).</li>
+  <li><b>Nenhuma restrição iguala o completo</b>, e a ordem é consistente em todas as sementes: congeladas &lt; só σ &lt; só rotação &lt; completo. Os últimos [[A_CR_D]] pontos exigem mudar σ e direções ao mesmo tempo.</li>
+  <li><b>As restrições foram cumpridas:</b> só σ preservou o conjunto de direções (índice [[A_SIG_PRES]]) e só rotação preservou os σ (|Δσ/σ| médio [[A_ROT_SALL]]%). O subespaço top-10 de só σ acusa [[A_SIG_SUB10]]°, mas isso é <b>reordenação</b> de σ vizinhos (os maiores σ mudaram de posição), não giro: as direções são as mesmas.</li>
+  <li><b>Sobreajuste parecido entre variantes</b> (acerto no treino: completo [[A_COMP_TR]]%, rotação [[A_ROT_TR]]%, σ [[A_SIG_TR]]%, congeladas [[A_CONG_TR]]%): a diferença de teste não vem de uma variante decorar mais que a outra.</li>
+  <li><b>A referência "72 congeladas" ([[A_CONG]]%) é mais alta que o "corpo congelado" da triagem (56,6%)</b> porque aqui bias, LayerNorm, embeddings e cabeça treinam junto, e mais alta que a variante <code>nenhuma</code> do transplante (48,5%), em que esses parâmetros estavam co-adaptados a matrizes que foram retiradas. São três zeros diferentes; o desta etapa é o correto para comparar liberdades das 72 matrizes.</li>
+</ol>
+
+<div class="caixa leia"><span class="rot">O que isso muda na resposta da tese</span>
+  <p>As etapas 1–3 responderam <b>o que o treino livre faz</b>: gira direções, e a reponderação dos σ que ele deposita é funcionalmente marginal. A etapa 4 responde <b>o que cada parte consegue</b>: os σ sozinhos carregam [[A_SIG_REC]]% da especialização com 0,13% dos parâmetros, as rotações sozinhas [[A_ROT_REC]]%. Para o framework de orientação da tese, a implicação prática é direta: num domínio distante, adaptar só os σ é um ponto muito barato e quase tão bom; a diferença para o completo ([[A_SIG_D2]] pontos) é o preço de não girar direções.</p></div>
+
+<div class="caixa aviso"><span class="rot">O que a etapa 4 ainda não permite concluir</span><ul>
+  <li><b>Que a ordem se mantenha a parâmetros iguais.</b> Só σ tem [[A_P_SIG]] parâmetros e só rotação [[A_P_ROT]]; a comparação é a orçamento de atualizações fixo, não de parâmetros.</li>
+  <li><b>Que só σ não chegue mais longe</b> com passo maior (o escolhido está na borda da grade), mais épocas, ou combinado com um ajuste de posto baixo.</li>
+  <li><b>Que valha em outros domínios e modelos</b>: um domínio (pele), um modelo (DINOv2-Small), um protocolo.</li>
+</ul></div>
+
+<h4>Candidatos a etapa 5</h4>
+<ol>
+  <li><b>Curva parâmetros × acurácia</b>: rotação com blocos menores (4, 8, 16), LoRA de posto 1 a 8, e σ + LoRA de posto baixo, para comparar as famílias a custo igual.</li>
+  <li><b>Varrer passo e épocas</b> para só σ, para ver se os [[A_SIG_D2]] pontos até o completo são limite de capacidade ou de otimização.</li>
+  <li><b>Repetir em um segundo domínio distante</b> (KMNIST, +7,9 pontos na triagem) e num dataset dermatológico com ficha técnica.</li>
+</ol>

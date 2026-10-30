@@ -1,0 +1,178 @@
+{
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "rows": [
+    {
+      "seed": 0,
+      "accuracy_before": 2.13,
+      "accuracy_per_epoch": [
+        91.58,
+        92.97,
+        93.84,
+        93.84,
+        93.84
+      ],
+      "accuracy_after": 93.84,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    },
+    {
+      "seed": 1,
+      "accuracy_before": 1.83,
+      "accuracy_per_epoch": [
+        91.82,
+        92.42,
+        93.32,
+        93.46,
+        93.57
+      ],
+      "accuracy_after": 93.57,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    },
+    {
+      "seed": 2,
+      "accuracy_before": 5.56,
+      "accuracy_per_epoch": [
+        92.2,
+        93.35,
+        93.95,
+        94.28,
+        94.33
+      ],
+      "accuracy_after": 94.33,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    },
+    {
+      "seed": 3,
+      "accuracy_before": 5.4,
+      "accuracy_per_epoch": [
+        92.64,
+        93.08,
+        93.3,
+        93.51,
+        93.4
+      ],
+      "accuracy_after": 93.4,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    },
+    {
+      "seed": 4,
+      "accuracy_before": 3.35,
+      "accuracy_per_epoch": [
+        91.09,
+        92.78,
+        93.32,
+        93.46,
+        93.46
+      ],
+      "accuracy_after": 93.46,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    },
+    {
+      "seed": 5,
+      "accuracy_before": 2.81,
+      "accuracy_per_epoch": [
+        91.74,
+        93.16,
+        93.49,
+        93.68,
+        93.87
+      ],
+      "accuracy_after": 93.87,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    },
+    {
+      "seed": 6,
+      "accuracy_before": 1.94,
+      "accuracy_per_epoch": [
+        91.88,
+        92.75,
+        93.84,
+        93.81,
+        93.84
+      ],
+      "accuracy_after": 93.84,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    },
+    {
+      "seed": 7,
+      "accuracy_before": 1.5,
+      "accuracy_per_epoch": [
+        91.71,
+        92.94,
+        93.62,
+        94.0,
+        94.06
+      ],
+      "accuracy_after": 94.06,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    },
+    {
+      "seed": 8,
+      "accuracy_before": 2.4,
+      "accuracy_per_epoch": [
+        91.82,
+        93.38,
+        93.49,
+        93.98,
+        93.92
+      ],
+      "accuracy_after": 93.92,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    },
+    {
+      "seed": 9,
+      "accuracy_before": 4.91,
+      "accuracy_per_epoch": [
+        91.8,
+        93.05,
+        93.49,
+        93.84,
+        93.87
+      ],
+      "accuracy_after": 93.87,
+      "body_tensors": 223,
+      "body_tensors_changed": 0,
+      "body_largest_difference": 0.0
+    }
+  ],
+  "summary": {
+    "accuracy_after": {
+      "mean": 93.816,
+      "std": 0.2792529717339149,
+      "min": 93.4,
+      "max": 94.33
+    },
+    "accuracy_epoch1_mean": 91.828,
+    "head_weights": 14208,
+    "head_bias": 37,
+    "body_tensors_changed_total": 0
+  }
+}

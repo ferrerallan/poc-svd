@@ -1,0 +1,51 @@
+{
+  "funcional": {
+    "corpo_congelado_reg_logistica": 94.79,
+    "etapa1": {
+      "media": 94.148,
+      "dp": 0.24836353283935086,
+      "ganho_sobre_congelado": -0.6420000000000101
+    },
+    "etapa2": {
+      "media": 94.131,
+      "dp": 0.23895373796801742,
+      "ganho_sobre_congelado": -0.659000000000006
+    }
+  },
+  "razao_direcoes_pesos": {
+    "adaptacao_etapa1": 86.7722977558226,
+    "ruido_etapa1": 106.53762570681013
+  },
+  "giro_x_colados": {
+    "r_pearson": 0.3982397065037522,
+    "giro_ate_3_colados": 0.6382058823529412,
+    "n_ate_3": 17,
+    "giro_mais_de_3": 1.0446636363636363,
+    "n_mais_de_3": 55
+  },
+  "subespaco_top10_etapa2_s0": {
+    "giro_vetor_a_vetor_graus": 0.9692900325689051,
+    "angulo_principal_medio_graus": 0.38073592488136554,
+    "angulo_principal_maior_graus": 1.1557297222316265,
+    "fracao_subespaco_sobre_vetores": 0.39279876207155745
+  },
+  "pareado_pesos_e1_e2": {
+    "media_diferenca_pct": 0.0018000000000000002,
+    "dp": 0.00028321832572670007,
+    "t_pareado": 20.097921890110474,
+    "positivo_em": 10,
+    "n": 10
+  },
+  "escala_geral_por_matriz_etapa2": {
+    "matrizes_com_sinal_igual_em_9_ou_10_treinos": 37,
+    "esperado_por_acaso": 1.546875,
+    "matrizes_com_8_ou_mais": 48,
+    "modulo_medio_pct": 0.005503224920370265
+  },
+  "zero_isotropico_0p5pct": {
+    "razao_mediana": 112.34551679473125,
+    "razao_min": 23.77484213809652,
+    "razao_max": 348.4032545810646,
+    "n_matrizes": 72
+  }
+}

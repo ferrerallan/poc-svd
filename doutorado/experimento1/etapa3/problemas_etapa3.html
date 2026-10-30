@@ -1,0 +1,30 @@
+<h4>O que ficou validado nesta etapa</h4>
+<ul>
+  <li><b>O domínio escolhido exige mudança do corpo.</b> Corpo congelado [[A_CONG]]%, fine-tuning [[A_ACC3]]% ± [[A_ACC3_DP]] (10 sementes): ganho de [[A_GANHO]] pontos, estável entre sementes. É a condição que faltava nas etapas 1 e 2.</li>
+  <li><b>O protocolo se reproduz.</b> Mesmo código, mesmos hiperparâmetros e mesmas sementes da etapa 2; 10 treinos reais e 10 embaralhados sem falha; cada passo tem log e saída em <code>etapa3/</code>.</li>
+  <li><b>A régua corrigida é comparável entre etapas</b>: foi aplicada do mesmo jeito aos 40 modelos (etapas 1, 2, 3 e controle), com o zero isotrópico calculado por matriz e por semente.</li>
+  <li><b>O teste funcional funciona como instrumento</b>: em pele, as variantes separam claramente (<code>nenhuma</code> [[A_TR_NEN]]%, <code>completo</code> [[A_TR_COMP]]%), o que não acontecia em pets.</li>
+</ul>
+<h4>Problemas e limitações desta etapa</h4>
+<div class="caixa aviso"><span class="rot">Do dataset</span><ul>
+  <li><b>Proveniência não documentada.</b> O repositório <code>Pranavkpba2000/skin_cancer_small_dataset</code> não informa a origem das fotos nem o nome das 8 classes (rótulos 0 a 7). Serve como teste metodológico de "domínio distante", <b>não</b> como evidência clínica. Para a tese, o ideal é repetir num dataset com ficha técnica (ex.: HAM10000 / ISIC), o que não foi feito aqui.</li>
+  <li><b>Possível vazamento treino/teste desconhecido.</b> Sem a proveniência, não dá para garantir que o mesmo paciente ou a mesma lesão não apareça nos dois conjuntos. Isso afeta o valor absoluto da acurácia, não a comparação entre variantes, que usam o mesmo teste.</li>
+  <li><b>Classes desbalanceadas</b> (majoritária: 14,1% do teste) e acurácia de treino bem acima da de teste ([[A_TRF3]]% contra [[A_ACC3]]%): há sobreajuste moderado em 5 épocas. A acurácia simples não é a melhor métrica clínica, mas é a mesma das etapas anteriores.</li>
+</ul></div>
+<div class="caixa aviso"><span class="rot">Do desenho</span><ul>
+  <li><b>Um único passo de treino e um único número de passos.</b> O deslocamento das matrizes foi quase igual em pets e em pele ([[A_DESL2]]% e [[A_DESL3]]%) apesar do efeito funcional oposto: o tamanho da mudança parece ditado pelo passo (1e-5) e pelas 460 atualizações, e não pela necessidade da tarefa. Variar o passo e o número de épocas é a extensão natural, e não foi feito.</li>
+  <li><b>O transplante mede a mudança das 72 matrizes sob uma cabeça e normalizações co-adaptadas</b> (todos os outros parâmetros são os do modelo fine-tuned). Por isso <code>nenhuma</code> em pets dá 92,4% e não os 94,8% do corpo congelado com cabeça própria. A comparação justa é sempre entre variantes da mesma semente, nunca com o corpo congelado.</li>
+  <li><b>A variante <code>direcoes_eq</code> reduz a parte direções por um fator único</b> (a razão de energias). É um controle de energia, não uma busca pelo melhor uso dessa energia; um fine-tuning restrito a σ (como em SVDiff/SVF) poderia encontrar uma mudança de σ mais útil do que a que o fine-tuning completo depositou ali.</li>
+  <li><b>O controle embaralhado usa uma única permutação fixa</b> para as 10 sementes. Isso mede "quanto da concordância sobrevive sem os rótulos verdadeiros", mas os treinos embaralhados ainda compartilham um rótulo aleatório comum e memorizam parte dele (acerto no treino [[A_ACCE_TR]]%, teste [[A_ACCE]]%). Uma permutação diferente por semente mediria o piso sem nenhum rótulo compartilhado; não foi feito.</li>
+  <li><b>Subamostra fixa de 3.680 imagens</b> de treino (das 11.360 publicadas), para manter o número de passos das etapas anteriores. Resultados com o conjunto completo podem diferir.</li>
+</ul></div>
+<div class="caixa aviso"><span class="rot">Da régua</span><ul>
+  <li><b>O zero isotrópico é um zero, não um modelo de ruído de treino.</b> Ruído gaussiano de mesma energia é a referência mais simples; o ruído real de SGD não é isotrópico. Medidas "acima do zero" indicam estrutura, mas o quanto acima dependeria do modelo de ruído escolhido.</li>
+  <li><b>Os ângulos de subespaço com k = 50 e 100 ficam no zero</b> ([[A_SUB50_3R]]× e [[A_SUB100_3R]]×): fora das 10 primeiras direções, a régua não distingue a mudança real de ruído de mesma energia. A estrutura detectável concentra-se no topo do espectro, ou a régua não é sensível o bastante no resto.</li>
+  <li><b>Estatística</b>: 10 sementes por coleção; os intervalos reportados são desvios padrão entre sementes, sem correção para múltiplas comparações.</li>
+  <li><b>Não determinismo da GPU</b> (medido em 2.2): a mesma semente difere em ~20% da mudança do fine-tuning entre execuções. As médias de 10 sementes são estáveis, mas um treino isolado não é reproduzível bit a bit.</li>
+</ul></div>
+<div class="caixa aviso"><span class="rot">Do registro</span><ul>
+  <li>Os dois primeiros passos desta etapa (download/inspeção dos candidatos e a verificação crítica) foram executados primeiro de forma interativa e depois convertidos em scripts (<code>baixar_candidatos.py</code>, <code>verificar_conclusoes_etapas12.py</code>); o <code>reproduzir_etapa3.sh</code> os reexecuta se as saídas forem apagadas. Os pilotos e os 20 treinos foram executados <b>pelo próprio script</b>.</li>
+  <li>O <code>resultados.html</code> é regenerado a partir da cópia <code>etapa3/base/resultados_ate_etapa2.html</code>; se o <code>construir_diario.py</code> das etapas 1–2 for executado de novo, ele sobrescreve a página sem a etapa 3, e é preciso rodar <code>etapa3/construir_resultados_etapa3.py</code> em seguida (o <code>reproduzir_etapa3.sh</code> faz isso).</li>
+</ul></div>

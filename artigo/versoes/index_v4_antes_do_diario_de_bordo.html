@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SVD e transfer learning, explicado do zero</title>
+<style>
+:root{--bg:#fbfbfd;--card:#ffffff;--tx:#1a1a1c;--mut:#5f5f69;--bd:#dedee6;--ac:#6b46c1;--acbg:#efe9fb;--ok:#1d7a54;--okbg:#e3f4ec;--warn:#9a5b0c;--warnbg:#fdf0dc;--code:#f0f0f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141417;--card:#1d1d22;--tx:#ececf0;--mut:#a3a3ae;--bd:#34343d;--ac:#b79cf5;--acbg:#2a2340;--ok:#6fd0a2;--okbg:#17302a;--warn:#f0b867;--warnbg:#3a2c14;--code:#26262d}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 80px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .3em}
+h2{font-size:1.5rem;margin:2.4em 0 .5em;padding-top:.6em;border-top:2px solid var(--bd)}
+h3{font-size:1.15rem;margin:1.6em 0 .4em;color:var(--ac)}
+h4{font-size:1.02rem;margin:1.3em 0 .3em}
+p{margin:.7em 0}
+.lead{font-size:1.1rem;color:var(--mut)}
+code{background:var(--code);padding:.1em .35em;border-radius:5px;font-size:.92em;overflow-wrap:anywhere}
+.box{background:var(--card);border:1px solid var(--bd);border-left:5px solid var(--ac);border-radius:10px;padding:12px 16px;margin:1em 0}
+.box.ok{border-left-color:var(--ok);background:var(--okbg)}
+.box.warn{border-left-color:var(--warn);background:var(--warnbg)}
+.box.term{background:var(--acbg)}
+.box b.t{display:block;margin-bottom:.2em}
+figure{margin:1.4em 0;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}
+figure .img{background:#fff;border-radius:8px;padding:6px;text-align:center}
+figure img{max-width:100%;height:auto}
+figcaption{font-size:.93rem;color:var(--mut);padding:8px 6px 2px}
+figcaption b{color:var(--tx)}
+nav.toc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 18px;margin:1.4em 0}
+nav.toc ol{margin:.3em 0;padding-left:1.3em;columns:2;column-gap:2em}
+nav.toc a{color:var(--ac);text-decoration:none}
+table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.95rem;background:var(--card)}
+th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--acbg)}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl{overflow-x:auto}
+dl dt{font-weight:700;margin-top:.9em;color:var(--ac)}
+dl dd{margin:.1em 0 0 0}
+details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 14px;margin:.7em 0}
+details summary{cursor:pointer;font-weight:600}
+.ex{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem}
+footer{margin-top:3em;color:var(--mut);font-size:.9rem}
+.box.files{border-left-color:var(--mut);background:var(--card);font-size:.93rem}
+.box.files ul{margin:.2em 0 .6em;padding-left:1.2em}
+.box.files code{font-size:.85em}
+pre.tree{background:var(--code);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.45}
+h4.etapa{color:var(--ac);margin:1.2em 0 .3em}
+a{color:var(--ac)}
+@media (max-width:640px){nav.toc ol{columns:1}h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>SVD e transfer learning, explicado do zero</h1>
+<p class="lead">Este texto reúne tudo o que foi explicado até aqui, em linguagem simples. Cada termo novo é explicado no momento em que aparece e também no glossário no final. As figuras 1 a 14 foram geradas por <code data-trace>artigo/generate_figures.py</code> e as figuras 15 a 18 pelo programa de exploração do dataset; todas usam dados reais do projeto.</p>
+
+<nav class="toc">
+<b>Roteiro</b>
+<ol>
+<li><a href="#objetivo">O que a tese quer descobrir</a></li>
+<li><a href="#matriz">Foto, matriz e SVD</a></li>
+<li><a href="#modelo">Modelos fundacionais e o DINOv2</a></li>
+<li><a href="#papers">Os artigos: Transformer e ViT</a></li>
+<li><a href="#entrada">Da foto aos tokens</a></li>
+<li><a href="#bloco">Dentro de um bloco</a></li>
+<li><a href="#atencao">Atenção passo a passo (com números)</a></li>
+<li><a href="#72">As 72 matrizes</a></li>
+<li><a href="#ft">Fine-tuning e o par (W0, W1)</a></li>
+<li><a href="#exp">O que o experimento 1 mostrou</a></li>
+<li><a href="#rastreabilidade">Rastreabilidade: etapas, scripts e dados</a></li>
+<li><a href="#duvidas">Perguntas que costumam travar</a></li>
+<li><a href="#gloss">Glossário</a></li>
+<li><a href="#fontes">Fontes</a></li>
+</ol>
+</nav>
+
+<!-- =================================================== 1 -->
+<h2 id="objetivo">1. O que a tese quer descobrir</h2>
+<p>Hoje, quase todo modelo de inteligência artificial para imagens ou texto começa de um <b>modelo já treinado</b> por uma grande empresa e depois é <b>ajustado</b> para uma tarefa específica. Esse ajuste é o <b>transfer learning</b> (aprendizado por transferência): o que o modelo aprendeu em uma tarefa é reaproveitado em outra.</p>
+<p>A pergunta da tese é: <b>quando o modelo é ajustado, o que muda mais?</b></p>
+<ul>
+<li>Os <b>pesos</b>, isto é, a intensidade com que cada padrão é amplificado (os valores singulares σ, explicados na seção 2);</li>
+<li>ou as <b>direções</b>, isto é, quais padrões o modelo usa (os vetores singulares U e V)?</li>
+</ul>
+<p>Saber isso permite montar um guia para <b>economizar tempo de treino</b>: se só os pesos mudam, basta treinar poucos números; se as direções mudam, é preciso treinar mais.</p>
+<div class="box term"><b class="t">Termos desta seção</b>
+<b>Modelo</b>: um programa cheio de números ajustáveis. <b>Pesos (parâmetros)</b>: esses números ajustáveis. <b>Treinar</b>: ajustar os pesos até o modelo acertar uma tarefa. <b>Fine-tuning</b>: continuar treinando um modelo já treinado, com dados da nova tarefa. <b>Foundation model (modelo fundacional)</b>: um modelo grande, treinado de forma geral, feito para ser reaproveitado em muitas tarefas.</div>
+
+<!-- =================================================== 2 -->
+<h2 id="matriz">2. Foto, matriz e SVD</h2>
+
+<h3>2.1 Uma foto é uma tabela de números</h3>
+<p>Uma <b>matriz</b> é uma tabela de números com linhas e colunas. Uma foto em tons de cinza é uma matriz: cada <b>pixel</b> (ponto da imagem) é um número de 0 (preto) a 255 (branco). Nossa foto de teste tem 296 linhas e 336 colunas, ou seja, 99.456 números.</p>
+<figure><div class="img"><img src="images/01_foto_vira_matriz.png" alt="Foto em tons de cinza com zoom mostrando os números de cada pixel"></div>
+<figcaption><b>Figura 1.</b> Para o computador, a foto é só uma matriz de números. O zoom mostra um pedaço de 8 × 8 pixels.</figcaption></figure>
+<p>Os pesos de um modelo também são matrizes. Por isso o mesmo truque matemático serve para os dois.</p>
+
+<h3>2.2 SVD: quebrar uma matriz em camadas</h3>
+<p>A <b>SVD</b> (<i>Singular Value Decomposition</i>, decomposição em valores singulares) escreve qualquer matriz W como um produto de três matrizes:</p>
+<p class="ex" style="text-align:center">W = U · Σ · Vᵀ</p>
+<ul>
+<li><b>Σ (sigma)</b> guarda os <b>valores singulares σ₁ ≥ σ₂ ≥ …</b>: números positivos que dizem <b>quanto peso</b> cada camada tem.</li>
+<li>As colunas de <b>U</b> e <b>V</b> são os <b>vetores singulares</b>: dizem <b>qual padrão</b> cada camada representa (U do lado das linhas, V do lado das colunas). Eles formam direções perpendiculares entre si.</li>
+</ul>
+<p>Outra forma de ler: W é a soma de camadas simples, <b>σᵢ · uᵢ · vᵢᵀ</b>. Cada camada é um padrão de listras (u vezes v). A primeira camada é a mais importante, a segunda vem depois, e assim por diante.</p>
+<figure><div class="img"><img src="images/02_svd_camadas.png" alt="Camadas da SVD de uma foto e somas parciais"></div>
+<figcaption><b>Figura 2.</b> Linha de cima: algumas camadas da foto, cada uma com seu peso σ. Linha de baixo: somando as primeiras N camadas a foto vai aparecendo. Com 35 camadas (22% dos números) já reconhecemos tudo.</figcaption></figure>
+<div class="box term"><b class="t">Energia e posto</b>
+<b>Energia</b> de uma camada é σ² (o peso ao quadrado); a energia total é a soma de todas. A porcentagem de energia diz quanto da matriz as primeiras camadas já explicam. <b>Posto (rank)</b> é o número de camadas usadas; aproximar com “posto N” é guardar só as N primeiras. O <b>teorema de Eckart–Young</b> (1936) garante que, para qualquer N, somar as N primeiras camadas da SVD é a <b>melhor aproximação possível</b> com N camadas (a que erra menos).</div>
+
+<h3>2.3 O que significam σ e as direções, em desenho</h3>
+<p>Imagine a matriz como uma máquina que pega um círculo de pontos e o deforma em uma elipse. Os <b>eixos da elipse</b> são as direções; o <b>comprimento</b> de cada eixo é o peso σ.</p>
+<figure><div class="img"><img src="images/03_svd_geometria.png" alt="Elipse mostrando mudança de peso versus mudança de direção"></div>
+<figcaption><b>Figura 3.</b> À esquerda, a matriz original. No meio, só o peso σ₁ aumentou: os eixos apontam para o mesmo lado, mas um ficou mais comprido. À direita, só a direção girou: os comprimentos são os mesmos, mas os eixos apontam para outro lado.</figcaption></figure>
+<p>Esta é a pergunta da tese, em miniatura: depois do fine-tuning, a elipse ficou <b>mais esticada</b> (σ mudou) ou <b>girou</b> (U e V mudaram)?</p>
+<div class="box warn"><b class="t">Uma armadilha técnica: o sinal</b>
+A SVD não é única no sinal: pode-se trocar uₖ e vₖ por −uₖ e −vₖ ao mesmo tempo e a matriz é a mesma. Por isso, ao comparar direções de dois modelos, é preciso alinhar os sinais antes. Foi um erro que corrigimos no começo do experimento.</div>
+
+<div class="box files"><b class="t">Arquivos desta seção</b><b>Scripts</b><ul><li><code data-trace>doutorado/experimento0/svd_image.py</code>: SVD de uma imagem, camada por camada (etapa 0)</li><li><code data-trace>artigo/generate_figures.py</code>: gera as figuras 1 a 3</li></ul><b>Dados e figuras</b><ul><li><code data-trace>doutorado/experimento0/entrada.png</code>: a foto de teste, 336 × 296 pixels</li><li><code data-trace>doutorado/experimento0/saida/</code>: as 35 camadas (.png e .npy) e a reconstrução</li><li><code data-trace>artigo/images/01_foto_vira_matriz.png</code>: figura 1</li><li><code data-trace>artigo/images/02_svd_camadas.png</code>: figura 2</li><li><code data-trace>artigo/images/03_svd_geometria.png</code>: figura 3</li></ul></div>
+
+<!-- =================================================== 3 -->
+<h2 id="modelo">3. Modelos fundacionais e o DINOv2</h2>
+<h3>3.1 O modelo que estudamos</h3>
+<p><b>DINOv2-Small</b> é um modelo de visão publicado pela Meta em 2023 (Oquab et al., arXiv 2304.07193). Ele recebe uma foto e devolve números que descrevem o conteúdo dela. Dados do exemplar que usamos:</p>
+<div class="tbl"><table>
+<tr><th>Característica</th><th>Valor</th><th>O que significa</th></tr>
+<tr><td>Tipo</td><td>Vision Transformer (ViT)</td><td>Arquitetura que trata a foto como uma sequência de pedaços (seção 5).</td></tr>
+<tr><td>Pesos</td><td>22,1 milhões</td><td>Quantidade de números ajustáveis. O “Small” é o menor da família.</td></tr>
+<tr><td>Layers (camadas ou blocos)</td><td>12</td><td>Blocos iguais empilhados.</td></tr>
+<tr><td>Hidden size (bitola)</td><td>384</td><td>Cada pedaço da foto é representado por 384 números.</td></tr>
+<tr><td>Cabeças de atenção</td><td>6</td><td>Seis “conversas” em paralelo dentro de cada bloco (seção 7).</td></tr>
+<tr><td>Patch</td><td>14 × 14 pixels</td><td>Tamanho de cada pedaço em que a foto é cortada.</td></tr>
+<tr><td>mlp_ratio</td><td>4</td><td>Dentro do MLP o vetor cresce 4 vezes (384 → 1536) e volta.</td></tr>
+<tr><td>Cabeça de classificação</td><td>nenhuma</td><td>Vem só com o “corpo”; a cabeça é colocada depois (seção 9).</td></tr>
+</table></div>
+<h3>3.2 Como ele foi treinado: sem rótulos</h3>
+<p>O DINOv2 foi treinado de forma <b>auto-supervisionada</b>: ninguém disse a ele “isto é um gato”. Ele viu cerca de <b>142 milhões de imagens</b> (conjunto chamado <b>LVD-142M</b>, selecionado automaticamente da internet) e aprendeu a fazer com que fotos parecidas produzissem números parecidos. O resultado é um modelo que <b>enxerga estrutura</b> (formas, texturas, objetos) sem saber o nome das coisas. Nomes são acrescentados depois, no fine-tuning.</p>
+<div class="box term"><b class="t">Termos</b>
+<b>Rótulo</b>: a resposta certa de uma foto (por exemplo, “beagle”). <b>Auto-supervisionado</b>: treino sem rótulos, em que o modelo cria seus próprios exercícios a partir dos dados. <b>Pré-treino</b>: esse treino geral inicial. <b>safetensors</b>: formato de arquivo que guarda os pesos como tabelas nomeadas (o nosso tem 85 MB e 223 tabelas, uma por grupo de pesos). <b>config.json</b>: arquivo que descreve o desenho do modelo (12 layers, bitola 384 e assim por diante).</div>
+
+<h3>3.3 Bitola (hidden size) em números</h3>
+<p><b>Bitola é a quantidade de números que descrevem cada token.</b> No DINOv2-Small cada token é uma lista de 384 números, então a bitola é 384 (em inglês, <i>hidden size</i>). No exemplo pequeno da seção 7 o token era <span class="ex">[1, 2]</span> e a bitola era 2; no modelo real o token é algo como <span class="ex">[0,12 ; −0,80 ; 0,33 ; 1,05 ; …]</span>, com 384 números.</p>
+<p>Esses 384 números são <b>tudo o que o modelo sabe sobre aquele pedaço da foto naquele momento</b>. Se um detalhe não cabe neles, o modelo não o enxerga.</p>
+<p><b>A bitola decide o tamanho das tabelas.</b> Toda tabela que mexe no token recebe 384 números, então tem 384 colunas (ou 384 linhas):</p>
+<div class="tbl"><table>
+<tr><th>Tabela</th><th>Entra</th><th>Sai</th><th>Formato</th></tr>
+<tr><td>query</td><td class="n">384</td><td class="n">384</td><td class="n">384 × 384</td></tr>
+<tr><td>fc1</td><td class="n">384</td><td class="n">1536</td><td class="n">1536 × 384</td></tr>
+<tr><td>fc2</td><td class="n">1536</td><td class="n">384</td><td class="n">384 × 1536</td></tr>
+</table></div>
+<p><b>Por que 384?</b> É uma escolha de quem projetou o modelo. A família DINOv2 tem quatro tamanhos:</p>
+<div class="tbl"><table>
+<tr><th>Modelo</th><th>Bitola</th></tr>
+<tr><td>Small (o nosso)</td><td class="n">384</td></tr>
+<tr><td>Base</td><td class="n">768</td></tr>
+<tr><td>Large</td><td class="n">1024</td></tr>
+<tr><td>Giant</td><td class="n">1536</td></tr>
+</table></div>
+<p>Bitola maior dá mais espaço para descrever cada token, e o modelo fica mais capaz. Em compensação, as tabelas crescem nas duas direções: com bitola 768, a tabela query passa de 384 × 384 = 147.456 pesos para 768 × 768 = 589.824, ou seja, <b>4 vezes maior</b>. A bitola é a mesma nos 12 blocos, porque o token que sai de um bloco precisa caber no seguinte.</p>
+
+<div class="box files"><b class="t">Arquivos desta seção</b><b>Scripts</b><ul><li><code data-trace>doutorado/experimento1/etapa1/scripts/download_model.py</code>: baixa o DINOv2-Small de facebook/dinov2-small</li></ul><b>Dados e figuras</b><ul><li><code data-trace>models/dinov2-small/</code>: o modelo original: model.safetensors (22.056.576 números) e config.json (12 layers, bitola 384, 6 cabeças); fora do git</li></ul></div>
+
+<!-- =================================================== 4 -->
+<h2 id="papers">4. Os artigos: Transformer e ViT</h2>
+<figure><div class="img"><img src="images/14_linha_do_tempo.png" alt="Linha do tempo de 1936 até a tese"></div>
+<figcaption><b>Figura 4.</b> De onde cada ideia veio.</figcaption></figure>
+
+<h3>4.1 “Attention Is All You Need” (2017)</h3>
+<p>Este é o artigo que criou o <b>Transformer</b>: Vaswani e colegas (Google), apresentado na conferência NeurIPS em 2017 (arXiv 1706.03762). Até então, modelos de texto liam as palavras uma por vez, em ordem (as chamadas redes recorrentes), o que era lento. O artigo mostrou que dava para <b>abandonar a leitura em sequência</b> (e também as convoluções) e usar <b>apenas atenção</b>: cada palavra olha todas as outras ao mesmo tempo e decide em quais prestar atenção. Isso permite treinar em paralelo, de forma muito mais rápida. O artigo testou a ideia em tradução de idiomas e superou os melhores modelos da época.</p>
+<p>O modelo original tinha 6 blocos, 8 cabeças de atenção e bitola 512. O desenho do bloco (atenção + MLP, com conexões residuais e normalização) é o que ainda usamos hoje, em versões maiores ou menores.</p>
+<h3>4.2 Vision Transformer, ViT (2020)</h3>
+<p>“An Image Is Worth 16×16 Words”, de Dosovitskiy e colegas (ICLR 2021, arXiv 2010.11929). A ideia: <b>cortar a foto em pedaços quadrados (patches), tratar cada pedaço como se fosse uma “palavra”</b> e usar o Transformer sem mudanças grandes. O DINOv2 é um ViT, só que treinado de outro jeito (auto-supervisionado, com muito mais dados).</p>
+<div class="box term"><b class="t">Outros nomes citados</b>
+<b>BERT</b> (Google, 2018) e <b>GPT</b> (OpenAI): Transformers para texto, o primeiro para entender e o segundo para gerar. <b>Llama</b> (Meta, 2023): família aberta de modelos de linguagem; usa uma variante do MLP chamada <b>SwiGLU</b> (Shazeer, 2020), com três matrizes em vez de duas. <b>CNN</b> (rede convolucional): arquitetura anterior para imagens, que usa filtros pequenos deslizando pela foto; seus pesos são tabelas de 4 dimensões, e não matrizes simples.</div>
+
+<div class="box files"><b class="t">Arquivos desta seção</b><b>Scripts</b><ul><li><code data-trace>artigo/generate_figures.py</code>: gera a figura 14</li></ul><b>Dados e figuras</b><ul><li><code data-trace>artigo/images/14_linha_do_tempo.png</code>: figura 14</li></ul></div>
+
+<!-- =================================================== 5 -->
+<h2 id="entrada">5. Da foto aos tokens</h2>
+<figure><div class="img"><img src="images/04_dinov2_visao_geral.png" alt="Visão geral do DINOv2: foto, patches, tokens, 12 blocos, CLS, cabeça"></div>
+<figcaption><b>Figura 5.</b> O caminho completo. A parte tracejada à esquerda é o corpo (pré-treinado); a cabeça é nova e nasce aleatória.</figcaption></figure>
+
+<h3>5.1 Patches</h3>
+<p>O modelo recebe a foto com tamanho fixo de <b>224 × 224 pixels</b> (fotos de outro tamanho são redimensionadas antes). Ela é cortada em quadradinhos de 14 × 14: 224 ÷ 14 = 16, então são 16 × 16 = <b>256 patches</b>. Cada patch tem 14 × 14 pixels × 3 cores (vermelho, verde, azul) = <b>588 números</b>.</p>
+<h3>5.2 Token</h3>
+<p>Uma matriz aprendida (588 × 384) <b>traduz</b> cada patch em um vetor de <b>384 números</b>. Esse vetor é o <b>token</b>. Diferença importante: <b>patch é o pedaço cru da foto; token é o patch já traduzido para a linguagem do modelo</b>, e que será atualizado bloco após bloco.</p>
+<figure><div class="img"><img src="images/08_foto_em_patches.png" alt="Foto cortada em patches, um patch ampliado, tradução em token"></div>
+<figcaption><b>Figura 6.</b> Um patch (quadrado vermelho) vira 588 números e depois 384 números pela matriz de tradução.</figcaption></figure>
+<h3>5.3 Posição e CLS</h3>
+<p><b>Posição.</b> A atenção, sozinha, não sabe onde cada patch estava: se embaralharmos os patches, ela dá o mesmo resultado (testamos: sem posição, a saída ficou idêntica, similaridade 1,0000; com posição, caiu para 0,48). Para o modelo saber “quem está em cima, quem está embaixo”, soma-se a cada token um <b>vetor de posição</b>, tirado de uma tabela aprendida (<b>position embedding</b>) com uma linha por posição. A tabela do DINOv2 tem 1370 linhas (um CLS mais 37 × 37 posições); para fotos de 224 × 224 ela é redimensionada (interpolada) para 16 × 16.</p>
+<p><b>CLS.</b> Além dos 256 tokens de patches, existe <b>um token extra, o CLS</b>, que não vem de nenhum pedaço da foto. Ele começa igual para toda foto e, ao passar pelos blocos, vai absorvendo informação de todos os patches. No final, o CLS é <b>o resumo da imagem</b>, e é ele que a cabeça de classificação lê. Total: <b>257 tokens × 384 números</b>.</p>
+<figure><div class="img"><img src="images/09_patch_vs_token.png" alt="Como o patch vira token e muda a cada bloco"></div>
+<figcaption><b>Figura 7.</b> “O token é o patch no final das contas?” Sim, no começo. Depois ele deixa de ser só o pedaço da foto: a cada bloco recebe informação dos outros e é reescrito.</figcaption></figure>
+
+<div class="box files"><b class="t">Arquivos desta seção</b><b>Scripts</b><ul><li><code data-trace>artigo/generate_figures.py</code>: gera as figuras 4, 8 e 9</li></ul><b>Dados e figuras</b><ul><li><code data-trace>doutorado/experimento0/entrada.png</code>: a foto recortada em patches na figura 8</li><li><code data-trace>artigo/images/04_dinov2_visao_geral.png</code>: figura 5 do texto (visão geral)</li><li><code data-trace>artigo/images/08_foto_em_patches.png</code>: figura 6 do texto (patches e token)</li><li><code data-trace>artigo/images/09_patch_vs_token.png</code>: figura 7 do texto (patch contra token)</li></ul></div>
+
+<!-- =================================================== 6 -->
+<h2 id="bloco">6. Dentro de um bloco</h2>
+<p>Cada um dos 12 blocos (também chamados <b>layers</b>) faz duas coisas, sempre nesta ordem:</p>
+<ol>
+<li><b>Atenção</b>: os tokens <b>conversam</b>. Cada token olha os outros e <b>troca informação</b>.</li>
+<li><b>MLP</b> (<i>multilayer perceptron</i>, “rede de camadas densas”): cada token é <b>reescrito sozinho</b>, sem olhar nenhum outro.</li>
+</ol>
+<figure><div class="img"><img src="images/06_bloco_transformer.png" alt="Um bloco Transformer com atenção e MLP e suas matrizes"></div>
+<figcaption><b>Figura 8.</b> Um bloco. A saída tem o mesmo formato da entrada; por isso 12 blocos podem ser empilhados.</figcaption></figure>
+<figure><div class="img"><img src="images/07_atencao_vs_mlp.png" alt="Atenção mistura tokens; MLP trata cada token sozinho"></div>
+<figcaption><b>Figura 9.</b> Diferença central. Na atenção, cada token depois depende de todos os de antes. No MLP, cada token depois depende só de si mesmo.</figcaption></figure>
+<h3>6.1 Atenção: o que significa “os tokens conversam”</h3>
+<p><b>Atenção é o momento em que cada token atualiza o próprio conteúdo usando o conteúdo dos outros.</b> Uma analogia ajuda a enxergar isso.</p>
+<p><b>Uma sala com 257 pessoas.</b> Cada pessoa segura um papel com 384 números: é o token. No começo, cada papel só descreve o pedaço da foto que a pessoa viu. A pessoa 40 viu um pedaço de pelo marrom, e o papel dela diz “pelo marrom”. A pessoa 12 viu uma orelha pontuda. A pessoa 77 viu um focinho. A pessoa 40 não sabe que existem orelha e focinho na foto: ela só conhece o pelo.</p>
+<p>Na atenção, três coisas acontecem com cada pessoa:</p>
+<ol>
+<li><b>Olhar.</b> Ela espia os papéis de todas as outras.</li>
+<li><b>Escolher.</b> Ela decide quanto importa cada papel. Orelha e focinho importam muito; céu e neve importam pouco.</li>
+<li><b>Reescrever.</b> Ela apaga o papel dela e escreve um novo, que é uma <b>mistura</b> do que leu, com mais peso nos papéis importantes.</li>
+</ol>
+<p>Depois disso o papel da pessoa 40 deixou de dizer só “pelo marrom”. Agora diz algo como “pelo marrom, perto de orelha pontuda e focinho, então parte de um cachorro”.</p>
+<p><b>“Trocar informação” quer dizer isto:</b> o conteúdo dos 384 números de cada token passa a incluir pedaços dos 384 números dos outros. Todos os tokens fazem isso ao mesmo tempo. <b>O que não muda é o formato:</b> no fim ainda são 257 tokens de 384 números; o conteúdo é que ficou mais rico, porque cada token agora conhece o contexto.</p>
+
+<h3>6.2 Como cada token escolhe a quem dar atenção</h3>
+<p>Na prática, a escolha é <b>uma conta de multiplicar e somar</b>. Ninguém ensinou ao modelo que “orelha importa”: ele aprendeu os números que fazem essa conta dar certo. Aqui está a ideia; a conta completa, com softmax e mistura, está na seção 7.</p>
+<p><b>Passo 1: cada token escreve dois bilhetes a partir do seu papel.</b></p>
+<ul>
+<li><b>Query (pergunta):</b> o que eu procuro.</li>
+<li><b>Key (cartaz):</b> o que eu ofereço para ser encontrado.</li>
+</ul>
+<p>Cada bilhete sai da multiplicação do papel por uma matriz: a <b>Wq</b> para a pergunta e a <b>Wk</b> para o cartaz. Elas são as mesmas para todos os tokens e para qualquer foto, e foram ajustadas no pré-treino.</p>
+<p><b>Passo 2: a pergunta de um token é comparada com o cartaz de todos os tokens, sem exceção.</b> Não existe uma busca que acha os parecidos. O computador faz a conta com todo mundo, e os parecidos são os que dão número grande. A comparação é o <b>produto escalar</b>: multiplica posição por posição e soma. O resultado é a <b>nota de afinidade</b>.</p>
+<p>Com os 3 tokens do exemplo da seção 7, cada query é multiplicada pela key de todos (3 × 3 = 9 contas):</p>
+<div class="tbl"><table>
+<tr><th>Query de…</th><th>× key de A <span class="ex">[1,0]</span></th><th>× key de B <span class="ex">[0,2]</span></th><th>× key de C <span class="ex">[1,2]</span></th></tr>
+<tr><td><b>A</b> <span class="ex">[2,0]</span></td><td class="n">2</td><td class="n">0</td><td class="n">2</td></tr>
+<tr><td><b>B</b> <span class="ex">[0,1]</span></td><td class="n">0</td><td class="n">2</td><td class="n">2</td></tr>
+<tr><td><b>C</b> <span class="ex">[2,1]</span></td><td class="n">2</td><td class="n">2</td><td class="n">4</td></tr>
+</table></div>
+<p>Cada linha é a lista de notas de um token. A linha de A é <span class="ex">[2, 0, 2]</span>, porque 2×1 + 0×0 = 2 com A, 2×0 + 0×2 = 0 com B e 2×1 + 0×2 = 2 com C. A query de A olha só a primeira posição, e as keys de A e C têm 1 nessa posição; por isso A “escolheu” A e C e ignorou B. Ninguém filtrou nada: o número maior saiu da própria conta.</p>
+<p><b>Regra do produto escalar:</b> se os dois vetores têm valores grandes nas mesmas posições, o resultado é grande; se um tem 0 onde o outro é grande, essa posição contribui com 0.</p>
+<p><b>No modelo real</b> são 257 tokens, então cada token faz 257 contas: 257 × 257 = 66.049 notas por cabeça de atenção, todas calculadas de uma vez. O que o modelo aprendeu foram as matrizes Wq e Wk, que fazem tokens que deveriam se importar um com o outro gerarem queries e keys com nota alta. Por exemplo, a Wq pode ter aprendido a fazer o token do pelo escrever uma pergunta parecida com “procuro formas de animal”, e a Wk a fazer o token da orelha escrever um cartaz parecido com “sou forma de animal”. (Essa leitura é uma interpretação comum; ninguém rotulou o que cada número significa.)</p>
+
+<h3>6.3 O MLP em contas: fc1 e fc2</h3>
+<p>O MLP (<i>multilayer perceptron</i>) tem duas tabelas de números, a <b>fc1</b> e a <b>fc2</b> (<i>fully connected</i>, “totalmente conectada”). Para ver o que elas fazem, vamos às contas com um token minúsculo de 2 números: <span class="ex">t = [1, 2]</span>.</p>
+<p><b>fc1</b> é uma tabela com 4 linhas e 2 colunas (no modelo real, 1536 linhas e 384 colunas):</p>
+<div class="tbl"><table>
+<tr><th></th><th>col 1</th><th>col 2</th></tr>
+<tr><td>linha 1</td><td class="n">1</td><td class="n">0</td></tr>
+<tr><td>linha 2</td><td class="n">0</td><td class="n">1</td></tr>
+<tr><td>linha 3</td><td class="n">1</td><td class="n">1</td></tr>
+<tr><td>linha 4</td><td class="n">1</td><td class="n">−1</td></tr>
+</table></div>
+<p>A conta: para cada linha, multiplica posição por posição com o token e soma. Linha 1: 1×1 + 0×2 = <b>1</b>. Linha 2: 0×1 + 1×2 = <b>2</b>. Linha 3: 1×1 + 1×2 = <b>3</b>. Linha 4: 1×1 + (−1)×2 = <b>−1</b>. O token de 2 números virou <b>4 números</b>: <span class="ex">[1, 2, 3, −1]</span>. Cada linha da tabela produz um número novo; é isso que “expandir” quer dizer.</p>
+<p><b>fc2</b> é outra tabela, com 2 linhas e 4 colunas (no modelo real, 384 linhas e 1536 colunas): a linha 1 é <span class="ex">[1, 0, 1, 0]</span> e a linha 2 é <span class="ex">[0, 1, 0, 1]</span>. A mesma conta, agora sobre os 4 números: linha 1: 1×1 + 0×2 + 1×3 + 0×(−1) = <b>4</b>; linha 2: 0×1 + 1×2 + 0×3 + 1×(−1) = <b>1</b>. Resultado: <span class="ex">[4, 1]</span>. Voltamos a 2 números, porque a tabela tem só 2 linhas; é isso que “comprimir” quer dizer.</p>
+<div class="tbl"><table>
+<tr><th></th><th>Linhas</th><th>Colunas</th><th>Entra</th><th>Sai</th></tr>
+<tr><td>fc1 real</td><td class="n">1536</td><td class="n">384</td><td class="n">384 números</td><td class="n">1536 números</td></tr>
+<tr><td>fc2 real</td><td class="n">384</td><td class="n">1536</td><td class="n">1536 números</td><td class="n">384 números</td></tr>
+</table></div>
+<p>A única diferença entre expandir e comprimir é o <b>número de linhas</b> da tabela. Na fc1 real, cada uma das 1536 linhas é multiplicada pelos 384 números do token: 1536 × 384 = 589.824 multiplicações, que é exatamente o número de pesos da matriz. O que o modelo aprendeu foram os números dentro das duas tabelas. Cada um dos 1536 números intermediários é uma <b>nota</b> do token contra um padrão guardado numa linha da fc1 (a mesma conta de produto escalar da atenção, só que contra padrões aprendidos em vez de contra cartazes de outros tokens).</p>
+
+<h3>6.4 Por que expandir, filtrar e comprimir</h3>
+<p>O motivo só aparece quando se vê algo que <b>uma tabela sozinha não consegue fazer</b>. A tarefa de brinquedo: receber um número x e devolver o seu valor sem sinal (entrando 3, sai 3; entrando −3, sai 3).</p>
+<p><b>Com uma tabela só</b> (1 linha, 1 coluna), a conta é saída = a × x. Para x = 3 dar 3 é preciso a = 1; para x = −3 dar 3 é preciso a = −1. Não existe um <i>a</i> que sirva para os dois: multiplicar e somar nunca “dobra” o sinal.</p>
+<p><b>Com expandir, filtrar e comprimir:</b></p>
+<ol>
+<li><b>Expandir.</b> A fc1 tem 2 linhas, <span class="ex">[1]</span> e <span class="ex">[−1]</span>, e transforma x em <span class="ex">[x, −x]</span>.</li>
+<li><b>Filtrar.</b> Uma função zera os números negativos. No modelo ela se chama <b>GELU</b> e faz uma versão suave disso.</li>
+<li><b>Comprimir.</b> A fc2 tem 1 linha, <span class="ex">[1, 1]</span>, e soma os dois números.</li>
+</ol>
+<div class="tbl"><table>
+<tr><th>x</th><th>expandir</th><th>filtrar</th><th>comprimir</th></tr>
+<tr><td class="n">3</td><td class="n">[3, −3]</td><td class="n">[3, 0]</td><td class="n"><b>3</b></td></tr>
+<tr><td class="n">−3</td><td class="n">[−3, 3]</td><td class="n">[0, 3]</td><td class="n"><b>3</b></td></tr>
+</table></div>
+<p>Funcionou para os dois, o que uma tabela só não conseguia. Esse é o motivo da estrutura:</p>
+<ul>
+<li><b>Expandir</b> cria vários resultados intermediários, cada um uma conta diferente sobre o token (aqui 2; no modelo real, 1536).</li>
+<li><b>Filtrar</b> deixa passar só alguns deles, o que permite regras do tipo “se isto, então aquilo”.</li>
+<li><b>Comprimir</b> combina o que sobrou e devolve o token no formato original (necessário para empilhar os 12 blocos).</li>
+</ul>
+<p>Quanto mais intermediários, mais regras o MLP consegue guardar. Por isso o espaço é 4 vezes maior que o token: 1536 = 4 × 384, o que o arquivo de configuração chama de <code>mlp_ratio = 4</code> (valor padrão nos Transformers desde 2017). <b>O filtro é obrigatório</b>: sem ele, expandir e comprimir, um depois do outro, equivalem a uma única tabela. Por último, a proporção dos pesos: fc1 e fc2 têm 589.824 pesos cada (1.179.648 no MLP), contra 147.456 de cada uma das 4 matrizes de atenção (589.824); o MLP tem o dobro, ou seja, 2/3 dos pesos do bloco.</p>
+<div class="box term"><b class="t">Mais três ingredientes do bloco</b>
+<b>Conexão residual</b>: a saída de cada etapa é <i>somada</i> à entrada, em vez de substituí-la; assim o token antigo não se perde e o treino fica estável. <b>LayerNorm</b>: ajusta cada token para ter média e escala padrão antes de cada etapa. <b>LayerScale</b>: um pequeno multiplicador aprendido que controla quanto cada etapa pode somar ao token. Nenhum dos três é uma das 72 matrizes que estudamos.</div>
+
+<div class="box files"><b class="t">Arquivos desta seção</b><b>Scripts</b><ul><li><code data-trace>artigo/generate_figures.py</code>: gera as figuras 6 e 7</li></ul><b>Dados e figuras</b><ul><li><code data-trace>artigo/images/06_bloco_transformer.png</code>: figura 8 do texto (um bloco)</li><li><code data-trace>artigo/images/07_atencao_vs_mlp.png</code>: figura 9 do texto (atenção contra MLP)</li></ul><p>Os números dos exemplos das seções 6.2 a 6.4 são contas à mão com vetores inventados; não vêm de arquivo.</p></div>
+
+<!-- =================================================== 7 -->
+<h2 id="atencao">7. Atenção passo a passo (com números)</h2>
+<p>Como cada patch escolhe com quem trocar informação? Usando três vetores, chamados <b>query</b> (consulta), <b>key</b> (chave) e <b>value</b> (valor):</p>
+<ul>
+<li><b>query</b>: o que o token <i>procura</i>;</li>
+<li><b>key</b>: o que o token <i>oferece</i> para ser encontrado;</li>
+<li><b>value</b>: o conteúdo que o token <i>entrega</i> a quem prestar atenção nele.</li>
+</ul>
+<p>Os três saem do mesmo token, multiplicado por três matrizes diferentes: <b>Wq, Wk e Wv</b>. Essas matrizes são <b>fixas depois do treino</b>: são as mesmas para qualquer foto (começam aleatórias e são ajustadas no pré-treino). O que muda de foto para foto são os tokens que entram.</p>
+<h3>7.1 Um exemplo pequeno</h3>
+<p>Três tokens com 2 números cada: <span class="ex">A = [1, 0]</span>, <span class="ex">B = [0, 1]</span>, <span class="ex">C = [1, 1]</span>, e as matrizes <span class="ex">Wq = [[2,0],[0,1]]</span>, <span class="ex">Wk = [[1,0],[0,2]]</span>, <span class="ex">Wv = [[1,1],[0,1]]</span>. (Números inventados só para ser possível fazer a conta à mão.)</p>
+<figure><div class="img"><img src="images/10_qkv_de_onde_vem.png" alt="De cada token saem query, key e value por três matrizes"></div>
+<figcaption><b>Figura 10.</b> De onde vêm os vetores [1,1], [0,1] e [1,2] que aparecem no cálculo: são os <b>values</b> de A, B e C, isto é, cada token multiplicado por Wv.</figcaption></figure>
+<h3>7.2 Recalculando o token A</h3>
+<ol>
+<li><b>Afinidade</b>: multiplica-se a query de A pela key de cada token (produto escalar: multiplica posição por posição e soma). Resultado: 2, 0 e 2.</li>
+<li><b>Softmax</b>: função que transforma números quaisquer em pesos positivos que somam 1: aqui 0,47, 0,06 e 0,47. Quanto maior a afinidade, maior o peso.</li>
+<li><b>Mistura</b>: o novo A é a soma dos values, cada um multiplicado pelo seu peso: 0,47·[1,1] + 0,06·[0,1] + 0,47·[1,2] = [0,94 ; 1,47].</li>
+</ol>
+<figure><div class="img"><img src="images/11_atencao_recalcula_token.png" alt="Cálculo do novo A em três passos"></div>
+<figcaption><b>Figura 11.</b> O mesmo cálculo desenhado. (Nas figuras, o decimal usa ponto.) Fazendo o mesmo para B e C: B novo = [0.53 ; 1.47] e C novo = [0.89 ; 1.79].</figcaption></figure>
+<figure><div class="img"><img src="images/12_pesos_e_cabecas.png" alt="Tabela de pesos de atenção e as seis cabeças"></div>
+<figcaption><b>Figura 12.</b> À esquerda, os pesos de atenção do exemplo: cada linha mostra com quem aquele token “conversou” (C presta 79% de atenção em si mesmo). À direita, o que acontece no modelo real.</figcaption></figure>
+<div class="box warn"><b class="t">Duas simplificações do exemplo</b>
+No modelo real o produto query·key é dividido por √64 = 8 antes do softmax (para os números não explodirem), e há bias nas matrizes. Deixamos de fora para a conta caber na cabeça.</div>
+<h3>7.3 As seis cabeças</h3>
+<p>No DINOv2-Small os 384 números do token são divididos em <b>6 fatias de 64</b>. Cada fatia faz a sua própria atenção, com seus próprios pesos: são as <b>6 cabeças de atenção</b>. Uma cabeça pode olhar para vizinhos próximos, outra para formas semelhantes, e assim por diante. No fim, os resultados das 6 são colados de volta e passam pela matriz de saída, a <b>dense</b>.</p>
+
+<div class="box files"><b class="t">Arquivos desta seção</b><b>Scripts</b><ul><li><code data-trace>artigo/generate_figures.py</code>: gera as figuras 10 a 12</li></ul><b>Dados e figuras</b><ul><li><code data-trace>artigo/images/10_qkv_de_onde_vem.png</code>: figura 10 do texto</li><li><code data-trace>artigo/images/11_atencao_recalcula_token.png</code>: figura 11 do texto</li><li><code data-trace>artigo/images/12_pesos_e_cabecas.png</code>: figura 12 do texto</li></ul><p>O exemplo usa Wq, Wk e Wv inventadas, para a conta caber à mão; o modelo real tem as matrizes de <code>models/dinov2-small/</code>.</p></div>
+
+<!-- =================================================== 8 -->
+<h2 id="72">8. As 72 matrizes</h2>
+<p>As matrizes de pesos que a SVD analisa são estas, em cada um dos 12 blocos:</p>
+<div class="tbl"><table>
+<tr><th>Matriz</th><th>Parte</th><th>Formato</th><th>Papel</th></tr>
+<tr><td>query</td><td>atenção</td><td class="n">384 × 384</td><td>gera “o que procuro”</td></tr>
+<tr><td>key</td><td>atenção</td><td class="n">384 × 384</td><td>gera “o que ofereço”</td></tr>
+<tr><td>value</td><td>atenção</td><td class="n">384 × 384</td><td>gera “o que entrego”</td></tr>
+<tr><td>dense</td><td>atenção</td><td class="n">384 × 384</td><td>junta as 6 cabeças</td></tr>
+<tr><td>fc1</td><td>MLP</td><td class="n">1536 × 384</td><td>expande o token</td></tr>
+<tr><td>fc2</td><td>MLP</td><td class="n">384 × 1536</td><td>comprime o token</td></tr>
+</table></div>
+<figure><div class="img"><img src="images/05_as_72_matrizes.png" alt="Grade de 12 layers por 6 matrizes"></div>
+<figcaption><b>Figura 13.</b> 12 layers × 6 matrizes = 72 matrizes, cada uma com sua própria SVD.</figcaption></figure>
+<p>Juntas, as 72 têm 21.233.664 pesos, quase tudo dos 22,1 milhões do modelo. O restante são bias (um número somado ao final de uma conta), parâmetros das normalizações, LayerScale e as tabelas de embedding (patches e posição). Cada matriz de atenção tem 147.456 pesos e cada uma do MLP 589.824.</p>
+<h3>8.1 De onde vêm os 22 milhões de parâmetros</h3>
+<p><b>Parâmetro é cada número guardado dentro das tabelas do modelo</b>, qualquer número que o treino pode ajustar. Os tokens que passam pelo modelo não contam: eles mudam a cada foto e não ficam guardados. Uma tabela com L linhas e C colunas tem L × C parâmetros. As contas abaixo foram conferidas contra o arquivo do modelo (223 tabelas, 22.056.576 números).</p>
+<div class="tbl"><table>
+<tr><th>Tabela de um bloco</th><th>Formato</th><th>Parâmetros</th></tr>
+<tr><td>query</td><td class="n">384 × 384</td><td class="n">147.456</td></tr>
+<tr><td>key</td><td class="n">384 × 384</td><td class="n">147.456</td></tr>
+<tr><td>value</td><td class="n">384 × 384</td><td class="n">147.456</td></tr>
+<tr><td>dense</td><td class="n">384 × 384</td><td class="n">147.456</td></tr>
+<tr><td>fc1</td><td class="n">1536 × 384</td><td class="n">589.824</td></tr>
+<tr><td>fc2</td><td class="n">384 × 1536</td><td class="n">589.824</td></tr>
+<tr><td><b>Soma das 6 matrizes</b></td><td></td><td class="n"><b>1.769.472</b></td></tr>
+</table></div>
+<p>Os 12 blocos têm o mesmo formato, mas <b>números diferentes</b>: 1.769.472 × 12 = <b>21.233.664</b>. Essas são as 72 matrizes que a SVD analisa. Faltam números menores, que não são matrizes:</p>
+<div class="tbl"><table>
+<tr><th>O quê</th><th>Parâmetros</th></tr>
+<tr><td>tradução do patch (588 → 384), mais 384 números de ajuste</td><td class="n">226.176</td></tr>
+<tr><td>tabela de posição (1370 × 384)</td><td class="n">526.080</td></tr>
+<tr><td>token CLS</td><td class="n">384</td></tr>
+<tr><td>token de máscara (usado só no pré-treino)</td><td class="n">384</td></tr>
+<tr><td>bias, normalizações e LayerScale dos 12 blocos (5.760 por bloco)</td><td class="n">69.120</td></tr>
+<tr><td>normalização final</td><td class="n">768</td></tr>
+<tr><td><b>Soma</b></td><td class="n"><b>822.912</b></td></tr>
+</table></div>
+<p><b>Total:</b> 21.233.664 + 822.912 = <b>22.056.576</b>, cerca de 22 milhões. As 72 matrizes têm 96% do total, por isso estudar só elas já cobre quase o modelo inteiro. Durante o pré-treino todos esses números começam aleatórios e são ajustados aos poucos; no fine-tuning, eles são ajustados de novo, e medimos quanto cada número das 72 matrizes mudou entre antes e depois.</p>
+<p><b>O número 6 é específico deste modelo.</b> Outros desenhos agrupam diferente: alguns juntam query, key e value em uma única matriz grande (<i>fused qkv</i>); modelos como o Llama têm 3 matrizes no MLP (SwiGLU); e redes convolucionais têm filtros de 4 dimensões, que precisam ser achatados em matriz antes da SVD. A ideia do experimento vale para todos; a lista de matrizes é que muda.</p>
+
+<div class="box files"><b class="t">Arquivos desta seção</b><b>Scripts</b><ul><li><code data-trace>artigo/generate_figures.py</code>: gera a figura 5</li></ul><b>Dados e figuras</b><ul><li><code data-trace>models/dinov2-small/</code>: origem da contagem de parâmetros da seção 8.1</li><li><code data-trace>artigo/images/05_as_72_matrizes.png</code>: figura 13 do texto (as 72 matrizes)</li></ul><p>A contagem de parâmetros foi conferida lendo o cabeçalho de <code>model.safetensors</code> (a lista de tensores com seus formatos), sem script guardado. Reproduz-se assim:</p><pre class="tree"><code>python3 - &lt;&lt;'E'
+import json, struct, math
+b = open('models/dinov2-small/model.safetensors', 'rb')
+n = struct.unpack('&lt;Q', b.read(8))[0]
+h = json.loads(b.read(n)); h.pop('__metadata__', None)
+print(sum(math.prod(v['shape']) for v in h.values()))   # 22056576
+E</code></pre></div>
+
+<!-- =================================================== 9 -->
+<h2 id="ft">9. Fine-tuning e o par (W0, W1)</h2>
+<h3>9.1 Corpo e cabeça</h3>
+<p>O <b>corpo</b> é tudo o que transforma a foto em números úteis (patches, 12 blocos, CLS): no DINOv2 ele vem pré-treinado. A <b>cabeça</b> é uma pequena matriz final (384 → número de classes) que lê o CLS e decide a resposta. O DINOv2 original <b>não tem cabeça</b>; ao especializar o modelo, colocamos uma nova, que nasce com números aleatórios.</p>
+<h3>9.2 Para que serve um modelo sem cabeça</h3>
+<p>Serve para <b>transformar uma foto em 384 números que descrevem o que há nela</b>; quem usa decide depois o que fazer com eles. Esses números são o token CLS: uma <b>impressão digital da foto</b>, em que fotos parecidas geram impressões parecidas.</p>
+<p><b>Por que o DINOv2 vem sem cabeça:</b> ele foi treinado sem rótulos, então não existe uma lista de respostas para ele dar. Uma cabeça embutida traria uma lista errada para a sua tarefa; sem cabeça, ele serve para qualquer uma.</p>
+<p><b>O que se faz com as 384 números:</b></p>
+<ul>
+<li><b>Comparar fotos:</b> se os números de duas fotos são parecidos, as fotos são parecidas. Dá para achar semelhantes numa coleção sem treinar nada.</li>
+<li><b>Agrupar:</b> fotos com impressões parecidas ficam no mesmo grupo, sem que ninguém diga os nomes.</li>
+<li><b>Colocar uma cabeça para classificar:</b> o caso do nosso experimento.</li>
+</ul>
+<p><b>A cabeça em números.</b> Nos pets são 37 raças, então a cabeça é uma tabela de <b>37 linhas por 384 colunas</b>, em que cada linha é o padrão de uma raça. A conta é a mesma de antes: para cada linha, produto escalar com a impressão da foto, o que dá uma nota por raça; a raça de maior nota é a resposta. A tabela tem 37 × 384 = 14.208 pesos (mais 37 números de ajuste), menos de 0,1% dos 22 milhões do corpo. Com 3 classes seria uma tabela de 3 × 384 = 1.152 pesos.</p>
+<h3>9.3 Congelado ou livre</h3>
+<p>Há duas formas de usar o modelo em uma tarefa nova. <b>Corpo congelado</b> (<i>linear probe</i>): só a cabeça treina; o corpo fica como está (nos nossos diagnósticos, a cabeça foi uma regressão logística; veja a seção 9.6). <b>Fine-tuning</b>: o corpo também treina, e seus pesos mudam. Só no segundo caso existe algo para medir: <b>o par (W0, W1)</b> de cada matriz, ou seja, antes e depois.</p>
+<figure><div class="img"><img src="images/13_finetuning_par_w0_w1.png" alt="Modelo pré-treinado, treino com pets, modelo especializado e o par W0,W1"></div>
+<figcaption><b>Figura 14.</b> O dado da tese é a diferença entre W0 e W1 nas 72 matrizes. O classificador de raças é descartável.</figcaption></figure>
+<h3>9.4 O dataset Oxford-IIIT Pet</h3>
+<p>No experimento 1 usamos o <b>Oxford-IIIT Pet</b> como tarefa de calibração. Esta seção mostra exatamente o que há nele. Tudo abaixo foi levantado pelo programa <code data-trace>doutorado/experimento1/etapa1/scripts/oxfordpet_exploration.py</code>, que lê os arquivos baixados e grava as tabelas e figuras.</p>
+<h4>9.4.1 O que é</h4>
+<p>Conjunto de fotos de <b>cães e gatos de 37 raças</b>, publicado em 2012 por Parkhi, Vedaldi, Zisserman e Jawahar (Universidade de Oxford e IIIT Hyderabad; daí o nome). Tem 7.349 fotos, com poses, luz e fundos muito variados. O dataset original traz também a posição da cabeça do animal e uma máscara que separa animal e fundo; <b>nós usamos só a raça</b>.</p>
+<p>Baixamos uma cópia do HuggingFace (espelho <code>timm/oxford-iiit-pet</code>), porque o servidor de Oxford entregava a 70 KB/s. É o mesmo dataset, dividido em 3.680 fotos de treino e 3.669 de teste.</p>
+<h4>9.4.2 Ele já vem rotulado?</h4>
+<p><b>Sim.</b> Cada foto tem a raça anotada por pessoas. O arquivo tem quatro colunas:</p>
+<div class="tbl"><table>
+<tr><th>Coluna</th><th>Conteúdo</th><th>Usada no treino?</th></tr>
+<tr><td><code>image</code></td><td>os bytes da foto (arquivo JPEG)</td><td>sim, é a entrada</td></tr>
+<tr><td><code>label</code></td><td>o número da raça, de 0 a 36</td><td>sim, é a resposta certa</td></tr>
+<tr><td><code>image_id</code></td><td>nome do arquivo original, como <code>beagle_178</code></td><td>não</td></tr>
+<tr><td><code>label_cat_dog</code></td><td>0 = gato, 1 = cão</td><td>não</td></tr>
+</table></div>
+<p>Os números de 0 a 36 são só uma forma de o computador contar as raças, em ordem alfabética. A lista de nomes fica no cabeçalho do arquivo. Há 12 raças de gato e 25 de cão. O programa também confirmou uma regra do dataset original: o arquivo com <b>inicial maiúscula é gato</b> (<code>Maine_Coon_204</code>) e com minúscula é cão (<code>beagle_178</code>), valendo para as 37 raças. Exemplo de linhas do arquivo:</p>
+<div class="tbl"><table>
+<tr><th>Foto (<code>image_id</code>)</th><th><code>label</code></th><th>Raça</th></tr>
+<tr><td>beagle_178</td><td class="n">4</td><td>beagle</td></tr>
+<tr><td>Siamese_167</td><td class="n">32</td><td>siamese</td></tr>
+<tr><td>Maine_Coon_204</td><td class="n">20</td><td>maine coon</td></tr>
+</table></div>
+<p>As 37 raças, com o número do rótulo e quantas fotos há de cada uma:</p>
+<div class="tbl"><table>
+<tr><th>Rótulo</th><th>Raça</th><th>Espécie</th><th>Fotos de treino</th><th>Fotos de teste</th></tr>
+<tr><td class="n">0</td><td>abyssinian</td><td>gato</td><td class="n">100</td><td class="n">98</td></tr>
+<tr><td class="n">1</td><td>american bulldog</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">2</td><td>american pit bull terrier</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">3</td><td>basset hound</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">4</td><td>beagle</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">5</td><td>bengal</td><td>gato</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">6</td><td>birman</td><td>gato</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">7</td><td>bombay</td><td>gato</td><td class="n">96</td><td class="n">88</td></tr>
+<tr><td class="n">8</td><td>boxer</td><td>cao</td><td class="n">100</td><td class="n">99</td></tr>
+<tr><td class="n">9</td><td>british shorthair</td><td>gato</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">10</td><td>chihuahua</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">11</td><td>egyptian mau</td><td>gato</td><td class="n">93</td><td class="n">97</td></tr>
+<tr><td class="n">12</td><td>english cocker spaniel</td><td>cao</td><td class="n">96</td><td class="n">100</td></tr>
+<tr><td class="n">13</td><td>english setter</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">14</td><td>german shorthaired</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">15</td><td>great pyrenees</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">16</td><td>havanese</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">17</td><td>japanese chin</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">18</td><td>keeshond</td><td>cao</td><td class="n">100</td><td class="n">99</td></tr>
+<tr><td class="n">19</td><td>leonberger</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">20</td><td>maine coon</td><td>gato</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">21</td><td>miniature pinscher</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">22</td><td>newfoundland</td><td>cao</td><td class="n">96</td><td class="n">100</td></tr>
+<tr><td class="n">23</td><td>persian</td><td>gato</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">24</td><td>pomeranian</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">25</td><td>pug</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">26</td><td>ragdoll</td><td>gato</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">27</td><td>russian blue</td><td>gato</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">28</td><td>saint bernard</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">29</td><td>samoyed</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">30</td><td>scottish terrier</td><td>cao</td><td class="n">100</td><td class="n">99</td></tr>
+<tr><td class="n">31</td><td>shiba inu</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">32</td><td>siamese</td><td>gato</td><td class="n">99</td><td class="n">100</td></tr>
+<tr><td class="n">33</td><td>sphynx</td><td>gato</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">34</td><td>staffordshire bull terrier</td><td>cao</td><td class="n">100</td><td class="n">89</td></tr>
+<tr><td class="n">35</td><td>wheaten terrier</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+<tr><td class="n">36</td><td>yorkshire terrier</td><td>cao</td><td class="n">100</td><td class="n">100</td></tr>
+</table></div>
+<figure><div class="img"><img src="images/15_pets_mosaico_rotulos.png" alt="Mosaico com uma foto de cada uma das 37 raças e o número do rótulo"></div>
+<figcaption><b>Figura 15.</b> Uma foto de cada raça, com o número do rótulo e o nome. Roxo é gato, laranja é cão.</figcaption></figure>
+<h4>9.4.3 Como um passo de treino usa o rótulo</h4>
+<ol>
+<li>Pegamos uma foto, por exemplo um beagle, com o rótulo “classe 4”.</li>
+<li>A foto passa pelo corpo e sai o CLS, com 384 números.</li>
+<li>A cabeça calcula <b>37 notas</b>, uma por raça.</li>
+<li>Comparamos com a resposta certa: se a maior nota foi a da classe 4, acertou; se foi a da classe 32, errou.</li>
+<li>Uma medida de erro diz o quanto errou: o erro é grande quando a nota certa ficou baixa. Usamos a <b>entropia cruzada</b> com <i>label smoothing</i> de 0,1, que pede “cerca de 90% de confiança na raça certa” em vez de 100%, para o modelo não ficar excessivamente seguro.</li>
+<li>O treino ajusta <b>um pouco</b> os números que podem mudar, de modo que na próxima vez a nota da classe 4 suba para fotos assim.</li>
+</ol>
+<p>Repetimos isso com as 3.680 fotos, várias vezes; cada passada completa é uma <b>época</b>. Com o corpo congelado, só a tabela da cabeça muda. No fine-tuning, os rótulos também puxam os pesos das 72 matrizes um pouco para cada lado, e essas mudanças são os dados que a tese mede.</p>
+<h4>9.4.4 Treino e teste ficam separados</h4>
+<p>As fotos de teste não entram no treino. Elas só servem no final para medir a <b>acurácia</b>: em quantas das 3.669 o modelo acerta a raça sem nunca ter visto aquela foto. Se usássemos as mesmas fotos para treinar e testar, o modelo poderia apenas decorar as respostas e a nota não diria nada sobre fotos novas. O programa confirmou que <b>nenhuma foto aparece nos dois conjuntos</b>.</p>
+<p>Para ter uma régua: chutando uma raça ao acaso, a acurácia seria 1/37, cerca de 2,7%. O corpo congelado, com um classificador (regressão logística) treinado sobre os 384 números do CLS, chegou a 94,8% na etapa 1; esse número vem do diagnóstico, não do laço de treino da seção 9.5.</p>
+<h4>9.4.5 O que se vê nos dados</h4>
+<p><b>As classes são equilibradas.</b> Cada raça tem entre 93 e 100 fotos no treino e entre 88 e 100 no teste. Nenhuma raça domina, então não há como acertar muito apenas chutando a mais comum.</p>
+<figure><div class="img"><img src="images/16_pets_contagem_por_raca.png" alt="Gráfico de barras com o número de fotos de treino e teste por raça"></div>
+<figcaption><b>Figura 16.</b> Fotos por raça no treino e no teste.</figcaption></figure>
+<p><b>Dentro de uma raça, as fotos são muito diferentes.</b> Todas as fotos abaixo têm o mesmo rótulo (4, beagle), mas variam em pose, luz, fundo e até no recorte. O modelo precisa aprender o que é comum a elas.</p>
+<figure><div class="img"><img src="images/17_pets_variacao_dentro_da_raca.png" alt="Oito fotos de beagle com poses e tamanhos diferentes"></div>
+<figcaption><b>Figura 17.</b> Oito fotos de beagle: mesmo rótulo, fotos muito diferentes.</figcaption></figure>
+<p><b>As fotos originais têm tamanhos diferentes e nenhuma tem 224 × 224.</b> A largura vai de 114 a 3264 pixels (mediana 500) e a altura de 103 a 2606 (mediana 375); 4.872 fotos são mais largas que altas e 2.361 são mais altas que largas. Por isso, antes de entrar no modelo, cada foto é redimensionada e recortada para 224 × 224 (os detalhes do preparo estão na seção 1.1 de <code>resultados.html</code>).</p>
+<figure><div class="img"><img src="images/18_pets_tamanhos_das_fotos.png" alt="Dispersão de largura e altura das fotos e histograma do lado maior"></div>
+<figcaption><b>Figura 18.</b> Tamanho das fotos originais. O ponto vermelho é o tamanho que o modelo recebe.</figcaption></figure>
+<h4>9.4.6 Por que ele serve para calibrar</h4>
+<p>A tarefa é fácil e próxima do que o DINOv2 já sabe, de propósito: ela serve para <b>calibrar a régua</b>, isto é, aprender quanto uma mudança pequena parece, antes de medir um caso difícil. Depois repetimos o procedimento em um domínio distante, imagens de lesões de pele.</p>
+<h4>9.4.7 Reproduzir a exploração</h4>
+<pre style="background:var(--code);padding:10px 14px;border-radius:8px;overflow-x:auto"><code>python3 doutorado/experimento1/etapa1/scripts/oxfordpet_exploration.py</code></pre>
+<p>O programa não altera nenhum dado nem arquivo de etapa. Grava tabelas, log e ambiente em <code>doutorado/experimento1/etapa1/exploracao_oxfordpet/</code> e as figuras em <code>artigo/images/</code>.</p>
+
+<h3 id="cabeca-aprende">9.5 Como a cabeça aprende: o gradiente em uma conta</h3>
+<p>No passo 6 da seção 9.4.3 o texto diz que o treino “ajusta um pouco” os números. Aqui está a conta, com um exemplo mínimo: <b>2 classes</b> (A e B) em vez de 37, e um CLS de <b>2 números</b> em vez de 384. A cabeça é uma tabela 2 × 2 que começa com números pequenos “aleatórios”, uma linha por classe. A foto é da classe <b>A</b>.</p>
+<div class="tbl"><table>
+<tr><th>Passo</th><th>Conta</th><th>Resultado</th></tr>
+<tr><td><b>0. Ponto de partida</b></td><td>CLS = <span class="ex">[1, 2]</span>; linha de A = <span class="ex">[0,5 ; 0]</span>; linha de B = <span class="ex">[0 ; 0,5]</span></td><td>a foto é da classe A</td></tr>
+<tr><td><b>1. Notas</b></td><td>A: 0,5×1 + 0×2; B: 0×1 + 0,5×2</td><td>nota de A = 0,5; nota de B = 1,0</td></tr>
+<tr><td><b>2. Probabilidades</b></td><td>softmax das notas (como na atenção)</td><td>A = 0,3775; B = 0,6225: o modelo acha que é B, e errou</td></tr>
+<tr><td><b>3. Erro</b></td><td>− ln(probabilidade da classe certa) = − ln 0,3775</td><td><b>0,974</b></td></tr>
+<tr><td><b>4. Gradiente</b></td><td>por nota: probabilidade dada − probabilidade desejada = [0,3775 − 1 ; 0,6225 − 0]. Por linha: esse número × CLS</td><td>linha de A: −0,6225 × [1, 2] = [−0,6225 ; −1,245]<br>linha de B: +0,6225 × [1, 2] = [0,6225 ; 1,245]</td></tr>
+<tr><td><b>5. Passo</b></td><td>novo = antigo − 0,1 × gradiente (0,1 é o passo de aprendizado)</td><td>linha de A = <span class="ex">[0,5622 ; 0,1245]</span> (aproximou-se do CLS)<br>linha de B = <span class="ex">[−0,0622 ; 0,3755]</span> (afastou-se do CLS)</td></tr>
+<tr><td><b>6. Conferir</b></td><td>refazer as notas com a cabeça nova</td><td>notas 0,8112 e 0,6888; probabilidades A = 0,5306, B = 0,4694; erro <b>0,974 → 0,634</b></td></tr>
+<tr><td><b>7. Repetir</b></td><td>um segundo passo, igual ao primeiro</td><td>probabilidade de A = 0,6438; erro 0,440</td></tr>
+</table></div>
+<p><b>A ideia em uma frase:</b> o <b>gradiente</b> diz para que lado cada número faz o erro crescer; o treino anda no sentido contrário, em um passo pequeno. O efeito é simples de ler: <b>a linha da raça certa se aproxima do CLS da foto, e as linhas das outras raças se afastam</b>. Na próxima foto parecida, a nota certa já nasce maior. Esse método se chama <b>descida do gradiente</b>.</p>
+<h4 class="etapa">O que muda do exemplo para o treino real</h4>
+<ul>
+<li><b>Tamanho.</b> A cabeça é 37 × 384, e o gradiente é calculado sobre um <b>lote de 32 fotos</b> de cada vez (a média dos 32 erros). Uma época tem 115 lotes (3.680 fotos), e o treino todo tem 5 épocas: 575 passos.</li>
+<li><b>Otimizador.</b> Usamos o <b>AdamW</b>, uma variante da descida do gradiente que ajusta o tamanho do passo de cada número conforme o histórico de gradientes e aplica o <i>weight decay</i> (o pequeno encolhimento das etapas 1 e 2). O agendamento é em <b>cosseno</b>: o passo diminui suavemente até quase zero no fim.</li>
+<li><b>Dois passos de aprendizado.</b> <b>1e-3</b> na cabeça e <b>1e-5</b> no corpo, 100 vezes menor. A cabeça parte de números aleatórios e precisa andar muito; o corpo já sabe quase tudo e só pode ser tocado de leve.</li>
+<li><b>Erro.</b> A entropia cruzada com <i>label smoothing</i> de 0,1 (o alvo é cerca de 90% na raça certa, e não 100%). O exemplo usou a versão simples.</li>
+<li><b>Aquecimento.</b> Na <b>época 1</b> o corpo fica <b>congelado</b> e só a cabeça aprende, para a cabeça aprender a ler antes de poder empurrar o corpo. Da época 2 em diante o corpo é solto.</li>
+<li><b>Quando o corpo está solto.</b> O mesmo raciocínio continua <b>para trás</b>, através dos 12 blocos: o gradiente do erro chega a cada matriz, passando pela anterior (a <b>retropropagação</b>, que é a regra da cadeia do cálculo). Cada um dos 21 milhões de números das 72 matrizes recebe o seu pequeno ajuste. Essa mudança, de W0 para W1, é exatamente o que a tese mede.</li>
+</ul>
+<h3 id="o-que-treinou">9.6 O que foi treinado, em cada etapa</h3>
+<div class="box ok"><b class="t">Resposta direta</b>Até aqui <b>não foi só a cabeça</b>. A cabeça sozinha treinou (a) nos diagnósticos do corpo congelado, com uma regressão logística, e (b) na primeira época de cada treino. Em todas as etapas o corpo também foi treinado, porque a tese mede a mudança dele.</div>
+<div class="tbl"><table>
+<tr><th>Momento</th><th>O que treinou</th><th>O que ficou parado</th><th>Onde</th></tr>
+<tr><td>Pré-treino do DINOv2 (Meta, 2023)</td><td>o corpo inteiro, sem rótulos</td><td>nada (não há cabeça)</td><td>fora do repositório</td></tr>
+<tr><td>Diagnóstico e triagem do corpo congelado (etapas 1 e 3)</td><td>só um classificador, a regressão logística, sobre os 384 números do CLS</td><td>o corpo inteiro</td><td><code data-trace>doutorado/experimento1/etapa1/scripts/diagnose_frozen_body.py</code> (94,8% em pets) e <code data-trace>doutorado/experimento1/etapa3/scripts/domain_screening.py</code> (56,6% em pele)</td></tr>
+<tr><td>Etapas 1 e 2, época 1 (aquecimento)</td><td>só a cabeça</td><td>o corpo</td><td><code data-trace>doutorado/experimento1/common/train.py</code></td></tr>
+<tr><td>Etapas 1 e 2, épocas 2 a 5</td><td>cabeça e corpo inteiro (as 72 matrizes mais bias, normalizações e embeddings)</td><td>nada</td><td><code data-trace>doutorado/experimento1/common/train.py</code></td></tr>
+<tr><td>Tentativa 0 da etapa 1 (descartada)</td><td>cabeça e corpo desde a época 1, com passo 5e-5 no corpo</td><td>nada</td><td><code data-trace>doutorado/experimento1/common/train.py</code> com <code>--warmup-epochs 0</code></td></tr>
+<tr><td>Etapa 3 (lesões de pele, e o controle de rótulos embaralhados)</td><td>igual às etapas 1 e 2: época 1 só a cabeça, depois cabeça e corpo</td><td>nada</td><td><code data-trace>doutorado/experimento1/etapa3/scripts/train_etapa3.py</code></td></tr>
+<tr><td>Etapa 4, variante “72 congeladas”</td><td>a cabeça e o resto do corpo (bias, normalizações, embeddings)</td><td>só as 72 matrizes</td><td><code data-trace>doutorado/experimento1/etapa4/scripts/train_etapa4.py</code></td></tr>
+<tr><td>Etapa 4, variante “só σ”</td><td>a cabeça, o resto do corpo e os 27.648 números δ que reponderam os σ</td><td>as direções U e V das 72 matrizes</td><td><code data-trace>doutorado/experimento1/etapa4/scripts/train_etapa4.py</code></td></tr>
+<tr><td>Etapa 4, variante “só rotação”</td><td>a cabeça, o resto do corpo e as rotações das direções</td><td>os σ das 72 matrizes</td><td><code data-trace>doutorado/experimento1/etapa4/scripts/train_etapa4.py</code></td></tr>
+</table></div>
+<p>Ou seja: o resultado de <b>94,8%</b> dos pets com o corpo congelado é de um diagnóstico com regressão logística, e o de <b>60,3%</b> da etapa 4 (“72 congeladas”) <b>não</b> é de cabeça sozinha, porque o resto do corpo ainda treina. A comparação de fundo é sempre a mesma: o que o corpo ganha ao ser treinado, medido pelo par (W0, W1).</p>
+
+<div class="box files"><b class="t">Arquivos desta seção</b><b>Scripts</b><ul><li><code data-trace>doutorado/experimento1/common/train.py</code>: o treino de 37 raças (etapas 1 e 2) e o laço de gradiente da seção 9.5</li><li><code data-trace>doutorado/experimento1/etapa1/scripts/oxfordpet_exploration.py</code>: a exploração do dataset (seção 9.4)</li><li><code data-trace>doutorado/experimento1/etapa1/scripts/diagnose_frozen_body.py</code>, <code data-trace>doutorado/experimento1/etapa3/scripts/domain_screening.py</code>: os diagnósticos com o corpo congelado (seção 9.6)</li><li><code data-trace>doutorado/experimento1/etapa3/scripts/train_etapa3.py</code>, <code data-trace>doutorado/experimento1/etapa4/scripts/train_etapa4.py</code>: os treinos das etapas 3 e 4 (seção 9.6)</li><li><code data-trace>artigo/generate_figures.py</code>: gera a figura 13</li></ul><b>Dados e figuras</b><ul><li><code data-trace>data/hf/data/</code>: os arquivos parquet do Oxford-IIIT Pet (treino e teste); fora do git</li><li><code data-trace>doutorado/experimento1/etapa1/exploracao_oxfordpet/</code>: rótulos, contagens, resumo, tabela das raças e log da exploração</li><li><code data-trace>artigo/images/13_finetuning_par_w0_w1.png</code>: figura 14 do texto</li><li><code data-trace>artigo/images/15_pets_mosaico_rotulos.png</code>: figura 15</li><li><code data-trace>artigo/images/16_pets_contagem_por_raca.png</code>: figura 16</li><li><code data-trace>artigo/images/17_pets_variacao_dentro_da_raca.png</code>: figura 17</li><li><code data-trace>artigo/images/18_pets_tamanhos_das_fotos.png</code>: figura 18</li><li><code data-trace>models/etapa1_tentativa0/</code>: a tentativa 0, descartada</li></ul></div>
+
+<!-- =================================================== 10 -->
+<h2 id="exp">10. O que o experimento 1 mostrou</h2>
+<p>O experimento foi feito em <b>etapas numeradas</b>, cada uma com seus scripts, logs e dados em pasta própria, e nada de uma etapa foi sobrescrito pela seguinte. Tudo está em <code>doutorado/experimento1/resultados.html</code>. Em cada etapa, rodamos <b>10 treinos</b> que diferem só na <b>semente</b> (número que decide a parte aleatória: inicialização da cabeça e ordem das fotos), para saber o que é efeito real e o que é acaso.</p>
+
+<h3>10.1 Como medimos “quanto mudou”</h3>
+<ul>
+<li><b>Mudança dos pesos</b>: para cada uma das 72 matrizes, comparamos W0 com W1 e calculamos a diferença percentual; depois fazemos a <b>média das diferenças</b> sobre as matrizes (e sobre as sementes).</li>
+<li><b>Mudança das direções</b>: medimos o <b>ângulo entre subespaços</b> (o espaço formado pelas primeiras direções singulares antes e depois). Ângulo 0° = mesmas direções; 90° = totalmente diferentes. Essa régua tratou um problema: comparar vetor a vetor engana, porque direções com σ quase igual podem trocar de lugar sem que nada mude de verdade.</li>
+<li><b>Ruído de referência</b>: mudar pesos com ruído aleatório também “muda” as direções; por isso comparamos com isso para saber o que é sinal.</li>
+</ul>
+
+<h3>10.2 Resumo das etapas</h3>
+<div class="tbl"><table>
+<tr><th>Etapa</th><th>O que mudou</th><th>O que se achou</th></tr>
+<tr><td>1</td><td>Fine-tuning em pets com weight decay 0,05 (<b>weight decay</b>: força que encolhe os pesos a cada passo do treino).</td><td>Os pesos mudam cerca de 0,5%. Com corpo congelado a acurácia nos pets já era 94,8%, contra 94,1% com fine-tuning livre: tarefa fácil demais para o corpo precisar mudar.</td></tr>
+<tr><td>2</td><td>Mesmo treino com weight decay 0.</td><td>O encolhimento uniforme dos σ sumiu (−0,0092% medido contra −0,0088% previsto): ele era efeito do otimizador, não da tarefa. Mudanças de tamanho puras não devem contar como aprendizado.</td></tr>
+<tr><td>3</td><td>Domínio de pele; régua corrigida; teste funcional; controle com rótulos embaralhados.</td><td>Corpo congelado 56,6%; livre 72,8%. A razão “mudança das direções ÷ dos pesos” é estrutural (ruído isotrópico já dá cerca de 112 vezes), então não prova nada sozinha. No <b>transplante</b> (colocar no modelo original só uma parte da mudança), a parte direções recupera o ganho e a parte σ recupera 0%. Controle: a similaridade entre as mudanças de dois treinos com rótulos reais foi 0,253 e entre real e embaralhado 0,034, logo a mudança é sinal e não acaso.</td></tr>
+<tr><td>4</td><td>Fine-tuning <b>restrito</b>: só σ, só rotação das direções, ou as 72 matrizes congeladas (bias, normalizações e cabeça treinam).</td><td>72 congeladas 60,3%; <b>só σ 70,3%</b> (recupera 80% do ganho com 27.648 parâmetros, 0,13% das 72 matrizes); só rotação 71,3%; completo 72,8%. Para chegar lá, o σ teve que mudar cerca de 200 vezes mais que no treino livre.</td></tr>
+</table></div>
+<div class="box ok"><b class="t">Leitura honesta até aqui</b>
+A função aprendida mora principalmente nas <b>direções</b>; ainda assim, treinar apenas os valores σ (poucos números) já recupera a maior parte do ganho, só que forçando mudanças muito maiores nos σ do que o treino livre faria. Isso sugere que existem atalhos de treino baratos, e é a hipótese que a tese vai testar em mais domínios. Várias conclusões iniciais foram corrigidas no caminho; os erros e as correções estão documentados nas páginas de cada etapa.</div>
+
+<div class="box files"><b class="t">Arquivos desta seção</b><b>Scripts</b><ul><li><code data-trace>doutorado/experimento1/etapa1/reproduce_etapa1.sh</code>: receita da etapa 1</li><li><code data-trace>doutorado/experimento1/etapa2/reproduce_etapa2.sh</code>: receita da etapa 2</li><li><code data-trace>doutorado/experimento1/etapa3/reproduce_etapa3.sh</code>: receita da etapa 3</li><li><code data-trace>doutorado/experimento1/etapa4/reproduce_etapa4.sh</code>: receita da etapa 4</li></ul><b>Dados e figuras</b><ul><li><code data-trace>doutorado/experimento1/resultados.html</code>: o diário completo das quatro etapas, gerado pelos scripts de construção de cada etapa</li><li><code data-trace>doutorado/experimento1/etapa1/agregado.json</code>: resultado agregado da etapa 1</li><li><code data-trace>doutorado/experimento1/etapa2/agregado.json</code>: resultado agregado da etapa 2</li><li><code data-trace>doutorado/experimento1/etapa3/regua_etapa3.json</code>: régua corrigida da etapa 3</li><li><code data-trace>doutorado/experimento1/etapa4/medidas_variantes.json</code>: medidas das variantes da etapa 4</li></ul><p>Cada etapa tem o seu quadro completo de scripts e dados na <a href="#rastreabilidade">seção 11</a>.</p></div>
+
+<!-- =================================================== 11 -->
+<h2 id="rastreabilidade">11. Rastreabilidade: etapas, scripts e dados</h2>
+<p>Esta seção liga cada etapa da pesquisa aos arquivos que a produziram. Regra do repositório: <b>cada etapa tem os seus scripts e os seus dados</b>; o que serve a mais de uma etapa fica em <code>common/</code>; e <b>tudo o que existe em <code>doutorado/</code> e <code>artigo/</code> aparece nesta página</b>. O programa <code data-trace>artigo/check_repo.py</code> confere isso.</p>
+<h3 id="e-historia">11.1 A história em cinco etapas</h3>
+<div class="tbl"><table>
+<tr><th>Etapa</th><th>Pergunta</th><th>O que mudou</th><th>Achado</th><th>Receita</th></tr>
+<tr><td><b>0</b></td><td>Dá para guardar uma foto com poucas camadas de SVD?</td><td>aquecimento, sem modelo</td><td>35 camadas guardam 22,3% dos números e quase toda a energia</td><td><code data-trace>doutorado/experimento0/svd_image.py</code></td></tr>
+<tr><td><b>1</b></td><td>No fine-tuning, mudam mais os pesos σ ou as direções?</td><td>primeira rodada: pets, weight decay 0,05, 10 sementes</td><td>os pesos mudam cerca de 0,5% e o corpo congelado já acerta 94,8%</td><td><code data-trace>doutorado/experimento1/etapa1/reproduce_etapa1.sh</code></td></tr>
+<tr><td><b>2</b></td><td>Parte da mudança era efeito do weight decay?</td><td>só weight decay = 0</td><td>o encolhimento uniforme dos σ some</td><td><code data-trace>doutorado/experimento1/etapa2/reproduce_etapa2.sh</code></td></tr>
+<tr><td><b>3</b></td><td>E num domínio em que o corpo precisa mudar?</td><td>lesões de pele, régua corrigida, teste funcional, rótulos embaralhados</td><td>a função mora nas direções; a parte σ sozinha recupera 0%</td><td><code data-trace>doutorado/experimento1/etapa3/reproduce_etapa3.sh</code></td></tr>
+<tr><td><b>4</b></td><td>Treinar só σ ou só rotação basta?</td><td>fine-tuning restrito, mesmo domínio</td><td>só σ recupera 80% do ganho com 27.648 parâmetros</td><td><code data-trace>doutorado/experimento1/etapa4/reproduce_etapa4.sh</code></td></tr>
+</table></div>
+<h4 class="etapa" id="e-mapa">Como o repositório está organizado</h4>
+<pre class="tree"><code>.
+├── README.md                           mapa curto do repositório; aponta para este artigo
+├── artigo/                             este artigo e o que o gera
+│   ├── index.html                      o artigo (esta página)
+│   ├── generate_figures.py             figuras 1 a 14
+│   ├── check_repo.py                   confere rastreabilidade, padrão de comentários e idioma
+│   ├── images/                         as 18 figuras
+│   └── versoes/                        versões anteriores deste artigo
+├── doutorado/
+│   ├── referencias/index.html          lista de leitura
+│   ├── transfer-learning-class.html    a jornada de aprendizado, em formato de conversa
+│   ├── experimento0/                   ETAPA 0: SVD de uma imagem (o aquecimento)
+│   └── experimento1/                   ETAPAS 1 a 4: SVD no DINOv2-Small
+│       ├── common/                     código compartilhado pelas etapas 1 a 3
+│       ├── etapa1/ ... etapa4/         cada etapa: scripts/, JSON, logs/, páginas e a receita reproduce_etapaN.sh
+│       └── *.html                      páginas do diário (diario, resultados, mapas de calor, ...)
+├── learning/                           resumos técnicos do que foi aprendido
+├── wisdom/                             página de conhecimento (mantida pelas skills arch-*)
+├── plannings/                          planos e revisões de mudanças no repositório
+├── models/                             pesos de todos os treinos (fora do git, cerca de 7 GB)
+└── data/                               datasets baixados (fora do git)</code></pre>
+<div class="box term"><b class="t">Convenções</b>
+<b>Idioma:</b> o código (identificadores, comentários, docstrings, flags e mensagens do terminal) está em inglês; o texto das páginas e das figuras está em português. <b>Nomes de dados</b> (chaves dos JSON, nomes de variante como <code>so_sigma</code>, nomes das pastas de modelos) ficam em português, porque os dados das etapas são congelados e não foram reescritos.
+<b>Padrão dos scripts:</b> toda função e classe tem docstring de 3 linhas (<i>what?</i>, <i>why?</i>, <i>how?</i>) e todo corpo de função é dividido em regiões numeradas; os scripts de shell seguem o mesmo padrão em comentários.
+<b>Como rodar:</b> sempre a partir da raiz do repositório. <b>Fora do git:</b> <code>models/</code> e <code>data/</code>.
+<b>Nada é sobrescrito:</b> cada etapa nova guarda cópias congeladas das páginas da anterior em <code>base/</code>.</div>
+<h3 id="e0">11.2 Etapa 0: o aquecimento (SVD de uma imagem)</h3>
+<p><b>Pergunta.</b> Uma foto é uma matriz; quantas camadas de SVD bastam para reconhecê-la?</p>
+<p><b>O que mudou em relação à etapa anterior.</b> É o ponto de partida: ainda não há modelo nem treino.</p>
+<h4 class="etapa">Scripts desta etapa</h4>
+<div class="tbl"><table><tr><th>Arquivo</th><th>Papel</th></tr><tr><td><code data-trace>doutorado/experimento0/svd_image.py</code></td><td>decompõe a foto, salva cada camada e a reconstrução e imprime o relatório de compressão</td></tr></table></div>
+
+<h4 class="etapa">Dados de entrada</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>doutorado/experimento0/entrada.png</code></td><td>a foto de teste, 336 × 296 pixels, em cores; o script converte para cinza</td></tr></table></div>
+<h4 class="etapa">Dados produzidos</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>doutorado/experimento0/saida/</code></td><td>layer_01 a layer_35 (.png e .npy) e reconstructed.png</td></tr><tr><td><code data-trace>doutorado/experimento0/README.md</code></td><td>explicação do script e das métricas do relatório</td></tr></table></div>
+<h4 class="etapa">Como reproduzir</h4>
+<pre class="tree"><code>python3 doutorado/experimento0/svd_image.py</code></pre>
+<p><b>Resultado principal.</b> com 35 camadas a reconstrução usa 22,3% dos números da foto.</p>
+<p><b>Onde ler.</b> Seção 2 deste artigo.</p>
+
+<h3 id="e1">11.3 Etapa 1: primeira rodada (pets, weight decay 0,05)</h3>
+<p><b>Pergunta.</b> Ao especializar o DINOv2-Small em 37 raças de pet, o que muda mais: os pesos (σ) ou as direções (U e V)?</p>
+<p><b>O que mudou em relação à etapa anterior.</b> Primeira rodada completa: download do modelo, tentativa 0 descartada, 10 treinos com sementes 0 a 9, 45 comparações entre treinos (o piso de ruído) e as análises.</p>
+<h4 class="etapa">Scripts desta etapa</h4>
+<div class="tbl"><table><tr><th>Arquivo</th><th>Papel</th></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/scripts/download_model.py</code></td><td>baixa o modelo original</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/scripts/diagnose_frozen_body.py</code></td><td>acurácia do corpo congelado com regressão logística</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/scripts/analyze_seeds.py</code></td><td>agrega as 10 sementes e os 45 pares de ruído em resultado_10sementes.json</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/scripts/oxfordpet_exploration.py</code></td><td>explora o dataset: rótulos, contagens, tamanhos e figuras 15 a 18</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/reproduce_etapa1.sh</code></td><td>receita equivalente da etapa (os comandos originais foram rodados à mão)</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/complements_etapa1.sh</code></td><td>complementos refeitos na etapa 2, porque os originais se perderam</td></tr></table></div>
+<p><b>Scripts reaproveitados de outras etapas (só leitura):</b> <code data-trace>doutorado/experimento1/common/train.py</code> (treino), <code data-trace>doutorado/experimento1/common/compare.py</code> (SVD antes e depois), <code data-trace>doutorado/experimento1/common/stages.py</code> (caminhos), <code data-trace>doutorado/experimento1/common/record_environment.py</code> (ambiente), <code data-trace>doutorado/experimento1/common/reproducibility_weights_directions.py</code>, <code data-trace>doutorado/experimento1/common/weight_decomposition.py</code>, <code data-trace>doutorado/experimento1/common/whole_matrix_cosine.py</code>, <code data-trace>doutorado/experimento1/common/aggregate_stage.py</code></p>
+<h4 class="etapa">Dados de entrada</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>models/dinov2-small/</code></td><td>o modelo original (o ANTES)</td></tr><tr><td><code data-trace>data/hf/data/</code></td><td>Oxford-IIIT Pet, treino e teste em parquet</td></tr></table></div>
+<h4 class="etapa">Dados produzidos</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>models/dinov2-small-pets*</code></td><td>os 10 modelos treinados (semente 0 em dinov2-small-pets, as outras em -s1 a -s9)</td></tr><tr><td><code data-trace>models/etapa1_tentativa0/</code></td><td>a tentativa 0 (corpo solto desde o início), descartada</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/comparacoes/</code></td><td>55 JSON de compare.py: original para cada treino (10) e treino i para treino j (45, o piso de ruído)</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/resultado_10sementes.json</code></td><td>agregação das 10 sementes e dos 45 pares</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/resultado_5sementes.json</code></td><td>análise anterior com 5 sementes, de uma versão antiga do script; mantida como dado</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/reprodutibilidade.json</code></td><td>concordância entre treinos</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/decomposicao.json</code></td><td>parte comum e diferencial da mudança dos σ</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/cosseno_matriz.json</code></td><td>cosseno entre mudanças, matriz inteira</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/agregado.json</code></td><td>tabela final da etapa</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/diagnostico.json</code></td><td>acurácia do corpo congelado</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/ambiente.json</code></td><td>versões, máquina e hashes</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/exploracao_oxfordpet/</code></td><td>saídas da exploração do dataset</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/logs/</code></td><td>um log por passo</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa1/paginas/</code></td><td>as páginas de mapa de calor v1 (2 sementes) e v2 (10 sementes)</td></tr><tr><td><code data-trace>doutorado/experimento1/mapa-de-calor-etapa1.html</code></td><td>mapa de calor da etapa 1 (a cópia mapa-de-calor.html é idêntica)</td></tr><tr><td><code data-trace>doutorado/experimento1/mapa-de-calor.html</code></td><td>cópia idêntica, citada nas páginas de narrativa</td></tr><tr><td><code data-trace>doutorado/experimento1/mapa-de-calor-detalhado.html</code></td><td>as quatro medidas em detalhe</td></tr><tr><td><code data-trace>doutorado/experimento1/concordancia-sementes.html</code></td><td>concordância entre sementes</td></tr><tr><td><code data-trace>doutorado/experimento1/results.html</code></td><td>primeira página de resultados</td></tr><tr><td><code data-trace>doutorado/experimento1/usecase.html</code></td><td>o caso de uso que motivou a tese</td></tr></table></div>
+<h4 class="etapa">Como reproduzir</h4>
+<pre class="tree"><code>bash doutorado/experimento1/etapa1/reproduce_etapa1.sh   # retreina e SOBRESCREVE models/dinov2-small-pets*</code></pre>
+<p><b>Resultado principal.</b> os pesos mudam cerca de 0,5%; com o corpo congelado a acurácia já era 94,8%, contra 94,1% no fine-tuning livre.</p>
+<p><b>Onde ler.</b> Seção 10.2 deste artigo e a seção 1 de <code data-trace>doutorado/experimento1/resultados.html</code>.</p>
+
+<h3 id="e2">11.4 Etapa 2: o mesmo protocolo com weight decay 0</h3>
+<p><b>Pergunta.</b> Parte da mudança dos pesos era efeito do otimizador (weight decay) e não da tarefa?</p>
+<p><b>O que mudou em relação à etapa anterior.</b> Somente <code>--weight-decay 0</code>; dados, modelo, passos, épocas e sementes são idênticos.</p>
+<h4 class="etapa">Scripts desta etapa</h4>
+<div class="tbl"><table><tr><th>Arquivo</th><th>Papel</th></tr><tr><td><code data-trace>doutorado/experimento1/etapa2/scripts/verify_repeat.py</code></td><td>a mesma semente, treinada duas vezes, dá o mesmo modelo?</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa2/scripts/build_diary.py</code></td><td>gera diario.html e resultados.html das etapas 1 e 2</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa2/scripts/diary_template.html</code></td><td>molde das duas páginas</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa2/scripts/explorer_template.js</code></td><td>script dos mapas de calor embutido nas páginas</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa2/reproduce_etapa2.sh</code></td><td>receita da etapa</td></tr></table></div>
+<p><b>Scripts reaproveitados de outras etapas (só leitura):</b> <code data-trace>doutorado/experimento1/common/train.py</code>, <code data-trace>doutorado/experimento1/common/compare.py</code>, <code data-trace>doutorado/experimento1/common/stages.py</code>, <code data-trace>doutorado/experimento1/common/record_environment.py</code>, <code data-trace>doutorado/experimento1/common/reproducibility_weights_directions.py</code>, <code data-trace>doutorado/experimento1/common/weight_decomposition.py</code>, <code data-trace>doutorado/experimento1/common/whole_matrix_cosine.py</code>, <code data-trace>doutorado/experimento1/common/aggregate_stage.py</code></p>
+<h4 class="etapa">Dados de entrada</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>models/dinov2-small/</code></td><td>o modelo original</td></tr><tr><td><code data-trace>data/hf/data/</code></td><td>os mesmos dados de pets</td></tr></table></div>
+<h4 class="etapa">Dados produzidos</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>models/etapa2/</code></td><td>s0 a s9 e s0b (a repetição da semente 0)</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa2/</code></td><td>resultado_s0 a resultado_s9, agregado, decomposicao, cosseno_matriz, reprodutibilidade, repeticao e ambiente (.json)</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa2/achados_etapa2.html</code></td><td>texto dos achados, escrito à mão e inserido nas páginas</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa2/logs/</code></td><td>um log por passo</td></tr><tr><td><code data-trace>doutorado/experimento1/diario.html</code></td><td>o diário de bordo das etapas 1 e 2</td></tr><tr><td><code data-trace>doutorado/experimento1/resultados.html</code></td><td>as etapas em sequência; cada etapa seguinte acrescenta a sua seção</td></tr></table></div>
+<h4 class="etapa">Como reproduzir</h4>
+<pre class="tree"><code>bash doutorado/experimento1/etapa2/reproduce_etapa2.sh   # retreina e SOBRESCREVE models/etapa2/</code></pre>
+<p><b>Resultado principal.</b> o encolhimento uniforme dos σ medido era de −0,0092% contra −0,0088% previsto pelo weight decay, e desaparece com weight decay 0.</p>
+<p><b>Onde ler.</b> Seção 10.2 e a seção 2 de <code data-trace>doutorado/experimento1/resultados.html</code>.</p>
+
+<h3 id="e3">11.5 Etapa 3: domínio distante, régua corrigida e controles</h3>
+<p><b>Pergunta.</b> Num domínio em que o corpo realmente precisa mudar, a função mora nos pesos ou nas direções?</p>
+<p><b>O que mudou em relação à etapa anterior.</b> Domínio de lesões de pele (corpo congelado 56,6%), subespaços no lugar de vetores, teste funcional por transplante e controle de rótulos embaralhados.</p>
+<h4 class="etapa">Scripts desta etapa</h4>
+<div class="tbl"><table><tr><th>Arquivo</th><th>Papel</th></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/config_etapa3.py</code></td><td>constantes e caminhos da etapa</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/train_etapa3.py</code></td><td>treino em qualquer dataset parquet, com subamostra fixa e opção de embaralhar rótulos</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/download_candidates.py</code></td><td>baixa os 4 datasets candidatos (usa a rede)</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/domain_screening.py</code></td><td>triagem dos candidatos com o corpo congelado</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/verify_stage12_conclusions.py</code></td><td>sete verificações críticas das etapas 1 e 2, só leitura</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/measure_ruler.py</code></td><td>a régua corrigida, com ruído isotrópico como zero</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/transplant.py</code></td><td>teste funcional: recoloca partes da mudança nas matrizes originais</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/shuffled_control.py</code></td><td>concordância entre treinos reais e embaralhados</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/build_results_etapa3.py</code></td><td>insere a etapa 3 em resultados.html a partir da cópia congelada da etapa 2</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/scripts/etapa3_template.html</code></td><td>molde da seção da etapa 3</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/reproduce_etapa3.sh</code></td><td>receita idempotente: cada passo é pulado se a saída existe</td></tr></table></div>
+<p><b>Scripts reaproveitados de outras etapas (só leitura):</b> <code data-trace>doutorado/experimento1/common/compare.py</code>, <code data-trace>doutorado/experimento1/common/stages.py</code>, <code data-trace>doutorado/experimento1/common/record_environment.py</code></p>
+<h4 class="etapa">Dados de entrada</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>models/dinov2-small/</code></td><td>o modelo original</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/dados/</code></td><td>os parquet dos 4 candidatos e candidatos_inspecao.json; o de pele é o escolhido</td></tr><tr><td><code data-trace>models/etapa2/</code></td><td>modelos da etapa 2, só leitura</td></tr><tr><td><code data-trace>models/dinov2-small-pets*</code></td><td>modelos da etapa 1, só leitura</td></tr></table></div>
+<h4 class="etapa">Dados produzidos</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>models/etapa3/</code></td><td>piloto_pele, piloto_dtd, piloto_kmnist, s0 a s9 e embaralhado_s0 a embaralhado_s9</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/verificacao_etapas12.json</code></td><td>as sete verificações</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/triagem.json</code></td><td>triagem dos domínios</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/regua_etapa3.json</code></td><td>régua do domínio de pele (há também etapa1, etapa2 e embaralhado)</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/transplante_etapa3.json</code></td><td>teste funcional do domínio de pele (há também o de etapa2)</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/controle_embaralhado.json</code></td><td>controle de rótulos embaralhados</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/resultado_s0.json</code></td><td>comparação original para treino (há s0 a s9)</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/ambiente.json</code></td><td>ambiente da etapa</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/achados_etapa3.html</code></td><td>achados, escritos à mão</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/problemas_etapa3.html</code></td><td>problemas encontrados e como foram resolvidos</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/resultados_etapa3_somente.html</code></td><td>só a seção da etapa 3</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/base/</code></td><td>cópias congeladas das páginas ao fim da etapa 2</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/logs/</code></td><td>um log por passo</td></tr></table></div>
+<p><b>Nota sobre a proveniência dos dados.</b> O arquivo <code data-trace>doutorado/experimento1/etapa3/dados/candidatos_inspecao.json</code> foi gerado por uma primeira versão do download, escrita em linha no terminal, que registrava campos a mais (<code>col_imagem</code>, <code>col_rotulo</code>, <code>exemplo_rotulo</code>, <code>tipo_img</code>). O script guardado, <code data-trace>doutorado/experimento1/etapa3/scripts/download_candidates.py</code>, é a versão seguinte, que grava só os campos usados pelas páginas. A receita pula o download quando o arquivo existe, por isso o JSON original foi mantido.</p>
+<h4 class="etapa">Como reproduzir</h4>
+<pre class="tree"><code>bash doutorado/experimento1/etapa3/reproduce_etapa3.sh   # idempotente</code></pre>
+<p><b>Resultado principal.</b> com o corpo congelado o acerto é 56,6% e com o fine-tuning livre 72,8%; no transplante, a parte σ sozinha recupera 0% do ganho. A concordância entre treinos reais (0,253) é muito maior que entre real e embaralhado (0,034).</p>
+<p><b>Onde ler.</b> Seção 10.2 e a seção 3 de <code data-trace>doutorado/experimento1/resultados.html</code>.</p>
+
+<h3 id="e4">11.6 Etapa 4: fine-tuning restrito</h3>
+<p><b>Pergunta.</b> Treinar só os σ, ou só rotacionar as direções, basta para aprender?</p>
+<p><b>O que mudou em relação à etapa anterior.</b> As 72 matrizes passam a ter liberdade restrita: só σ, só rotação ou congeladas; o resto do protocolo é o da etapa 3.</p>
+<h4 class="etapa">Scripts desta etapa</h4>
+<div class="tbl"><table><tr><th>Arquivo</th><th>Papel</th></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/scripts/config_etapa4.py</code></td><td>variantes, grade de passos e caminhos</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/scripts/train_etapa4.py</code></td><td>treino das variantes restritas</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/scripts/choose_step.py</code></td><td>escolhe o passo de cada variante pela validação</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/scripts/measure_variants.py</code></td><td>confere que cada restrição foi respeitada</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/scripts/build_results_etapa4.py</code></td><td>insere a etapa 4 em resultados.html a partir da cópia congelada da etapa 3</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/scripts/etapa4_template.html</code></td><td>molde da seção da etapa 4</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/reproduce_etapa4.sh</code></td><td>receita idempotente</td></tr></table></div>
+<p><b>Scripts reaproveitados de outras etapas (só leitura):</b> <code data-trace>doutorado/experimento1/common/record_environment.py</code>, <code data-trace>doutorado/experimento1/etapa3/scripts/train_etapa3.py</code> (carregamento de dados e acurácia), <code data-trace>doutorado/experimento1/etapa3/scripts/config_etapa3.py</code></p>
+<h4 class="etapa">Dados de entrada</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>models/dinov2-small/</code></td><td>o modelo original</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa3/dados/</code></td><td>o parquet de lesões de pele da etapa 3</td></tr><tr><td><code data-trace>models/etapa3/</code></td><td>os modelos livres da etapa 3, reaproveitados como a variante completo</td></tr></table></div>
+<h4 class="etapa">Dados produzidos</h4>
+<div class="tbl"><table><tr><th>Caminho</th><th>Conteúdo</th></tr><tr><td><code data-trace>models/etapa4/</code></td><td>pilotos, congelado_72_s0 a s9, so_sigma_s0 a s9 e so_rotacao_s0 a s9</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/passos_escolhidos.json</code></td><td>passo escolhido por variante</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/medidas_variantes.json</code></td><td>medidas de cada variante</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/ambiente.json</code></td><td>ambiente da etapa</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/achados_etapa4.html</code></td><td>achados, escritos à mão</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/problemas_etapa4.html</code></td><td>problemas e a tentativa com a parametrização de Cayley que falhou</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/resultados_etapa4_somente.html</code></td><td>só a seção da etapa 4</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/base/</code></td><td>cópia congelada da página ao fim da etapa 3</td></tr><tr><td><code data-trace>doutorado/experimento1/etapa4/logs/</code></td><td>um log por passo</td></tr></table></div>
+<h4 class="etapa">Como reproduzir</h4>
+<pre class="tree"><code>bash doutorado/experimento1/etapa4/reproduce_etapa4.sh   # idempotente</code></pre>
+<p><b>Resultado principal.</b> 72 matrizes congeladas 60,3%; só σ 70,3% (80% do ganho, com 27.648 parâmetros); só rotação 71,3%; completo 72,8%.</p>
+<p><b>Onde ler.</b> Seção 10.2 e a seção 4 de <code data-trace>doutorado/experimento1/resultados.html</code>.</p>
+
+<h3 id="e-common">11.7 Código compartilhado</h3>
+<p>Estes scripts servem a mais de uma etapa e por isso não pertencem a nenhuma pasta de etapa:</p>
+<div class="tbl"><table><tr><th>Arquivo</th><th>Usado por</th></tr><tr><td><code data-trace>doutorado/experimento1/common/train.py</code></td><td>etapas 1 e 2 (a etapa 2 só muda <code>--weight-decay</code>)</td></tr><tr><td><code data-trace>doutorado/experimento1/common/compare.py</code></td><td>etapas 1, 2 e 3 (a etapa 3 o chama como está, para continuidade)</td></tr><tr><td><code data-trace>doutorado/experimento1/common/stages.py</code></td><td>caminhos dos modelos e das comparações das etapas 1 e 2; lido também pela verificação da etapa 3</td></tr><tr><td><code data-trace>doutorado/experimento1/common/record_environment.py</code></td><td>etapas 1, 2, 3 e 4</td></tr><tr><td><code data-trace>doutorado/experimento1/common/weight_decomposition.py</code></td><td>etapas 1 e 2</td></tr><tr><td><code data-trace>doutorado/experimento1/common/reproducibility_weights_directions.py</code></td><td>etapas 1 e 2</td></tr><tr><td><code data-trace>doutorado/experimento1/common/whole_matrix_cosine.py</code></td><td>etapas 1 e 2</td></tr><tr><td><code data-trace>doutorado/experimento1/common/aggregate_stage.py</code></td><td>etapas 1 e 2</td></tr></table></div>
+<h3 id="e-nomes">11.8 Mapa de nomes: antigo para novo</h3>
+<p>As páginas de narrativa (<code>resultados.html</code>, <code>diario.html</code>) e os logs antigos citam os nomes de antes da refatoração. Esta tabela traduz cada um. Os dados mudaram de pasta sem mudar de conteúdo (conferido por SHA-256).</p>
+<div class="tbl"><table><tr><th>Nome antigo</th><th>Nome novo</th><th>Observação</th></tr><tr><td><code data-legacy>treinar.py</code></td><td><code data-legacy>common/train.py</code></td><td>flags --semente, --saida, --lr-corpo, --epocas, --epocas-aquecer viraram --seed, --output, --body-lr, --epochs, --warmup-epochs</td></tr><tr><td><code data-legacy>comparar.py</code></td><td><code data-legacy>common/compare.py</code></td><td>--antes, --depois, --saida viraram --before, --after, --output</td></tr><tr><td><code data-legacy>etapas.py</code></td><td><code data-legacy>common/stages.py</code></td><td>funções modelo, pasta_modelo, resultado viraram model, model_dir, comparison</td></tr><tr><td><code data-legacy>registrar_ambiente.py</code></td><td><code data-legacy>common/record_environment.py</code></td><td>--saida virou --output; o hash dos scripts agora varre common/ e etapa*/scripts/</td></tr><tr><td><code data-legacy>decomposicao_pesos.py</code></td><td><code data-legacy>common/weight_decomposition.py</code></td><td>--etapa virou --stage</td></tr><tr><td><code data-legacy>reprodutibilidade_pesos_direcoes.py</code></td><td><code data-legacy>common/reproducibility_weights_directions.py</code></td><td>--etapa virou --stage</td></tr><tr><td><code data-legacy>cosseno_matriz_inteira.py</code></td><td><code data-legacy>common/whole_matrix_cosine.py</code></td><td>--etapa virou --stage; passou a fazer parte das receitas 1 e 2</td></tr><tr><td><code data-legacy>agregar_etapa.py</code></td><td><code data-legacy>common/aggregate_stage.py</code></td><td>--etapa virou --stage</td></tr><tr><td><code data-legacy>baixar_modelo.py</code></td><td><code data-legacy>etapa1/scripts/download_model.py</code></td><td></td></tr><tr><td><code data-legacy>diagnostico_corpo_congelado.py</code></td><td><code data-legacy>etapa1/scripts/diagnose_frozen_body.py</code></td><td></td></tr><tr><td><code data-legacy>analisar_sementes.py</code></td><td><code data-legacy>etapa1/scripts/analyze_seeds.py</code></td><td></td></tr><tr><td><code data-legacy>etapa1/oxfordpet_explorartion.py</code></td><td><code data-legacy>etapa1/scripts/oxfordpet_exploration.py</code></td><td>o nome foi corrigido (explorartion para exploration) e o script entrou na receita 1</td></tr><tr><td><code data-legacy>verificar_repeticao.py</code></td><td><code data-legacy>etapa2/scripts/verify_repeat.py</code></td><td></td></tr><tr><td><code data-legacy>construir_diario.py</code></td><td><code data-legacy>etapa2/scripts/build_diary.py</code></td><td>passou a fazer parte da receita 2</td></tr><tr><td><code data-legacy>diario_template.html</code></td><td><code data-legacy>etapa2/scripts/diary_template.html</code></td><td>conteúdo idêntico</td></tr><tr><td><code data-legacy>explorador_template.js</code></td><td><code data-legacy>etapa2/scripts/explorer_template.js</code></td><td>conteúdo idêntico: o texto é embutido nas páginas congeladas</td></tr><tr><td><code data-legacy>etapa3/baixar_candidatos.py</code></td><td><code data-legacy>etapa3/scripts/download_candidates.py</code></td><td></td></tr><tr><td><code data-legacy>etapa3/triagem_dominio.py</code></td><td><code data-legacy>etapa3/scripts/domain_screening.py</code></td><td></td></tr><tr><td><code data-legacy>etapa3/verificar_conclusoes_etapas12.py</code></td><td><code data-legacy>etapa3/scripts/verify_stage12_conclusions.py</code></td><td></td></tr><tr><td><code data-legacy>etapa3/treinar_etapa3.py</code></td><td><code data-legacy>etapa3/scripts/train_etapa3.py</code></td><td>flags --treino, --teste, --semente, --saida, --embaralhar-rotulos viraram --train, --test, --seed, --output, --shuffle-labels</td></tr><tr><td><code data-legacy>etapa3/medir_regua.py</code></td><td><code data-legacy>etapa3/scripts/measure_ruler.py</code></td><td>--conjunto virou --set</td></tr><tr><td><code data-legacy>etapa3/transplante.py</code></td><td><code data-legacy>etapa3/scripts/transplant.py</code></td><td>--conjunto e --sementes viraram --set e --seeds</td></tr><tr><td><code data-legacy>etapa3/controle_embaralhado.py</code></td><td><code data-legacy>etapa3/scripts/shuffled_control.py</code></td><td></td></tr><tr><td><code data-legacy>etapa3/construir_resultados_etapa3.py</code></td><td><code data-legacy>etapa3/scripts/build_results_etapa3.py</code></td><td></td></tr><tr><td><code data-legacy>etapa3/config_etapa3.py</code></td><td><code data-legacy>etapa3/scripts/config_etapa3.py</code></td><td>constantes em inglês</td></tr><tr><td><code data-legacy>etapa3/etapa3_template.html</code></td><td><code data-legacy>etapa3/scripts/etapa3_template.html</code></td><td>conteúdo idêntico</td></tr><tr><td><code data-legacy>etapa4/treinar_etapa4.py</code></td><td><code data-legacy>etapa4/scripts/train_etapa4.py</code></td><td>flags --variante, --lr-restrito, --validacao, --bloco-oft, --param-rotacao viraram --variant, --restricted-lr, --validation, --oft-block, --rotation-param</td></tr><tr><td><code data-legacy>etapa4/escolher_passo.py</code></td><td><code data-legacy>etapa4/scripts/choose_step.py</code></td><td></td></tr><tr><td><code data-legacy>etapa4/medir_variantes.py</code></td><td><code data-legacy>etapa4/scripts/measure_variants.py</code></td><td></td></tr><tr><td><code data-legacy>etapa4/construir_resultados_etapa4.py</code></td><td><code data-legacy>etapa4/scripts/build_results_etapa4.py</code></td><td></td></tr><tr><td><code data-legacy>etapa4/config_etapa4.py</code></td><td><code data-legacy>etapa4/scripts/config_etapa4.py</code></td><td></td></tr><tr><td><code data-legacy>etapa4/etapa4_template.html</code></td><td><code data-legacy>etapa4/scripts/etapa4_template.html</code></td><td>conteúdo idêntico</td></tr><tr><td><code data-legacy>reproduzir_etapa1.sh, reproduzir_etapa2.sh, complementos_etapa1.sh, etapa3/reproduzir_etapa3.sh, etapa4/reproduzir_etapa4.sh</code></td><td><code data-legacy>etapa1/reproduce_etapa1.sh, etapa2/reproduce_etapa2.sh, etapa1/complements_etapa1.sh, etapa3/reproduce_etapa3.sh, etapa4/reproduce_etapa4.sh</code></td><td>comandos atualizados para as flags novas</td></tr><tr><td><code data-legacy>artigo/gerar_imagens.py</code></td><td><code data-legacy>artigo/generate_figures.py</code></td><td>as 14 figuras saem idênticas byte a byte</td></tr><tr><td><code data-legacy>svd_imagem.py, entrada.png, saida/, README.md (raiz)</code></td><td><code data-legacy>doutorado/experimento0/svd_image.py, entrada.png, saida/, README.md</code></td><td>o README da raiz foi reescrito como mapa do repositório</td></tr><tr><td><code data-legacy>experimento1/resultado*.json, resultado_ruido.json, ruido_*.json</code></td><td><code data-legacy>etapa1/comparacoes/</code></td><td>55 arquivos, conteúdo idêntico</td></tr><tr><td><code data-legacy>experimento1/reprodutibilidade.json, resultado_10sementes.json, resultado_5sementes.json</code></td><td><code data-legacy>etapa1/</code></td><td>conteúdo idêntico</td></tr><tr><td><code data-legacy>experimento1/achados_etapa2.html</code></td><td><code data-legacy>etapa2/achados_etapa2.html</code></td><td>conteúdo idêntico</td></tr></table></div>
+<h3 id="e-removidos">11.9 Scripts removidos e por quê</h3>
+<div class="tbl"><table><tr><th>Arquivo (todos em <code data-legacy>doutorado/experimento1/</code>)</th><th>Motivo</th></tr><tr><td><code data-legacy>etapa1/ferramentas/gerar_mapa.py</code></td><td>gravava num diretório temporário que não existe mais; nenhuma receita o chamava</td></tr><tr><td><code data-legacy>etapa1/ferramentas/construir_diario_ANTES_do_resultados.py</code></td><td>versão anterior do construtor de páginas, substituída por build_diary.py</td></tr><tr><td><code data-legacy>etapa1/ferramentas/treinar_ANTES_da_etapa2.py</code></td><td>versão do treino anterior à flag de weight decay; common/train.py com os valores padrão a substitui</td></tr><tr><td><code data-legacy>etapa1/ferramentas/conc_template.html, mapa_template.html, mapa2_template.html, mapa3_template.html, diario_template_ANTES_do_resultados.html</code></td><td>moldes sem nenhum script que os use; as páginas geradas continuam em etapa1/paginas/ e na raiz de experimento1/</td></tr></table></div>
+<p>Páginas HTML nunca foram removidas, porque as páginas de narrativa se ligam por caminho relativo e guardam o que foi dito em cada momento.</p>
+<h3 id="e-verificar">11.10 Como conferir</h3>
+<pre class="tree"><code>python3 artigo/check_repo.py      # rastreabilidade, padrão dos comentários e idioma
+python3 artigo/generate_figures.py # refaz as figuras 1 a 14 (idênticas às atuais)
+python3 doutorado/experimento1/etapa1/scripts/oxfordpet_exploration.py   # refaz as figuras 15 a 18</code></pre>
+
+<!-- =================================================== 12 -->
+<h2 id="duvidas">12. Perguntas que costumam travar</h2>
+<details><summary>Os patches são analisados, e não a foto inteira?</summary><p>Os dois. A foto entra como 256 patches; depois, pela atenção, cada patch recebe informação dos outros, de modo que no fim cada token já “conhece” a foto inteira.</p></details>
+<details><summary>Sempre 256 patches? A tabela de posição tem sempre o mesmo tamanho?</summary><p>Com fotos de 224 × 224, sim. A tabela guardada tem 1370 linhas (resolução maior); para 224 × 224 ela é redimensionada para 16 × 16 posições mais o CLS. Se usarmos fotos de outro tamanho, o número de patches muda.</p></details>
+<details><summary>As matrizes query e key são fixas? De onde vieram?</summary><p>Depois do treino, sim: são as mesmas para qualquer foto. Começaram com números aleatórios e foram ajustadas no pré-treino. O que varia por foto são os tokens e, por isso, as queries, keys e values.</p></details>
+<details><summary>Por que o token fica com 384 números e não 588?</summary><p>384 é a bitola escolhida para o modelo Small (modelos maiores usam 768, 1024…). A matriz de tradução 588 → 384 aprende a guardar o que importa do patch.</p></details>
+<details><summary>Na atenção, cada token procura os parecidos ou multiplica com todos?</summary><p>Multiplica com todos. Não existe busca: cada query é multiplicada pela key de todos os tokens, e os parecidos são os que dão número grande (seção 6.2).</p></details>
+<details><summary>O que significa o modelo ter 22 milhões de parâmetros e bitola 384?</summary><p>Parâmetros são os números guardados nas tabelas do modelo, somando 22.056.576 (seção 8.1). Bitola é quantos números descrevem cada token: 384 (seção 3.3).</p></details>
+<details><summary>Para que serve um modelo sem cabeça?</summary><p>Para transformar fotos em 384 números (a impressão digital do CLS), que podem ser comparados, agrupados ou lidos por uma cabeça que você coloca (seção 9.2).</p></details>
+<details><summary>Até agora só a cabeça foi treinada?</summary><p>Não. A cabeça sozinha treinou nos diagnósticos (regressão logística) e na primeira época de cada treino. Em todas as etapas o corpo também foi treinado, porque a tese mede a mudança dele (seção 9.6).</p></details>
+<details><summary>Como a cabeça aprende?</summary><p>Pelo gradiente: para cada número da cabeça, o treino calcula para que lado o erro cresce e anda um passo pequeno no sentido contrário. A linha da raça certa se aproxima do CLS da foto, e as outras se afastam (seção 9.5).</p></details>
+<details><summary>O Oxford-IIIT Pet já vem rotulado?</summary><p>Sim: cada foto tem a raça anotada, de 0 a 36. Só os rótulos do treino puxam o modelo (seção 9.4).</p></details>
+<details><summary>Por que não medir a acurácia com as mesmas fotos do treino?</summary><p>Porque o modelo poderia ter decorado essas fotos. As de teste nunca foram vistas, então a nota mede se ele aprendeu a reconhecer a raça de verdade.</p></details>
+<details><summary>Qual a diferença entre atenção e MLP, em uma frase?</summary><p>Atenção mistura informação entre tokens; MLP reescreve cada token sozinho. Em um bloco, primeiro conversam, depois cada um pensa.</p></details>
+<details><summary>Por que não basta olhar o tamanho das mudanças nos pesos?</summary><p>Porque uma mudança pequena em muitos pesos pode ser só efeito do otimizador (como o weight decay) ou ruído, e porque a mesma quantidade de mudança em direções diferentes tem efeitos diferentes na função. Por isso medimos separadamente σ e direções e checamos com testes funcionais.</p></details>
+
+<!-- =================================================== 13 -->
+<h2 id="gloss">13. Glossário</h2>
+<dl>
+<dt>Acurácia</dt><dd>Porcentagem de fotos de teste que o modelo acerta.</dd>
+<dt>AdamW</dt><dd>Variante da descida do gradiente que adapta o passo de cada número e aplica o weight decay; é o otimizador de todos os nossos treinos.</dd>
+<dt>Ângulo entre subespaços</dt><dd>Medida de quanto duas famílias de direções diferem (0° igual, 90° totalmente diferente).</dd>
+<dt>Aquecimento</dt><dd>Veja Warm-up.</dd>
+<dt>Atenção</dt><dd>Operação em que cada token calcula pesos sobre os outros e mistura os values deles (seção 7).</dd>
+<dt>Auto-supervisionado</dt><dd>Treino sem rótulos humanos.</dd>
+<dt>Bias</dt><dd>Número somado ao resultado de uma conta; fora das 72 matrizes.</dd>
+<dt>Bitola (hidden size)</dt><dd>Quantidade de números por token: 384.</dd>
+<dt>Cabeça (de classificação)</dt><dd>Matriz final que lê o CLS e escolhe a classe.</dd>
+<dt>Cabeça de atenção</dt><dd>Uma das 6 atenções paralelas dentro do bloco, cada uma com fatia de 64 números.</dd>
+<dt>Classe</dt><dd>Uma das respostas possíveis da tarefa; nos pets, cada uma das 37 raças.</dd>
+<dt>CLS</dt><dd>Token extra que resume a foto.</dd>
+<dt>Conexão residual</dt><dd>Somar a saída de uma etapa à sua entrada.</dd>
+<dt>Congelar</dt><dd>Impedir que um conjunto de pesos mude durante o treino.</dd>
+<dt>Corpo</dt><dd>Parte do modelo que transforma a foto em números úteis.</dd>
+<dt>Dataset (conjunto de dados)</dt><dd>Coleção de exemplos usada para treinar ou testar; aqui, fotos com rótulos.</dd>
+<dt>Descida do gradiente</dt><dd>Método de treino: repetir passos pequenos no sentido contrário ao gradiente, para o erro diminuir (seção 9.5).</dd>
+<dt>Direções (vetores singulares)</dt><dd>Colunas de U e V; dizem qual padrão cada camada da SVD representa.</dd>
+<dt>Eckart–Young</dt><dd>Teorema: as N primeiras camadas da SVD são a melhor aproximação de posto N.</dd>
+<dt>Embedding</dt><dd>Tabela aprendida que converte algo (patch, posição) em vetor.</dd>
+<dt>Energia</dt><dd>Soma dos σ² das camadas; mede quanto da matriz elas explicam.</dd>
+<dt>Entropia cruzada (cross-entropy)</dt><dd>Medida de erro de classificação: grande quando o modelo dá nota baixa à classe certa.</dd>
+<dt>Época</dt><dd>Uma passada completa pelas fotos de treino.</dd>
+<dt>Fine-tuning</dt><dd>Continuar treinando um modelo pronto em uma nova tarefa.</dd>
+<dt>Foundation model</dt><dd>Modelo grande de uso geral, reaproveitável.</dd>
+<dt>GELU</dt><dd>Função que dobra os números de forma suave entre fc1 e fc2.</dd>
+<dt>Gradiente</dt><dd>Para cada número do modelo, a direção em que o erro mais cresce. O treino anda no sentido contrário.</dd>
+<dt>Impressão digital da foto</dt><dd>Os 384 números do token CLS, que descrevem a imagem.</dd>
+<dt>Key / Query / Value</dt><dd>Os três vetores da atenção: o que se oferece, o que se procura e o que se entrega.</dd>
+<dt>Label smoothing</dt><dd>Truque de treino que pede cerca de 90% de confiança na classe certa em vez de 100%.</dd>
+<dt>Layer (bloco)</dt><dd>Unidade repetida do Transformer: atenção + MLP.</dd>
+<dt>LayerNorm / LayerScale</dt><dd>Normalização do token e multiplicador aprendido de cada etapa.</dd>
+<dt>Learning rate (taxa de aprendizado)</dt><dd>Tamanho de cada passo de ajuste dos pesos. No nosso treino: 1e-3 para a cabeça e 1e-5 para o corpo.</dd>
+<dt>Linear probe</dt><dd>Usar o corpo congelado e treinar só a cabeça (nos nossos diagnósticos, com regressão logística).</dd>
+<dt>Matriz</dt><dd>Tabela de números.</dd>
+<dt>MLP</dt><dd>Duas matrizes (fc1, fc2) que reescrevem cada token sozinho.</dd>
+<dt>Nota de afinidade</dt><dd>Resultado do produto escalar entre a query de um token e a key de outro.</dd>
+<dt>Parquet</dt><dd>Formato de arquivo de tabela usado para guardar as fotos e rótulos do dataset.</dd>
+<dt>Patch</dt><dd>Pedaço quadrado de 14 × 14 pixels da foto.</dd>
+<dt>Peso (parâmetro)</dt><dd>Número ajustável do modelo.</dd>
+<dt>Posição (position embedding)</dt><dd>Vetor somado ao token para informar onde o patch estava.</dd>
+<dt>Posto (rank)</dt><dd>Número de camadas da SVD usadas.</dd>
+<dt>Pré-treino</dt><dd>Treino geral e inicial do modelo.</dd>
+<dt>Produto escalar</dt><dd>Multiplicar dois vetores posição por posição e somar os resultados.</dd>
+<dt>Regressão logística</dt><dd>Classificador simples que calcula uma nota por classe a partir de um vetor; usado nos diagnósticos do corpo congelado.</dd>
+<dt>Retropropagação (backpropagation)</dt><dd>Cálculo do gradiente de todas as matrizes, do fim do modelo para o começo, pela regra da cadeia.</dd>
+<dt>Rótulo</dt><dd>Resposta certa de uma foto.</dd>
+<dt>Semente</dt><dd>Número que fixa a parte aleatória de um treino.</dd>
+<dt>Softmax</dt><dd>Converte números em pesos positivos que somam 1.</dd>
+<dt>SVD</dt><dd>Decomposição W = U Σ Vᵀ.</dd>
+<dt>Token</dt><dd>Vetor de 384 números que representa um patch (ou o CLS) dentro do modelo.</dd>
+<dt>Transfer learning</dt><dd>Reaproveitar o que um modelo aprendeu em outra tarefa.</dd>
+<dt>Transformer</dt><dd>Arquitetura baseada em atenção, criada em 2017.</dd>
+<dt>Treino e teste</dt><dd>As duas partes do dataset: uma ajusta o modelo, a outra só mede a acurácia.</dd>
+<dt>Valores singulares σ</dt><dd>Pesos das camadas da SVD, do maior para o menor.</dd>
+<dt>ViT</dt><dd>Vision Transformer: Transformer aplicado a patches de imagem.</dd>
+<dt>Warm-up (aquecimento)</dt><dd>Em geral, começar o treino com passos pequenos e aumentar. <b>Neste projeto o aquecimento é outra coisa:</b> a primeira época, em que o corpo fica congelado e só a cabeça aprende, para ela aprender a ler antes de poder empurrar o corpo.</dd>
+<dt>Weight decay</dt><dd>Força que encolhe levemente todos os pesos a cada passo.</dd>
+</dl>
+
+<!-- =================================================== 14 -->
+<h2 id="fontes">14. Fontes</h2>
+<ul>
+<li>Vaswani et al. (2017). <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a>. NeurIPS.</li>
+<li>Dosovitskiy et al. (2021). <a href="https://arxiv.org/abs/2010.11929">An Image Is Worth 16x16 Words</a>. ICLR.</li>
+<li>Oquab et al. (2023). <a href="https://arxiv.org/abs/2304.07193">DINOv2: Learning Robust Visual Features without Supervision</a>.</li>
+<li>Eckart &amp; Young (1936). The approximation of one matrix by another of lower rank. Psychometrika.</li>
+<li>Parkhi et al. (2012). Cats and Dogs (Oxford-IIIT Pet). CVPR.</li>
+<li>Oxford-IIIT Pet: <a href="https://www.robots.ox.ac.uk/~vgg/data/oxford-iiit-pet/">página do dataset</a> e cópia usada: <a href="https://huggingface.co/datasets/timm/oxford-iiit-pet">timm/oxford-iiit-pet</a>.</li>
+<li>Shazeer (2020). <a href="https://arxiv.org/abs/2002.05202">GLU Variants Improve Transformer</a> (SwiGLU).</li>
+<li>Mapa completo de scripts e dados: <a href="#rastreabilidade">seção 11</a>.</li>
+<li>Dados e códigos do projeto: <code>doutorado/experimento1/resultados.html</code>, <code>learning/aprendizados.md</code>, <code data-trace>artigo/generate_figures.py</code>, <code data-trace>doutorado/experimento1/etapa1/scripts/oxfordpet_exploration.py</code>.</li>
+</ul>
+<footer>Reprodução das figuras 1 a 14: <code>python3 artigo/generate_figures.py</code>. Figuras 15 a 18: <code>python3 doutorado/experimento1/etapa1/scripts/oxfordpet_exploration.py</code>. Versão anterior deste texto: <code>artigo/versoes/</code>.</footer>
+</div>
+</body>
+</html>

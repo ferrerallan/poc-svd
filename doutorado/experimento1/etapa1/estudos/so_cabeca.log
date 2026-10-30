@@ -1,0 +1,15 @@
+seed   before   epoch1   epoch2   epoch5   tensors   changed  largest diff
+   0     2.13    91.58    92.97    93.84       223         0       0.0e+00
+   1     1.83    91.82    92.42    93.57       223         0       0.0e+00
+   2     5.56    92.20    93.35    94.33       223         0       0.0e+00
+   3     5.40    92.64    93.08    93.40       223         0       0.0e+00
+   4     3.35    91.09    92.78    93.46       223         0       0.0e+00
+   5     2.81    91.74    93.16    93.87       223         0       0.0e+00
+   6     1.94    91.88    92.75    93.84       223         0       0.0e+00
+   7     1.50    91.71    92.94    94.06       223         0       0.0e+00
+   8     2.40    91.82    93.38    93.92       223         0       0.0e+00
+   9     4.91    91.80    93.05    93.87       223         0       0.0e+00
+
+final accuracy: mean 93.82  std 0.28  min 93.40  max 94.33
+head: 14208 weights + 37 bias;  body tensors changed in all seeds: 0
+written: doutorado/experimento1/etapa1/estudos/so_cabeca.json

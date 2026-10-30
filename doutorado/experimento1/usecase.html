@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Experimento 1 — caso de uso</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#fff; --ink:#1a1a1c; --ink2:#52535b; --ink3:#86868f;
+  --line:#e5e3de; --accent:#7a4bd0; --accent-bg:#f3edfd;
+  --ok:#1d6b4a; --ok-bg:#e9f5ee; --ruim:#b23b3b; --ruim-bg:#fbeceb;
+  --aviso:#8a5a00; --aviso-bg:#fdf3e1;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#141418; --card:#1d1d23; --ink:#ecebf1; --ink2:#a8a7b3; --ink3:#7c7b87;
+    --line:#2e2e36; --accent:#b699f5; --accent-bg:#26203a;
+    --ok:#7bcea5; --ok-bg:#1c2f26; --ruim:#e58b83; --ruim-bg:#33211f;
+    --aviso:#e6ab5b; --aviso-bg:#332a1b;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16.5px/1.7 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px 100px}
+header{padding:56px 0 20px}
+.kicker{font:600 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:35px;line-height:1.15;margin:14px 0 12px;letter-spacing:-.02em}
+.lede{font-size:18px;color:var(--ink2);margin:0;max-width:62ch}
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-bottom:4px}
+nav ol{list-style:none;display:flex;flex-wrap:wrap;gap:4px 15px;margin:0;padding:11px 0;font:500 13.5px/1 inherit}
+nav a{color:var(--ink2);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+nav a:hover{color:var(--accent);border-color:var(--accent)}
+section{padding:44px 0 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border:0}
+h2{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:0 0 8px}
+h2 .n{color:var(--accent)}
+h3{font-size:23px;line-height:1.25;margin:0 0 14px;letter-spacing:-.01em}
+h4{font-size:16px;margin:26px 0 8px}
+p{margin:0 0 15px;max-width:68ch}
+ul,ol.l{margin:0 0 15px;padding-left:22px;max-width:68ch}
+li{margin:6px 0}
+b{font-weight:650}
+code{font:13.5px/1.45 var(--mono);background:var(--accent-bg);border-radius:4px;padding:1.5px 5px}
+pre{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:13px 16px;overflow-x:auto;margin:0 0 16px}
+pre code{background:none;padding:0;font-size:13px;line-height:1.65}
+a{color:var(--accent)}
+
+.caixa{border-radius:11px;padding:16px 19px;margin:20px 0}
+.caixa>:last-child{margin-bottom:0}
+.rot{font:700 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:9px}
+.analogia{background:var(--accent-bg)} .analogia .rot{color:var(--accent)}
+.ok{background:var(--ok-bg)} .ok .rot{color:var(--ok)}
+.erro{background:var(--ruim-bg)} .erro .rot{color:var(--ruim)}
+.aviso{background:var(--aviso-bg)} .aviso .rot{color:var(--aviso)}
+
+.fluxo{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+.passo{flex:1 1 180px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 15px;position:relative}
+.passo .num{font:700 11px/1 var(--mono);color:var(--accent);letter-spacing:.1em}
+.passo b{display:block;margin:7px 0 4px;font-size:15px}
+.passo span{font-size:13.5px;color:var(--ink2);line-height:1.5;display:block}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px;margin:18px 0}
+.art{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:16px 18px}
+.art h4{margin:0 0 3px;font-size:17px}
+.art .tipo{font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:11px}
+.art dl{margin:0;font-size:14.5px}
+.art dt{font:700 10.5px/1.5 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:10px}
+.art dd{margin:2px 0 0;color:var(--ink2)}
+.art dd.s{color:var(--ink)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:11px;margin:20px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+.kpi .v{font:700 24px/1.1 var(--mono);letter-spacing:-.02em}
+.kpi .k{font-size:12px;color:var(--ink3);margin-top:5px;line-height:1.45}
+.kpi.ok2 .v{color:var(--ok)} .kpi.ruim .v{color:var(--ruim)} .kpi.acc .v{color:var(--accent)}
+
+.scroll{overflow-x:auto;margin:0 0 16px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+.scroll table{min-width:520px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);white-space:nowrap}
+td.num,th.num{text-align:right;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+tr.hl td{background:var(--ok-bg)}
+.sim{color:var(--ok);font-weight:650} .nao{color:var(--ruim);font-weight:650} .talvez{color:var(--aviso);font-weight:650}
+footer{padding:34px 0 0;color:var(--ink3);font-size:13.5px;border-top:1px solid var(--line);margin-top:48px}
+@media (max-width:620px){h1{font-size:27px} header{padding-top:36px} .cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Doutorado · Experimento 1 · Caso de uso</div>
+  <h1>O que o Experimento 1 faz, e por que ele existe</h1>
+  <p class="lede">Pegar um modelo de imagem já treinado, ensinar a ele uma tarefa nova e
+  medir, com SVD, o que mudou dentro dele. A tarefa não importa. O que importa é a medição.</p>
+</header>
+
+<nav><ol>
+  <li><a href="#ideia">1. A ideia</a></li>
+  <li><a href="#passos">2. O que é feito</a></li>
+  <li><a href="#artefatos">3. Os artefatos</a></li>
+  <li><a href="#esperavamos">4. O que esperávamos</a></li>
+  <li><a href="#resultados">5. O que aconteceu</a></li>
+  <li><a href="#correcao">6. Uma correção</a></li>
+  <li><a href="#afirmar">7. O que dá para afirmar</a></li>
+  <li><a href="#proximo">8. Próximos passos</a></li>
+</ol></nav>
+
+<!-- ========================= 1 ========================= -->
+<section id="ideia">
+  <h2><span class="n">01</span> &nbsp;A ideia</h2>
+  <h3>Uma pergunta, e um experimento só para calibrar a régua</h3>
+
+  <p>A pergunta da tese é: quando um foundation model se especializa numa tarefa nova, ele
+  <b>reorganiza as ferramentas que já tinha</b> ou <b>cria ferramentas novas</b>? Em termos de
+  SVD: mudaram os <b>valores singulares</b> (o quanto cada direção pesa) ou os
+  <b>vetores singulares</b> (para onde cada direção aponta)?</p>
+
+  <div class="caixa analogia">
+    <span class="rot">Analogia</span>
+    <p>Imagine um fotógrafo generalista que vira especialista em retrato. Ele pode ter
+    mudado de duas formas: passou a <b>usar mais</b> as técnicas que já dominava, ou aprendeu
+    <b>técnicas inéditas</b>. A SVD é a lupa que deixa você olhar dentro da cabeça dele e
+    separar uma coisa da outra.</p>
+  </div>
+
+  <p>Este primeiro experimento <b>não tenta responder essa pergunta</b>. Ele serve para
+  calibrar a régua: aprender a medir, num caso fácil e conhecido, antes de medir num caso
+  difícil e desconhecido.</p>
+
+  <div class="caixa analogia">
+    <span class="rot">Analogia</span>
+    <p>Antes de pesar algo que você não sabe quanto pesa, você coloca na balança um peso de
+    1 kg conhecido. Se a balança marcar 3 kg, o problema é a balança, não o objeto. Raça de
+    pet é o peso de 1 kg: é um domínio próximo do que o modelo já viu, então a mudança tem
+    que ser pequena. Se a medição disser que tudo virou de cabeça para baixo, o erro está no
+    nosso método.</p>
+  </div>
+
+  <div class="caixa aviso">
+    <span class="rot">O que este experimento não é</span>
+    <p>Não é um classificador de raças para usar em produto. O classificador é descartável.
+    O produto do experimento são os <b>pesos antes e depois</b>: duas versões das mesmas 72
+    matrizes, que podem ser comparadas.</p>
+  </div>
+</section>
+
+<!-- ========================= 2 ========================= -->
+<section id="passos">
+  <h2><span class="n">02</span> &nbsp;O que é feito</h2>
+  <h3>Seis passos, do download à medição</h3>
+
+  <div class="fluxo">
+    <div class="passo"><span class="num">PASSO 1</span><b>Pegar o ANTES</b>
+      <span>Baixar o DINOv2-Small e guardar em <code>models/dinov2-small/</code>. Essa pasta nunca é alterada.</span></div>
+    <div class="passo"><span class="num">PASSO 2</span><b>Colar uma cabeça</b>
+      <span>Adicionar uma camada nova de 37 saídas, uma por raça, começando aleatória.</span></div>
+    <div class="passo"><span class="num">PASSO 3</span><b>Treinar</b>
+      <span>5 épocas no Oxford-IIIT Pet. Corpo e cabeça treinam juntos, depois da 1ª época.</span></div>
+    <div class="passo"><span class="num">PASSO 4</span><b>Guardar o DEPOIS</b>
+      <span>Salvar o corpo treinado em <code>models/dinov2-small-pets/</code>.</span></div>
+    <div class="passo"><span class="num">PASSO 5</span><b>Repetir</b>
+      <span>Treinar tudo de novo mudando só a semente aleatória. Isso gera o piso de ruído.</span></div>
+    <div class="passo"><span class="num">PASSO 6</span><b>Comparar</b>
+      <span>Rodar a SVD nas 72 matrizes de cada versão e medir quanto mudou.</span></div>
+  </div>
+
+  <h4>Por que o corpo e a cabeça são tratados de formas diferentes</h4>
+  <p>O modelo tem duas partes. O <b>corpo</b> (12 blocos, 22 milhões de números) já sabe
+  enxergar. A <b>cabeça</b> (uma camada de 384 × 37, cerca de 14 mil números) nasce do zero e
+  só serve para ler a descrição que o corpo produz e escolher a raça.</p>
+  <p>Cada parte recebe um passo de treino diferente: <code>1e-5</code> no corpo (pequeno, para
+  só ajustar) e <code>1e-3</code> na cabeça (grande, 100 vezes maior, porque ela precisa
+  aprender tudo). Na primeira época o corpo fica <b>congelado</b>, para a cabeça aprender a ler
+  antes de poder empurrar o corpo.</p>
+
+  <div class="caixa analogia">
+    <span class="rot">Analogia</span>
+    <p>É um especialista com 20 anos de estudo (o corpo) que passa a trabalhar com um estagiário
+    novo (a cabeça). No primeiro dia o estagiário erra tudo. Se o especialista mudar todo o
+    método dele por causa desses erros, ele se estraga. Então ele fica observando na primeira
+    semana, e só depois, quando o estagiário já acerta, começa a se ajustar de leve.</p>
+  </div>
+</section>
+
+<!-- ========================= 3 ========================= -->
+<section id="artefatos">
+  <h2><span class="n">03</span> &nbsp;Os artefatos</h2>
+  <h3>Cada peça do experimento, explicada</h3>
+  <p>Aqui estão todas as coisas que aparecem no experimento, uma por uma: o que é, qual papel
+  tem, e uma analogia.</p>
+
+  <div class="cards">
+
+    <div class="art">
+      <h4>DINOv2-Small</h4><span class="tipo">o foundation model</span>
+      <dl>
+        <dt>O que é</dt>
+        <dd>Um modelo de visão da Meta (Oquab et al., 2023, arXiv 2304.07193), do tipo Vision
+        Transformer. Tem 22,1 milhões de números, 12 blocos, bitola 384, quadradinho de 14×14
+        pixels e 6 &laquo;mesas de conversa&raquo; (cabeças de atenção) por bloco.</dd>
+        <dt>Como foi treinado</dt>
+        <dd>Em cerca de 142 milhões de imagens, <b>sem nenhuma etiqueta</b>. Ele aprendeu a
+        reconhecer que dois recortes diferentes vêm da mesma foto. Por isso sabe distinguir e
+        agrupar coisas, mas não sabe dar nomes.</dd>
+        <dt>Papel aqui</dt>
+        <dd class="s">É o objeto de estudo. As 72 matrizes dentro dele são o que a SVD vai
+        decompor.</dd>
+        <dt>Analogia</dt>
+        <dd>Um consultor que descreve qualquer imagem com precisão, mas que se recusa a dar
+        opinião. Mostra um gato e diz &laquo;pelo curto, laranja, orelha triangular&raquo;, nunca
+        &laquo;é um gato&raquo;.</dd>
+      </dl>
+    </div>
+
+    <div class="art">
+      <h4>Oxford-IIIT Pet</h4><span class="tipo">o dataset</span>
+      <dl>
+        <dt>O que é</dt>
+        <dd>Fotos de cães e gatos de 37 raças, cada uma etiquetada por uma pessoa com a raça
+        correta. Vem do artigo &laquo;Cats and Dogs&raquo; (Parkhi et al., CVPR 2012), da
+        Universidade de Oxford. Total de 7.349 fotos, das quais 3.680 usamos para treinar e
+        3.669 para testar.</dd>
+        <dt>Papel aqui</dt>
+        <dd class="s">É o que obriga o modelo a se mexer. A tarefa &laquo;identificar a raça&raquo;
+        é só um jeito barato e rápido de forçar uma mudança nos pesos, para podermos medir.</dd>
+        <dt>Por que este</dt>
+        <dd>Treina em menos de 2 minutos na sua GPU, então dá para errar e refazer no mesmo dia.
+        E é próximo do que o DINOv2 já viu, então sabemos o que esperar.</dd>
+        <dt>Analogia</dt>
+        <dd>É o peso de 1 kg da balança. Não interessa o peso em si, interessa saber se a
+        balança está certa.</dd>
+      </dl>
+    </div>
+
+    <div class="art">
+      <h4>Espelho do HuggingFace</h4><span class="tipo">a fonte dos dados</span>
+      <dl>
+        <dt>O que é</dt>
+        <dd>O mesmo Oxford-IIIT Pet, mas hospedado no HuggingFace (<code>timm/oxford-iiit-pet</code>)
+        em vez do servidor da universidade. Confirmado: 3.680 de treino, 3.669 de teste, 37
+        classes.</dd>
+        <dt>Por que existe</dt>
+        <dd class="s">O servidor original de Oxford entregava a 70 KB/s (cerca de 2 horas de
+        espera). O espelho entrega a 21 MB/s, mais de 300 vezes mais rápido.</dd>
+      </dl>
+    </div>
+
+    <div class="art">
+      <h4>A cabeça</h4><span class="tipo">a parte nova do modelo</span>
+      <dl>
+        <dt>O que é</dt>
+        <dd>Uma camada linear de 384 entradas para 37 saídas, colada em cima do <b>secretário</b>
+        (o token CLS, que resume a foto inteira).</dd>
+        <dt>Papel aqui</dt>
+        <dd class="s">Só traduz a descrição do corpo em uma raça. <b>Não entra na medição</b>:
+        ela não tem versão &laquo;antes&raquo; para comparar, porque nasce aleatória.</dd>
+        <dt>Analogia</dt>
+        <dd>O estagiário que ouve a descrição do consultor e chuta a raça.</dd>
+      </dl>
+    </div>
+
+    <div class="art">
+      <h4>model.safetensors e config.json</h4><span class="tipo">os arquivos do modelo</span>
+      <dl>
+        <dt>O que são</dt>
+        <dd>O <code>safetensors</code> (85 MB) guarda os números: 223 tabelas. O
+        <code>config.json</code> (547 bytes) guarda a receita: quantos blocos, que bitola, que
+        tamanho de quadradinho.</dd>
+        <dt>Papel aqui</dt>
+        <dd class="s">O <code>safetensors</code> é o dado experimental. Comparamos o de antes com o de depois.</dd>
+        <dt>Analogia</dt>
+        <dd>A planta da casa (<code>config.json</code>) e os móveis (<code>safetensors</code>).</dd>
+      </dl>
+    </div>
+
+    <div class="art">
+      <h4>As 72 matrizes</h4><span class="tipo">o que é medido</span>
+      <dl>
+        <dt>O que são</dt>
+        <dd>Seis matrizes por bloco, em 12 blocos: <code>query</code>, <code>key</code>,
+        <code>value</code>, <code>dense</code> (saída da atenção), <code>mlp.fc1</code> e
+        <code>mlp.fc2</code>. As quatro primeiras são da atenção (&laquo;a roda de conversa&raquo;),
+        as duas últimas são do MLP (&laquo;pensar sozinho depois da conversa&raquo;).</dd>
+        <dt>Por que só elas</dt>
+        <dd>São as únicas matrizes 2D dos blocos. Os biases e a cabeça ficam de fora.</dd>
+      </dl>
+    </div>
+
+    <div class="art">
+      <h4>SVD</h4><span class="tipo">a lupa</span>
+      <dl>
+        <dt>O que é</dt>
+        <dd>A decomposição que separa uma matriz em <b>direções</b> (vetores singulares: para
+        onde ela olha) e <b>pesos</b> (valores singulares: o quanto amplifica cada uma).</dd>
+        <dt>Papel aqui</dt>
+        <dd class="s">É o instrumento de medida. Aplicada antes e depois, permite perguntar se
+        mudou o peso ou a direção.</dd>
+        <dt>Analogia</dt>
+        <dd>Um equalizador de som com 384 controles. O vetor diz qual faixa cada controle
+        mexe, o sigma diz a que altura ele está.</dd>
+      </dl>
+    </div>
+
+    <div class="art">
+      <h4>Piso de ruído (segunda semente)</h4><span class="tipo">o controle</span>
+      <dl>
+        <dt>O que é</dt>
+        <dd>O mesmo treino, repetido, mudando só a semente aleatória (que altera a ordem das
+        fotos e o início da cabeça). Gera um segundo modelo igualmente bom.</dd>
+        <dt>Papel aqui</dt>
+        <dd class="s">Mostra o quanto os pesos mudam <b>só por acaso</b>. Todo efeito que
+        quisermos reportar precisa ser claramente maior que isso.</dd>
+        <dt>Analogia</dt>
+        <dd>Medir duas vezes a mesma mesa para saber o quanto a trena balança.</dd>
+      </dl>
+    </div>
+
+    <div class="art">
+      <h4>treinar.py e comparar.py</h4><span class="tipo">os scripts</span>
+      <dl>
+        <dt>treinar.py</dt>
+        <dd>Monta o modelo com a cabeça, baixa os dados, treina as 5 épocas e salva o
+        &laquo;depois&raquo; mais um <code>relatorio.json</code>. Aceita <code>--semente</code> e
+        <code>--saida</code>.</dd>
+        <dt>comparar.py</dt>
+        <dd>Lê dois <code>safetensors</code>, roda a SVD nas 72 matrizes e calcula quatro
+        medidas: deslocamento, variação dos valores, giro das direções e concentração. Grava em
+        JSON.</dd>
+      </dl>
+    </div>
+
+    <div class="art">
+      <h4>Os arquivos de resultado</h4><span class="tipo">a saída</span>
+      <dl>
+        <dt>O que são</dt>
+        <dd><code>resultado.json</code> (original vs semente 0), <code>resultado_s1.json</code>
+        (original vs semente 1) e <code>resultado_ruido.json</code> (semente 0 vs semente 1),
+        mais <code>relatorio.json</code> dentro de cada pasta de modelo, com a acurácia e os
+        parâmetros do treino.</dd>
+        <dt>Papel aqui</dt>
+        <dd class="s">Toda cifra desta página sai desses arquivos.</dd>
+      </dl>
+    </div>
+
+  </div>
+
+  <h4>As quatro medidas, em palavras simples</h4>
+  <div class="scroll"><table>
+    <thead><tr><th>Medida</th><th>Pergunta que responde</th></tr></thead>
+    <tbody>
+      <tr><td><code>deslocamento</code></td><td>A matriz se mexeu muito? É o tamanho da diferença entre antes e depois, em relação ao tamanho original.</td></tr>
+      <tr><td><code>variação dos valores</code></td><td>Os pesos das 10 direções principais mudaram? Em porcentagem.</td></tr>
+      <tr><td><code>giro</code></td><td>As direções principais apontam para outro lugar? Em graus. Usa o valor absoluto do cosseno, porque uma direção e a mesma invertida são idênticas.</td></tr>
+      <tr><td><code>concentração</code></td><td>Quanto da mudança caiu em mudar pesos, em vez de girar direções? Normalizada: 1 significa &laquo;indistinguível de uma mudança aleatória&raquo;, e quanto maior, mais concentrada.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ========================= 4 ========================= -->
+<section id="esperavamos">
+  <h2><span class="n">04</span> &nbsp;O que esperávamos</h2>
+  <h3>As expectativas que foram ditas antes de rodar</h3>
+  <p>Estas são as previsões que fizemos <b>antes</b> de executar, em conversa. Vale separar das
+  coisas que só descobrimos depois.</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th>Expectativa</th><th class="num">Previsto</th><th class="num">Aconteceu</th></tr></thead>
+    <tbody>
+      <tr><td>Acurácia antes de treinar (cabeça aleatória chutando entre 37 raças)</td><td class="num">≈ 2,7%</td><td class="num">2,1% e 1,8%</td></tr>
+      <tr><td>Acurácia depois de umas 5 épocas</td><td class="num">&gt; 90%</td><td class="num">94,2% e 94,3%</td></tr>
+      <tr><td>Tempo de treino</td><td class="num">minutos</td><td class="num">1,6 e 1,5 min</td></tr>
+      <tr><td>O corpo muda só &laquo;um pouquinho&raquo;</td><td class="num">pequeno</td><td class="num">≈ 0,5%</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="caixa aviso">
+    <span class="rot">O que não tínhamos como prever</span>
+    <p>Não havia aposta firme sobre <b>valores ou vetores</b>. Esse é justamente o objeto da
+    tese, e o experimento não foi desenhado para decidir isso. Também não esperávamos que a
+    primeira tentativa de treino destruísse o modelo.</p>
+  </div>
+</section>
+
+<!-- ========================= 5 ========================= -->
+<section id="resultados">
+  <h2><span class="n">05</span> &nbsp;O que aconteceu</h2>
+  <h3>Primeiro um treino que falhou, depois um que funcionou</h3>
+
+  <h4>Tentativa 1: o modelo foi destruído</h4>
+  <p>O corpo foi destravado desde o primeiro passo, com passo de treino <code>5e-5</code>.
+  A cabeça aleatória errava muito no começo, e esse erro empurrou o corpo com força antes de
+  ela aprender a ler.</p>
+<pre><code>época 1/5   acurácia 4,1%
+época 2/5   acurácia 5,2%
+época 3/5   acurácia 9,7%      (interrompido)</code></pre>
+
+  <p>O diagnóstico foi congelar o corpo por completo e treinar só uma regressão logística sobre
+  os 384 números do secretário. Deu <b>94,8%</b>. Isso provou que o corpo estava intacto e que o
+  problema era o método de treino, não o modelo nem os dados.</p>
+
+  <h4>Tentativa 2: congelar na primeira época, passo menor</h4>
+<pre><code>época 1/5  corpo travado   acurácia 91,6%
+época 2/5  corpo solto     acurácia 91,9%
+época 3/5  corpo solto     acurácia 93,9%
+época 4/5  corpo solto     acurácia 93,8%
+época 5/5  corpo solto     acurácia 94,2%     1,6 min</code></pre>
+
+  <div class="grid">
+    <div class="kpi ruim"><div class="v">2,1%</div><div class="k">acurácia antes<br>(semente 0)</div></div>
+    <div class="kpi ok2"><div class="v">94,2%</div><div class="k">acurácia depois<br>(semente 0)</div></div>
+    <div class="kpi ok2"><div class="v">94,3%</div><div class="k">acurácia depois<br>(semente 1)</div></div>
+    <div class="kpi acc"><div class="v">0,52%</div><div class="k">deslocamento médio<br>das 72 matrizes</div></div>
+    <div class="kpi acc"><div class="v">0,96°</div><div class="k">giro médio das<br>direções principais</div></div>
+  </div>
+
+  <h4>A medição, antes e depois, e o piso de ruído</h4>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th class="num">Deslocamento</th><th class="num">Giro</th><th class="num">Var. dos valores</th><th class="num">Concentração</th></tr></thead>
+    <tbody>
+      <tr><td>original → semente 0</td><td class="num">0,516%</td><td class="num">0,964°</td><td class="num">0,019%</td><td class="num">3,30</td></tr>
+      <tr><td>original → semente 1</td><td class="num">0,529%</td><td class="num">0,981°</td><td class="num">0,019%</td><td class="num">3,14</td></tr>
+      <tr><td>semente 0 → semente 1 (ruído)</td><td class="num">0,651%</td><td class="num">1,069°</td><td class="num">0,018%</td><td class="num">2,16</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Concentração por tipo de matriz</h4>
+  <div class="scroll"><table>
+    <thead><tr><th>Tipo</th><th class="num">Adaptação</th><th class="num">Ruído</th><th class="num">Razão</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td><code>mlp.fc2</code></td><td class="num">8,11</td><td class="num">4,16</td><td class="num">1,95×</td></tr>
+      <tr><td><code>mlp.fc1</code></td><td class="num">5,78</td><td class="num">4,06</td><td class="num">1,42×</td></tr>
+      <tr><td><code>query</code></td><td class="num">1,94</td><td class="num">1,44</td><td class="num">1,35×</td></tr>
+      <tr><td><code>key</code></td><td class="num">1,73</td><td class="num">1,29</td><td class="num">1,34×</td></tr>
+      <tr><td><code>value</code></td><td class="num">1,13</td><td class="num">1,01</td><td class="num">1,12×</td></tr>
+      <tr><td><code>dense</code></td><td class="num">1,09</td><td class="num">1,01</td><td class="num">1,08×</td></tr>
+    </tbody>
+  </table></div>
+  <p>As duas matrizes do MLP concentram a mudança nos valores singulares mais do que as da
+  atenção, e <code>mlp.fc2</code> chega a quase o dobro do ruído.</p>
+</section>
+
+<!-- ========================= 6 ========================= -->
+<section id="correcao">
+  <h2><span class="n">06</span> &nbsp;Uma correção</h2>
+  <h3>A leitura do piso de ruído que demos antes estava errada</h3>
+
+  <div class="caixa erro">
+    <span class="rot">O que foi dito, e estava errado</span>
+    <p>Depois da segunda semente, concluí que o deslocamento causado pelo treino era
+    &laquo;menor que o ruído&raquo; (razão 0,79×) e que, por isso, quatro dos cinco achados
+    &laquo;morreram&raquo;. Isso foi apresentado em <code>results.html</code> e nos arquivos de
+    aprendizado. <b>Essa conclusão foi forte demais.</b></p>
+  </div>
+
+  <h4>Onde está o erro</h4>
+  <p>O piso de ruído foi calculado como a diferença entre dois modelos treinados. Mas uma
+  diferença de duas coisas ruidosas é naturalmente maior que cada uma delas. Se os dois treinos
+  fossem totalmente independentes, essa diferença seria <b>1,41 vezes</b> maior (a raiz de 2).
+  Então comparar &laquo;diferença entre as duas rodadas&raquo; com &laquo;mudança de uma rodada&raquo;
+  coloca o ruído em desvantagem injusta.</p>
+
+  <div class="caixa analogia">
+    <span class="rot">Analogia</span>
+    <p>Duas pessoas tentam acertar o mesmo alvo. Cada uma erra em média 5 cm do centro. A
+    distância entre os dois acertos é maior que 5 cm, porque os dois erros se somam. Comparar
+    essa distância com os 5 cm de cada uma e dizer que o erro de cada uma &laquo;é menor que a
+    distância entre elas&raquo; não prova nada.</p>
+  </div>
+
+  <h4>O teste direto que deveria ter sido feito</h4>
+  <p>A pergunta correta é: as duas mudanças (semente 0 e semente 1) <b>apontam para o mesmo
+  lugar</b>? Se fossem puro acaso independente, o cosseno entre elas seria próximo de zero. Medi
+  nas 72 matrizes:</p>
+
+  <div class="grid">
+    <div class="kpi acc"><div class="v">0,22</div><div class="k">cosseno médio entre as<br>duas mudanças</div></div>
+    <div class="kpi"><div class="v">72 de 72</div><div class="k">matrizes com cosseno<br>positivo (mín. 0,035)</div></div>
+    <div class="kpi"><div class="v">1,25</div><div class="k">razão medida entre a<br>diferença e cada mudança<br>(independente daria 1,41)</div></div>
+  </div>
+
+  <div class="scroll"><table>
+    <thead><tr><th>Tipo</th><th class="num">Cosseno médio</th></tr></thead>
+    <tbody>
+      <tr><td><code>mlp.fc2</code></td><td class="num">0,253</td></tr>
+      <tr><td><code>value</code></td><td class="num">0,234</td></tr>
+      <tr><td><code>dense</code></td><td class="num">0,231</td></tr>
+      <tr><td><code>key</code></td><td class="num">0,215</td></tr>
+      <tr><td><code>query</code></td><td class="num">0,205</td></tr>
+      <tr><td><code>mlp.fc1</code></td><td class="num">0,189</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="caixa ok">
+    <span class="rot">A leitura correta</span>
+    <p>As duas rodadas <b>compartilham uma parte</b> da mudança. Algo como um quinto da mudança
+    de cada rodada é reprodutível (o sinal), e o resto, cerca de quatro quintos, é específico
+    de cada rodada (o ruído). Isso é diferente de &laquo;não é efeito da especialização&raquo;:
+    existe um efeito real, só que ele é a minoria do deslocamento total.</p>
+  </div>
+
+  <p>Na prática, isso significa que os cinco achados <b>não podem ser dados como mortos nem
+  como confirmados</b>. A comparação que eu fiz não tinha a calibragem certa para decidir.</p>
+</section>
+
+<!-- ========================= 7 ========================= -->
+<section id="afirmar">
+  <h2><span class="n">07</span> &nbsp;O que dá para afirmar</h2>
+  <h3>Separando o sólido do que ainda é aposta</h3>
+
+  <div class="scroll"><table>
+    <thead><tr><th>Afirmação</th><th>Situação</th><th>Por quê</th></tr></thead>
+    <tbody>
+      <tr><td>O modelo vira especialista (2% → 94%) mexendo pouco nos pesos</td><td class="sim">sólida</td><td>Medido em duas sementes, resultados quase idênticos (94,2% e 94,3%).</td></tr>
+      <tr><td>Treinar sem aquecimento destrói o modelo</td><td class="sim">sólida</td><td>9,7% contra 94,8% no diagnóstico, no mesmo modelo e nos mesmos dados.</td></tr>
+      <tr><td>Parte da mudança é reprodutível entre rodadas</td><td class="sim">sólida</td><td>Cosseno positivo nas 72 matrizes, média 0,22.</td></tr>
+      <tr><td>MLP e atenção se comportam diferente</td><td class="talvez">indício</td><td>Concentração de 8,1 e 5,8 contra 1,1 a 1,9, e 1,95× o ruído no <code>mlp.fc2</code>. Mas com só duas sementes e sem intervalo de confiança.</td></tr>
+      <tr><td>A mudança é mais rotação do que mudança de valores</td><td class="talvez">indício</td><td>Só 0,41% da energia cai na diagonal, mas o acaso já daria 0,065% a 0,26%, conforme o tamanho da matriz, e a medida de giro sofre com valores singulares colados.</td></tr>
+      <tr><td>O meio da rede muda mais que as pontas</td><td class="nao">não sustentada</td><td>Variação entre blocos é pequena e não foi comparada contra um piso calibrado.</td></tr>
+      <tr><td>&laquo;Valores&raquo; ou &laquo;vetores&raquo; mudam mais</td><td class="nao">não respondida</td><td>Não é o objetivo deste experimento. Precisa de domínio distante e do teste funcional.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Limitações que valem para tudo acima</h4>
+  <ul>
+    <li><b>Duas sementes</b> é o mínimo para existir um piso, não para ter confiança. Com três ou
+    mais dá para calcular uma variação.</li>
+    <li><b>O passo de treino foi escolhido por nós</b> (<code>1e-5</code>). Com passo maior o
+    deslocamento seria maior, então comparações precisam ser feitas com acurácia equiparada.</li>
+    <li><b>Um modelo, um dataset, um domínio próximo.</b> Nada aqui diz como isso se comporta
+    longe do que o DINOv2 já viu.</li>
+    <li><b>Valores singulares colados:</b> em 363 dos 720 pares vizinhos do topo (72 matrizes ×
+    10), dois valores estão a menos de 2% um do outro. Nesses casos a direção correspondente
+    fica mal definida e gira sozinha, o que contamina a medida de giro. A concentração não
+    sofre disso.</li>
+  </ul>
+</section>
+
+<!-- ========================= 8 ========================= -->
+<section id="proximo">
+  <h2><span class="n">08</span> &nbsp;Próximos passos</h2>
+  <h3>O que falta para esse experimento virar achado</h3>
+  <ol class="l">
+    <li><b>Mais sementes.</b> Treinar pelo menos 5 vezes e usar a variação entre elas como
+    piso, em vez de uma única diferença entre duas rodadas.</li>
+    <li><b>Teste funcional.</b> Devolver ao modelo só a parte diagonal da mudança (pesos) e depois
+    só a parte fora da diagonal (rotação), e medir a acurácia de cada uma. Isso transforma
+    uma afirmação geométrica em causal, e responde a pergunta da tese de forma direta.</li>
+    <li><b>Domínio distante.</b> Repetir tudo com imagem médica ou textura, e comparar o mapa de
+    concentração com o de raça de pet.</li>
+  </ol>
+</section>
+
+<footer>
+  Experimento 1, rodado em 28 de setembro de 2026 numa RTX 3060 de 12 GB. Os números vêm de
+  <code>doutorado/experimento1/resultado*.json</code> e dos <code>relatorio.json</code> de cada
+  pasta em <code>models/</code>. Os cossenos da seção 6 foram calculados diretamente sobre os
+  <code>safetensors</code>. Os detalhes completos estão em <code>results.html</code>, que ainda
+  traz a leitura anterior do piso de ruído.
+</footer>
+
+</div>
+</body>
+</html>

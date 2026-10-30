@@ -1,0 +1,26 @@
+<h4>O que ficou validado nesta etapa</h4>
+<ul>
+  <li><b>As restrições foram cumpridas de fato</b>, conferidas nos pesos materializados (<code>medir_variantes.py</code>): em <code>so_sigma</code> o conjunto de direções é preservado (direções preservadas [[A_SIG_PRES]]); em <code>so_rotacao</code> os valores singulares ficam intactos (|Δσ/σ| médio [[A_ROT_SALL]]%).</li>
+  <li><b>Comparação controlada</b>: mesmo domínio, mesmos dados e subamostra, mesmas 10 sementes, mesmo protocolo e mesmos parâmetros livres fora das 72 matrizes. Só a liberdade das 72 muda.</li>
+  <li><b>O passo dos parâmetros restritos foi escolhido por validação</b>, separada do treino; o teste só foi usado nas 10 sementes finais.</li>
+  <li>O procedimento é reproduzível pelo <code>reproduzir_etapa4.sh</code>, e cada treino tem log, relatório e ambiente registrado.</li>
+</ul>
+<h4>Problemas e limitações desta etapa</h4>
+<div class="caixa aviso"><span class="rot">Do desenho</span><ul>
+  <li><b>Orçamento igual em passos, não em parâmetros.</b> As variantes têm números de parâmetros livres muito diferentes ([[A_P_SIG]] em só σ, [[A_P_ROT]] em só rotação, 21,2 M no completo) e o mesmo número de atualizações. Uma comparação "a parâmetros iguais" exigiria, por exemplo, uma rotação com blocos menores ou um LoRA de posto baixo; não foi feita.</li>
+  <li><b>Só σ tem um teto estrutural neste desenho</b>: 384 graus de liberdade por matriz, sempre nas direções de W0. Métodos como SVDiff/SVF operam assim de propósito (é a aposta deles); mas um resultado fraco aqui não exclui variantes com mais liberdade espectral (por exemplo, treinar σ e um pequeno ajuste de posto baixo).</li>
+  <li><b>A rotação é bloco-diagonal (blocos de 32 linhas)</b> e aplicada só pela esquerda (R·W0): é a forma econômica de OFT, não a rotação geral. Ela não pode criar direções novas no espaço de entrada (V0), só recombinar as linhas de W0 dentro de cada bloco.</li>
+  <li><b>A validação dos pilotos foi avaliada com as transformações de treino</b> (recorte aleatório e espelhamento), porque o conjunto de validação foi recortado do objeto de treino sem trocar a transformação. Isso torna o acerto de validação ruidoso (a mesma rede dá valores diferentes em avaliações sucessivas, da ordem de 1 a 2 pontos; compare a última época com a avaliação final em 4.1). As escolhas de passo não dependem desse ruído (a vantagem do passo escolhido é maior que ele nas duas variantes), mas o número absoluto de validação não deve ser comparado com os de teste. Erro de implementação registrado, não corrigido retroativamente para não alterar a execução.</li>
+  <li><b>O passo escolhido para só σ está na borda da grade</b> (1e-2, o maior testado): o ótimo pode estar além. Para só rotação o escolhido (1e-4) está no interior (1e-3 colapsou).</li>
+  <li><b>Grade de passos pequena</b> (4 valores para σ, 3 para rotação) e escolhida com uma semente e 368 imagens de validação. A escolha pode estar subótima; o sinal entre variantes é grande o bastante para não depender disso, mas os valores absolutos podem.</li>
+  <li><b>5 épocas para todas as variantes.</b> Variantes com poucos parâmetros podem precisar de mais épocas (ou passos maiores) para convergir; a comparação é a orçamento fixo de atualizações, que é a condição prática da tese, não a de capacidade máxima.</li>
+</ul></div>
+<div class="caixa aviso"><span class="rot">Da execução</span><ul>
+  <li><b>Erro de CUDA no primeiro treino completo de só rotação.</b> A rotação foi parametrizada primeiro pela transformada de Cayley, R = (I + A)(I − A)⁻¹, resolvida com <code>torch.linalg.solve</code>. Os três pilotos com essa forma rodaram, mas o primeiro treino de 10 sementes caiu com <code>CUDA error: an illegal memory access</code> dentro do solver (log em <code>logs/reproduzir_etapa4_tentativa_cayley_FALHOU.log</code>). A rotação passou para a exponencial de matriz, R = exp(2A), que é igualmente ortogonal e coincide com Cayley até segunda ordem em A. <b>Os pilotos de rotação foram refeitos</b> com a nova forma (<code>piloto_so_rotacao_exp_lr*</code>) e são eles que escolhem o passo; os pilotos com Cayley ficaram guardados e não são usados. A única corrida com Cayley que havia começado não gerou modelo.</li>
+  <li>Dois scripts desta etapa foram gravados fora da pasta por engano e movidos antes de qualquer execução; e o primeiro lançamento da cadeia falhou por diferença de formato no nome das pastas dos pilotos (<code>1e-5</code> × <code>1e-05</code>), corrigida antes de qualquer treino final.</li>
+</ul></div>
+<div class="caixa aviso"><span class="rot">Da medição</span><ul>
+  <li><b>O subespaço top-10 não serve de sanidade para só σ</b>: ele compara os 10 primeiros de cada lado e acusa reordenação dos σ (a reponderação troca a ordem de σ vizinhos quase iguais) como se fosse giro. Por isso a sanidade usa "direções preservadas", que compara conjuntos.</li>
+  <li><b>Os números de "completo" vêm da etapa 3</b> (mesmas sementes e protocolo), não de um retreino; a GPU não é determinística (ver 2.2), então um retreino daria valores ligeiramente diferentes.</li>
+  <li>Herdadas da etapa 3: dataset sem proveniência documentada, classes desbalanceadas, subamostra de 3.680 imagens, um único modelo.</li>
+</ul></div>

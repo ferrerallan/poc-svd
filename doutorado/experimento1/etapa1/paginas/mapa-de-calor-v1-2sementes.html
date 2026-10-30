@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa de calor das 72 matrizes</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#fff; --ink:#1a1a1c; --ink2:#52535b; --ink3:#86868f;
+  --line:#e5e3de; --accent:#7a4bd0; --accent-bg:#f3edfd; --onacc:#fff;
+  --aviso:#8a5a00; --aviso-bg:#fdf3e1;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#141418; --card:#1d1d23; --ink:#ecebf1; --ink2:#a8a7b3; --ink3:#7c7b87;
+    --line:#2e2e36; --accent:#b699f5; --accent-bg:#26203a; --onacc:#16161a;
+    --aviso:#e6ab5b; --aviso-bg:#332a1b;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px 80px}
+header{padding:48px 0 18px}
+.kicker{font:600 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:31px;line-height:1.15;margin:13px 0 10px;letter-spacing:-.02em}
+.lede{font-size:17px;color:var(--ink2);margin:0;max-width:66ch}
+p{margin:0 0 13px;max-width:70ch}
+b{font-weight:650}
+code{font:13px/1.45 var(--mono);background:var(--accent-bg);border-radius:4px;padding:1.5px 5px}
+
+.controles{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 6px}
+.controles button{font:600 13px/1 inherit;color:var(--ink2);background:var(--card);
+  border:1px solid var(--line);border-radius:999px;padding:10px 16px;cursor:pointer}
+.controles button:hover{border-color:var(--accent);color:var(--accent)}
+.controles button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--onacc)}
+.explica{font-size:14.5px;color:var(--ink2);margin:8px 0 22px;max-width:75ch;min-height:44px}
+
+.mapas{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start}
+.mapa{flex:1 1 320px;min-width:300px}
+.mapa h3{font-size:16px;margin:0 0 2px}
+.mapa .sub{font:12px var(--mono);color:var(--ink3);margin:0 0 12px}
+.grade{display:grid;grid-template-columns:30px repeat(6,1fr);gap:3px}
+.cab{font:600 10px/1.2 var(--mono);color:var(--ink3);text-align:center;align-self:end;padding-bottom:3px}
+.grupo{font:700 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);
+  text-align:center;border-bottom:2px solid var(--accent);padding-bottom:4px;margin-bottom:2px}
+.lin{font:600 11px/30px var(--mono);color:var(--ink3);text-align:right;padding-right:6px}
+.cel{font:11px/30px var(--mono);text-align:center;border-radius:4px;border:1px solid var(--line);
+  color:var(--ink);cursor:default}
+.cel.forte{color:var(--onacc)}
+.med{margin-top:6px}
+.med .lin{color:var(--ink)}
+.med .cel{border-style:dashed;font-weight:700}
+
+.legenda{display:flex;align-items:center;gap:10px;margin:24px 0 6px;font:12px var(--mono);color:var(--ink3)}
+.degraus{display:flex;gap:4px}
+.deg{width:58px;text-align:center}
+.deg i{display:block;height:14px;border-radius:4px;border:1px solid var(--line);margin-bottom:3px}
+
+.caixa{border-radius:11px;padding:16px 19px;margin:20px 0;max-width:820px}
+.caixa>:last-child{margin-bottom:0}
+.rot{font:700 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:9px}
+.leia{background:var(--accent-bg)} .leia .rot{color:var(--accent)}
+.aviso{background:var(--aviso-bg)} .aviso .rot{color:var(--aviso)}
+.corr{font:700 15px var(--mono);color:var(--accent)}
+footer{padding:28px 0 0;color:var(--ink3);font-size:13px;border-top:1px solid var(--line);margin-top:36px;max-width:820px}
+@media (max-width:620px){h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Doutorado · Experimento 1 · Visualização</div>
+  <h1>Mapa de calor das 72 matrizes</h1>
+  <p class="lede">Cada quadradinho é uma matriz do DINOv2. Quanto mais escura a cor, maior o valor
+  daquela medida. Os três mapas usam a mesma escala, então dá para comparar as cores entre eles.</p>
+</header>
+
+<div class="controles" id="controles" role="group" aria-label="Escolha a medida"></div>
+<p class="explica" id="explica"></p>
+
+<div class="mapas" id="mapas"></div>
+
+<div class="legenda"><div class="degraus" id="degraus"></div></div>
+<p class="sub" style="font:12px var(--mono);color:var(--ink3);margin:0 0 4px">
+  Escala em raiz quadrada: realça diferenças pequenas. Os valores abaixo de cada tom são os reais.</p>
+
+<div class="caixa leia">
+  <span class="rot">Como ler</span>
+  <p><b>Linhas:</b> os 12 blocos. O bloco 0 está no começo da rede, perto da foto crua, e o 11 está no
+  fim, perto da cabeça. <b>Colunas:</b> o tipo de matriz. As quatro primeiras são da atenção (a roda
+  de conversa), as duas últimas são do MLP (pensar sozinho). A linha tracejada embaixo é a média de
+  cada coluna.</p>
+  <p><b>Os três mapas:</b> o primeiro compara o modelo original com o treino 1, o segundo com o
+  treino 2, e o terceiro compara o treino 1 com o treino 2. Esse terceiro é o <b>piso de ruído</b>:
+  o que muda só por acaso entre duas rodadas.</p>
+</div>
+
+<div class="caixa aviso">
+  <span class="rot">Cuidado ao interpretar</span>
+  <p>Os dois primeiros mapas são quase iguais (correlação <span class="corr" id="corr">–</span>
+  entre as 72 células). <b>Isso não prova que o padrão é reprodutível</b>, porque o mapa de ruído, o
+  terceiro, mostra o <b>mesmo desenho</b> por tipo de matriz, só com cores mais claras.</p>
+  <p id="nota-especifica"></p>
+</div>
+
+<footer>
+  Dados reais de <code>resultado.json</code>, <code>resultado_s1.json</code> e
+  <code>resultado_ruido.json</code>, embutidos nesta página. Duas sementes bastam para existir um piso
+  de ruído, mas não para ter confiança estatística.
+</footer>
+
+</div>
+
+<script>
+const DADOS = {"s0":[{"b":0,"t":"dense","concentracao":1.03,"giro":0.716,"deslocamento":0.574,"variacao":0.028},{"b":0,"t":"key","concentracao":4.64,"giro":0.333,"deslocamento":0.366,"variacao":0.031},{"b":0,"t":"mlp.fc1","concentracao":6.79,"giro":0.603,"deslocamento":0.48,"variacao":0.015},{"b":0,"t":"mlp.fc2","concentracao":5.27,"giro":0.602,"deslocamento":0.589,"variacao":0.007},{"b":0,"t":"query","concentracao":5.09,"giro":0.534,"deslocamento":0.381,"variacao":0.034},{"b":0,"t":"value","concentracao":1.24,"giro":0.99,"deslocamento":0.476,"variacao":0.02},{"b":1,"t":"dense","concentracao":1.01,"giro":0.796,"deslocamento":0.588,"variacao":0.027},{"b":1,"t":"key","concentracao":2.62,"giro":0.336,"deslocamento":0.339,"variacao":0.023},{"b":1,"t":"mlp.fc1","concentracao":5.43,"giro":0.775,"deslocamento":0.559,"variacao":0.015},{"b":1,"t":"mlp.fc2","concentracao":4.57,"giro":0.714,"deslocamento":0.689,"variacao":0.009},{"b":1,"t":"query","concentracao":2.77,"giro":1.036,"deslocamento":0.335,"variacao":0.026},{"b":1,"t":"value","concentracao":1.06,"giro":0.88,"deslocamento":0.559,"variacao":0.017},{"b":2,"t":"dense","concentracao":1.13,"giro":0.664,"deslocamento":0.606,"variacao":0.013},{"b":2,"t":"key","concentracao":2.28,"giro":0.503,"deslocamento":0.402,"variacao":0.022},{"b":2,"t":"mlp.fc1","concentracao":5.9,"giro":0.85,"deslocamento":0.602,"variacao":0.02},{"b":2,"t":"mlp.fc2","concentracao":5.19,"giro":1.001,"deslocamento":0.691,"variacao":0.017},{"b":2,"t":"query","concentracao":2.16,"giro":0.355,"deslocamento":0.404,"variacao":0.019},{"b":2,"t":"value","concentracao":1.25,"giro":0.573,"deslocamento":0.567,"variacao":0.025},{"b":3,"t":"dense","concentracao":1.1,"giro":1.534,"deslocamento":0.635,"variacao":0.021},{"b":3,"t":"key","concentracao":1.52,"giro":1.591,"deslocamento":0.428,"variacao":0.023},{"b":3,"t":"mlp.fc1","concentracao":6.18,"giro":0.605,"deslocamento":0.616,"variacao":0.013},{"b":3,"t":"mlp.fc2","concentracao":5.66,"giro":1.631,"deslocamento":0.699,"variacao":0.021},{"b":3,"t":"query","concentracao":1.38,"giro":2.303,"deslocamento":0.427,"variacao":0.025},{"b":3,"t":"value","concentracao":1.15,"giro":0.849,"deslocamento":0.593,"variacao":0.014},{"b":4,"t":"dense","concentracao":1.07,"giro":1.455,"deslocamento":0.64,"variacao":0.015},{"b":4,"t":"key","concentracao":1.36,"giro":0.629,"deslocamento":0.436,"variacao":0.018},{"b":4,"t":"mlp.fc1","concentracao":6.75,"giro":0.58,"deslocamento":0.608,"variacao":0.01},{"b":4,"t":"mlp.fc2","concentracao":5.31,"giro":1.208,"deslocamento":0.656,"variacao":0.018},{"b":4,"t":"query","concentracao":1.43,"giro":1.325,"deslocamento":0.422,"variacao":0.026},{"b":4,"t":"value","concentracao":1.15,"giro":0.711,"deslocamento":0.599,"variacao":0.023},{"b":5,"t":"dense","concentracao":1.07,"giro":1.239,"deslocamento":0.627,"variacao":0.009},{"b":5,"t":"key","concentracao":1.07,"giro":0.747,"deslocamento":0.462,"variacao":0.022},{"b":5,"t":"mlp.fc1","concentracao":4.27,"giro":0.521,"deslocamento":0.587,"variacao":0.012},{"b":5,"t":"mlp.fc2","concentracao":5.72,"giro":1.365,"deslocamento":0.658,"variacao":0.03},{"b":5,"t":"query","concentracao":1.35,"giro":0.517,"deslocamento":0.439,"variacao":0.02},{"b":5,"t":"value","concentracao":1.18,"giro":1.382,"deslocamento":0.576,"variacao":0.015},{"b":6,"t":"dense","concentracao":1.13,"giro":0.746,"deslocamento":0.607,"variacao":0.014},{"b":6,"t":"key","concentracao":1.74,"giro":2.692,"deslocamento":0.444,"variacao":0.034},{"b":6,"t":"mlp.fc1","concentracao":5.6,"giro":0.635,"deslocamento":0.579,"variacao":0.009},{"b":6,"t":"mlp.fc2","concentracao":6.14,"giro":1.852,"deslocamento":0.619,"variacao":0.026},{"b":6,"t":"query","concentracao":2.44,"giro":3.615,"deslocamento":0.429,"variacao":0.05},{"b":6,"t":"value","concentracao":1.17,"giro":0.96,"deslocamento":0.569,"variacao":0.014},{"b":7,"t":"dense","concentracao":1.19,"giro":0.692,"deslocamento":0.563,"variacao":0.016},{"b":7,"t":"key","concentracao":1.12,"giro":0.719,"deslocamento":0.451,"variacao":0.017},{"b":7,"t":"mlp.fc1","concentracao":5.86,"giro":0.967,"deslocamento":0.568,"variacao":0.017},{"b":7,"t":"mlp.fc2","concentracao":4.61,"giro":0.685,"deslocamento":0.598,"variacao":0.018},{"b":7,"t":"query","concentracao":1.33,"giro":1.808,"deslocamento":0.427,"variacao":0.021},{"b":7,"t":"value","concentracao":1.16,"giro":2.161,"deslocamento":0.539,"variacao":0.017},{"b":8,"t":"dense","concentracao":1.03,"giro":0.787,"deslocamento":0.54,"variacao":0.012},{"b":8,"t":"key","concentracao":1.26,"giro":0.604,"deslocamento":0.435,"variacao":0.018},{"b":8,"t":"mlp.fc1","concentracao":6.01,"giro":1.053,"deslocamento":0.53,"variacao":0.013},{"b":8,"t":"mlp.fc2","concentracao":4.87,"giro":0.999,"deslocamento":0.549,"variacao":0.023},{"b":8,"t":"query","concentracao":1.16,"giro":0.703,"deslocamento":0.419,"variacao":0.013},{"b":8,"t":"value","concentracao":1.05,"giro":1.048,"deslocamento":0.528,"variacao":0.012},{"b":9,"t":"dense","concentracao":1.0,"giro":1.012,"deslocamento":0.497,"variacao":0.012},{"b":9,"t":"key","concentracao":1.06,"giro":0.702,"deslocamento":0.428,"variacao":0.012},{"b":9,"t":"mlp.fc1","concentracao":5.57,"giro":0.876,"deslocamento":0.51,"variacao":0.014},{"b":9,"t":"mlp.fc2","concentracao":8.55,"giro":1.16,"deslocamento":0.521,"variacao":0.029},{"b":9,"t":"query","concentracao":1.05,"giro":0.565,"deslocamento":0.413,"variacao":0.01},{"b":9,"t":"value","concentracao":1.05,"giro":0.602,"deslocamento":0.515,"variacao":0.015},{"b":10,"t":"dense","concentracao":1.09,"giro":0.702,"deslocamento":0.498,"variacao":0.012},{"b":10,"t":"key","concentracao":1.02,"giro":0.456,"deslocamento":0.435,"variacao":0.019},{"b":10,"t":"mlp.fc1","concentracao":5.98,"giro":1.115,"deslocamento":0.497,"variacao":0.018},{"b":10,"t":"mlp.fc2","concentracao":11.34,"giro":0.822,"deslocamento":0.474,"variacao":0.027},{"b":10,"t":"query","concentracao":1.3,"giro":0.562,"deslocamento":0.417,"variacao":0.018},{"b":10,"t":"value","concentracao":1.0,"giro":0.756,"deslocamento":0.486,"variacao":0.017},{"b":11,"t":"dense","concentracao":1.27,"giro":0.581,"deslocamento":0.421,"variacao":0.015},{"b":11,"t":"key","concentracao":1.02,"giro":0.423,"deslocamento":0.492,"variacao":0.008},{"b":11,"t":"mlp.fc1","concentracao":5.06,"giro":0.502,"deslocamento":0.526,"variacao":0.011},{"b":11,"t":"mlp.fc2","concentracao":30.12,"giro":0.622,"deslocamento":0.441,"variacao":0.036},{"b":11,"t":"query","concentracao":1.77,"giro":1.288,"deslocamento":0.479,"variacao":0.03},{"b":11,"t":"value","concentracao":1.05,"giro":1.461,"deslocamento":0.418,"variacao":0.01}],"s1":[{"b":0,"t":"dense","concentracao":1.34,"giro":0.668,"deslocamento":0.585,"variacao":0.034},{"b":0,"t":"key","concentracao":4.45,"giro":0.344,"deslocamento":0.361,"variacao":0.035},{"b":0,"t":"mlp.fc1","concentracao":5.4,"giro":0.599,"deslocamento":0.498,"variacao":0.013},{"b":0,"t":"mlp.fc2","concentracao":5.31,"giro":0.706,"deslocamento":0.609,"variacao":0.012},{"b":0,"t":"query","concentracao":4.49,"giro":0.309,"deslocamento":0.383,"variacao":0.024},{"b":0,"t":"value","concentracao":1.38,"giro":1.269,"deslocamento":0.502,"variacao":0.023},{"b":1,"t":"dense","concentracao":1.17,"giro":1.158,"deslocamento":0.599,"variacao":0.026},{"b":1,"t":"key","concentracao":2.81,"giro":0.487,"deslocamento":0.342,"variacao":0.028},{"b":1,"t":"mlp.fc1","concentracao":5.56,"giro":1.134,"deslocamento":0.571,"variacao":0.021},{"b":1,"t":"mlp.fc2","concentracao":5.25,"giro":0.631,"deslocamento":0.706,"variacao":0.021},{"b":1,"t":"query","concentracao":2.01,"giro":0.93,"deslocamento":0.341,"variacao":0.023},{"b":1,"t":"value","concentracao":0.98,"giro":1.417,"deslocamento":0.574,"variacao":0.021},{"b":2,"t":"dense","concentracao":0.98,"giro":0.823,"deslocamento":0.61,"variacao":0.018},{"b":2,"t":"key","concentracao":1.71,"giro":0.703,"deslocamento":0.408,"variacao":0.021},{"b":2,"t":"mlp.fc1","concentracao":6.37,"giro":0.741,"deslocamento":0.61,"variacao":0.028},{"b":2,"t":"mlp.fc2","concentracao":4.98,"giro":1.377,"deslocamento":0.697,"variacao":0.012},{"b":2,"t":"query","concentracao":1.72,"giro":0.403,"deslocamento":0.41,"variacao":0.015},{"b":2,"t":"value","concentracao":1.25,"giro":0.791,"deslocamento":0.577,"variacao":0.023},{"b":3,"t":"dense","concentracao":1.19,"giro":0.9,"deslocamento":0.645,"variacao":0.02},{"b":3,"t":"key","concentracao":1.61,"giro":1.288,"deslocamento":0.437,"variacao":0.031},{"b":3,"t":"mlp.fc1","concentracao":6.18,"giro":0.471,"deslocamento":0.63,"variacao":0.02},{"b":3,"t":"mlp.fc2","concentracao":5.64,"giro":2.766,"deslocamento":0.712,"variacao":0.03},{"b":3,"t":"query","concentracao":1.06,"giro":3.993,"deslocamento":0.435,"variacao":0.01},{"b":3,"t":"value","concentracao":0.99,"giro":0.763,"deslocamento":0.604,"variacao":0.014},{"b":4,"t":"dense","concentracao":1.18,"giro":0.917,"deslocamento":0.648,"variacao":0.027},{"b":4,"t":"key","concentracao":1.59,"giro":1.269,"deslocamento":0.452,"variacao":0.026},{"b":4,"t":"mlp.fc1","concentracao":5.65,"giro":0.892,"deslocamento":0.617,"variacao":0.013},{"b":4,"t":"mlp.fc2","concentracao":5.18,"giro":0.897,"deslocamento":0.682,"variacao":0.022},{"b":4,"t":"query","concentracao":1.58,"giro":1.563,"deslocamento":0.438,"variacao":0.028},{"b":4,"t":"value","concentracao":1.21,"giro":0.649,"deslocamento":0.612,"variacao":0.019},{"b":5,"t":"dense","concentracao":1.28,"giro":1.52,"deslocamento":0.638,"variacao":0.017},{"b":5,"t":"key","concentracao":1.11,"giro":0.652,"deslocamento":0.468,"variacao":0.02},{"b":5,"t":"mlp.fc1","concentracao":4.13,"giro":0.644,"deslocamento":0.599,"variacao":0.011},{"b":5,"t":"mlp.fc2","concentracao":6.13,"giro":1.011,"deslocamento":0.673,"variacao":0.029},{"b":5,"t":"query","concentracao":1.14,"giro":0.698,"deslocamento":0.442,"variacao":0.016},{"b":5,"t":"value","concentracao":1.18,"giro":1.196,"deslocamento":0.583,"variacao":0.019},{"b":6,"t":"dense","concentracao":1.16,"giro":0.919,"deslocamento":0.615,"variacao":0.013},{"b":6,"t":"key","concentracao":1.82,"giro":1.46,"deslocamento":0.449,"variacao":0.032},{"b":6,"t":"mlp.fc1","concentracao":5.71,"giro":0.543,"deslocamento":0.592,"variacao":0.014},{"b":6,"t":"mlp.fc2","concentracao":5.04,"giro":1.61,"deslocamento":0.632,"variacao":0.012},{"b":6,"t":"query","concentracao":1.65,"giro":2.184,"deslocamento":0.432,"variacao":0.03},{"b":6,"t":"value","concentracao":1.11,"giro":1.453,"deslocamento":0.577,"variacao":0.017},{"b":7,"t":"dense","concentracao":1.17,"giro":0.744,"deslocamento":0.581,"variacao":0.012},{"b":7,"t":"key","concentracao":1.22,"giro":1.121,"deslocamento":0.474,"variacao":0.014},{"b":7,"t":"mlp.fc1","concentracao":4.88,"giro":0.83,"deslocamento":0.581,"variacao":0.014},{"b":7,"t":"mlp.fc2","concentracao":4.44,"giro":0.68,"deslocamento":0.612,"variacao":0.018},{"b":7,"t":"query","concentracao":1.29,"giro":1.925,"deslocamento":0.44,"variacao":0.024},{"b":7,"t":"value","concentracao":1.18,"giro":1.25,"deslocamento":0.553,"variacao":0.012},{"b":8,"t":"dense","concentracao":1.19,"giro":0.499,"deslocamento":0.558,"variacao":0.014},{"b":8,"t":"key","concentracao":1.18,"giro":0.613,"deslocamento":0.457,"variacao":0.009},{"b":8,"t":"mlp.fc1","concentracao":6.23,"giro":0.797,"deslocamento":0.554,"variacao":0.02},{"b":8,"t":"mlp.fc2","concentracao":4.84,"giro":0.997,"deslocamento":0.571,"variacao":0.019},{"b":8,"t":"query","concentracao":1.27,"giro":0.929,"deslocamento":0.437,"variacao":0.014},{"b":8,"t":"value","concentracao":1.12,"giro":0.749,"deslocamento":0.538,"variacao":0.011},{"b":9,"t":"dense","concentracao":1.13,"giro":0.819,"deslocamento":0.515,"variacao":0.014},{"b":9,"t":"key","concentracao":1.27,"giro":0.659,"deslocamento":0.439,"variacao":0.015},{"b":9,"t":"mlp.fc1","concentracao":5.46,"giro":0.764,"deslocamento":0.529,"variacao":0.012},{"b":9,"t":"mlp.fc2","concentracao":6.11,"giro":1.247,"deslocamento":0.538,"variacao":0.02},{"b":9,"t":"query","concentracao":0.89,"giro":0.859,"deslocamento":0.418,"variacao":0.01},{"b":9,"t":"value","concentracao":1.11,"giro":0.486,"deslocamento":0.534,"variacao":0.013},{"b":10,"t":"dense","concentracao":1.25,"giro":1.254,"deslocamento":0.511,"variacao":0.016},{"b":10,"t":"key","concentracao":1.16,"giro":0.507,"deslocamento":0.451,"variacao":0.013},{"b":10,"t":"mlp.fc1","concentracao":5.54,"giro":1.002,"deslocamento":0.515,"variacao":0.013},{"b":10,"t":"mlp.fc2","concentracao":11.85,"giro":0.888,"deslocamento":0.484,"variacao":0.031},{"b":10,"t":"query","concentracao":1.11,"giro":0.572,"deslocamento":0.429,"variacao":0.017},{"b":10,"t":"value","concentracao":1.08,"giro":0.963,"deslocamento":0.499,"variacao":0.017},{"b":11,"t":"dense","concentracao":1.27,"giro":0.682,"deslocamento":0.434,"variacao":0.011},{"b":11,"t":"key","concentracao":1.02,"giro":0.753,"deslocamento":0.504,"variacao":0.01},{"b":11,"t":"mlp.fc1","concentracao":4.5,"giro":0.368,"deslocamento":0.546,"variacao":0.011},{"b":11,"t":"mlp.fc2","concentracao":27.43,"giro":0.611,"deslocamento":0.455,"variacao":0.036},{"b":11,"t":"query","concentracao":1.21,"giro":0.909,"deslocamento":0.512,"variacao":0.028},{"b":11,"t":"value","concentracao":1.31,"giro":1.418,"deslocamento":0.435,"variacao":0.015}],"ruido":[{"b":0,"t":"dense","concentracao":1.09,"giro":0.584,"deslocamento":0.769,"variacao":0.032},{"b":0,"t":"key","concentracao":3.29,"giro":0.33,"deslocamento":0.471,"variacao":0.027},{"b":0,"t":"mlp.fc1","concentracao":4.37,"giro":0.646,"deslocamento":0.68,"variacao":0.012},{"b":0,"t":"mlp.fc2","concentracao":4.59,"giro":0.898,"deslocamento":0.798,"variacao":0.015},{"b":0,"t":"query","concentracao":4.56,"giro":0.565,"deslocamento":0.524,"variacao":0.03},{"b":0,"t":"value","concentracao":1.3,"giro":0.779,"deslocamento":0.636,"variacao":0.028},{"b":1,"t":"dense","concentracao":1.0,"giro":1.012,"deslocamento":0.815,"variacao":0.019},{"b":1,"t":"key","concentracao":1.17,"giro":0.43,"deslocamento":0.467,"variacao":0.017},{"b":1,"t":"mlp.fc1","concentracao":3.95,"giro":1.121,"deslocamento":0.773,"variacao":0.017},{"b":1,"t":"mlp.fc2","concentracao":4.54,"giro":0.672,"deslocamento":0.924,"variacao":0.02},{"b":1,"t":"query","concentracao":1.41,"giro":0.409,"deslocamento":0.466,"variacao":0.018},{"b":1,"t":"value","concentracao":0.98,"giro":1.416,"deslocamento":0.775,"variacao":0.028},{"b":2,"t":"dense","concentracao":0.96,"giro":0.714,"deslocamento":0.787,"variacao":0.015},{"b":2,"t":"key","concentracao":1.26,"giro":0.57,"deslocamento":0.526,"variacao":0.024},{"b":2,"t":"mlp.fc1","concentracao":3.61,"giro":0.933,"deslocamento":0.81,"variacao":0.014},{"b":2,"t":"mlp.fc2","concentracao":4.51,"giro":1.129,"deslocamento":0.894,"variacao":0.017},{"b":2,"t":"query","concentracao":1.23,"giro":0.542,"deslocamento":0.538,"variacao":0.014},{"b":2,"t":"value","concentracao":0.93,"giro":0.799,"deslocamento":0.737,"variacao":0.015},{"b":3,"t":"dense","concentracao":1.12,"giro":1.467,"deslocamento":0.806,"variacao":0.013},{"b":3,"t":"key","concentracao":1.12,"giro":1.727,"deslocamento":0.563,"variacao":0.023},{"b":3,"t":"mlp.fc1","concentracao":4.0,"giro":0.678,"deslocamento":0.812,"variacao":0.013},{"b":3,"t":"mlp.fc2","concentracao":4.29,"giro":2.566,"deslocamento":0.873,"variacao":0.028},{"b":3,"t":"query","concentracao":1.28,"giro":2.397,"deslocamento":0.555,"variacao":0.026},{"b":3,"t":"value","concentracao":0.95,"giro":0.913,"deslocamento":0.75,"variacao":0.022},{"b":4,"t":"dense","concentracao":0.93,"giro":1.271,"deslocamento":0.807,"variacao":0.018},{"b":4,"t":"key","concentracao":1.16,"giro":1.288,"deslocamento":0.573,"variacao":0.027},{"b":4,"t":"mlp.fc1","concentracao":4.16,"giro":1.115,"deslocamento":0.791,"variacao":0.015},{"b":4,"t":"mlp.fc2","concentracao":4.07,"giro":1.297,"deslocamento":0.838,"variacao":0.021},{"b":4,"t":"query","concentracao":1.21,"giro":1.604,"deslocamento":0.562,"variacao":0.024},{"b":4,"t":"value","concentracao":0.98,"giro":0.801,"deslocamento":0.754,"variacao":0.016},{"b":5,"t":"dense","concentracao":1.13,"giro":1.861,"deslocamento":0.795,"variacao":0.014},{"b":5,"t":"key","concentracao":0.97,"giro":0.915,"deslocamento":0.618,"variacao":0.024},{"b":5,"t":"mlp.fc1","concentracao":3.54,"giro":0.664,"deslocamento":0.741,"variacao":0.011},{"b":5,"t":"mlp.fc2","concentracao":4.04,"giro":1.127,"deslocamento":0.804,"variacao":0.013},{"b":5,"t":"query","concentracao":1.02,"giro":0.741,"deslocamento":0.587,"variacao":0.018},{"b":5,"t":"value","concentracao":0.87,"giro":1.483,"deslocamento":0.723,"variacao":0.015},{"b":6,"t":"dense","concentracao":1.0,"giro":1.235,"deslocamento":0.731,"variacao":0.011},{"b":6,"t":"key","concentracao":1.28,"giro":3.088,"deslocamento":0.551,"variacao":0.028},{"b":6,"t":"mlp.fc1","concentracao":4.38,"giro":0.866,"deslocamento":0.724,"variacao":0.014},{"b":6,"t":"mlp.fc2","concentracao":3.87,"giro":2.128,"deslocamento":0.733,"variacao":0.015},{"b":6,"t":"query","concentracao":1.31,"giro":2.477,"deslocamento":0.532,"variacao":0.039},{"b":6,"t":"value","concentracao":0.95,"giro":1.813,"deslocamento":0.686,"variacao":0.014},{"b":7,"t":"dense","concentracao":0.92,"giro":0.877,"deslocamento":0.69,"variacao":0.015},{"b":7,"t":"key","concentracao":1.13,"giro":0.758,"deslocamento":0.576,"variacao":0.024},{"b":7,"t":"mlp.fc1","concentracao":4.15,"giro":1.047,"deslocamento":0.697,"variacao":0.02},{"b":7,"t":"mlp.fc2","concentracao":3.33,"giro":0.521,"deslocamento":0.694,"variacao":0.011},{"b":7,"t":"query","concentracao":1.16,"giro":1.634,"deslocamento":0.541,"variacao":0.028},{"b":7,"t":"value","concentracao":1.1,"giro":2.197,"deslocamento":0.663,"variacao":0.016},{"b":8,"t":"dense","concentracao":1.07,"giro":0.821,"deslocamento":0.635,"variacao":0.013},{"b":8,"t":"key","concentracao":1.09,"giro":0.748,"deslocamento":0.542,"variacao":0.017},{"b":8,"t":"mlp.fc1","concentracao":4.18,"giro":0.928,"deslocamento":0.647,"variacao":0.014},{"b":8,"t":"mlp.fc2","concentracao":3.31,"giro":1.12,"deslocamento":0.636,"variacao":0.015},{"b":8,"t":"query","concentracao":0.97,"giro":0.938,"deslocamento":0.517,"variacao":0.016},{"b":8,"t":"value","concentracao":0.96,"giro":0.858,"deslocamento":0.625,"variacao":0.013},{"b":9,"t":"dense","concentracao":0.9,"giro":0.985,"deslocamento":0.584,"variacao":0.009},{"b":9,"t":"key","concentracao":1.02,"giro":1.096,"deslocamento":0.518,"variacao":0.012},{"b":9,"t":"mlp.fc1","concentracao":4.18,"giro":0.829,"deslocamento":0.615,"variacao":0.013},{"b":9,"t":"mlp.fc2","concentracao":5.48,"giro":1.062,"deslocamento":0.599,"variacao":0.017},{"b":9,"t":"query","concentracao":0.85,"giro":0.896,"deslocamento":0.491,"variacao":0.013},{"b":9,"t":"value","concentracao":1.06,"giro":0.58,"deslocamento":0.611,"variacao":0.009},{"b":10,"t":"dense","concentracao":1.07,"giro":1.133,"deslocamento":0.591,"variacao":0.014},{"b":10,"t":"key","concentracao":1.04,"giro":0.643,"deslocamento":0.511,"variacao":0.018},{"b":10,"t":"mlp.fc1","concentracao":4.09,"giro":0.972,"deslocamento":0.602,"variacao":0.008},{"b":10,"t":"mlp.fc2","concentracao":3.98,"giro":0.899,"deslocamento":0.552,"variacao":0.015},{"b":10,"t":"query","concentracao":1.12,"giro":0.708,"deslocamento":0.489,"variacao":0.026},{"b":10,"t":"value","concentracao":1.04,"giro":0.952,"deslocamento":0.578,"variacao":0.007},{"b":11,"t":"dense","concentracao":0.97,"giro":0.807,"deslocamento":0.521,"variacao":0.008},{"b":11,"t":"key","concentracao":0.91,"giro":0.525,"deslocamento":0.538,"variacao":0.009},{"b":11,"t":"mlp.fc1","concentracao":4.15,"giro":0.468,"deslocamento":0.704,"variacao":0.007},{"b":11,"t":"mlp.fc2","concentracao":3.91,"giro":0.769,"deslocamento":0.565,"variacao":0.01},{"b":11,"t":"query","concentracao":1.11,"giro":0.969,"deslocamento":0.529,"variacao":0.023},{"b":11,"t":"value","concentracao":0.98,"giro":1.18,"deslocamento":0.52,"variacao":0.017}]};
+const TIPOS = [
+  ["query","query"],["key","key"],["value","value"],["dense","dense"],
+  ["mlp.fc1","fc1"],["mlp.fc2","fc2"]
+];
+const RUNS = [
+  {id:"s0",    nome:"Treino 1",       sub:"original → semente 0"},
+  {id:"s1",    nome:"Treino 2",       sub:"original → semente 1"},
+  {id:"ruido", nome:"Piso de ruído",  sub:"treino 1 → treino 2"}
+];
+const MEDIDAS = {
+  concentracao:{nome:"Concentração", casas:1, un:"",
+    txt:"Quanto da mudança caiu em mexer nos pesos das direções (valores singulares), comparado ao que o acaso daria. 1 significa indistinguível de uma mudança aleatória. Quanto maior, mais concentrada."},
+  giro:{nome:"Giro", casas:2, un:"°",
+    txt:"Quanto as 10 direções principais giraram, em graus, entre a versão de antes e a de depois."},
+  deslocamento:{nome:"Deslocamento", casas:2, un:"%",
+    txt:"Quanto a matriz inteira andou, em relação ao tamanho dela."},
+  variacao:{nome:"Variação dos pesos", casas:3, un:"%",
+    txt:"Quanto mudaram os pesos (valores singulares) das 10 direções principais, em porcentagem."}
+};
+let atual = "concentracao";
+
+function celula(run, b, t){ return DADOS[run].find(d => d.b===b && d.t===t); }
+function media(arr){ return arr.reduce((a,x)=>a+x,0)/arr.length; }
+function pearson(a,b){
+  const ma=media(a), mb=media(b); let n=0,da=0,db=0;
+  for(let i=0;i<a.length;i++){ n+=(a[i]-ma)*(b[i]-mb); da+=(a[i]-ma)**2; db+=(b[i]-mb)**2; }
+  return n/Math.sqrt(da*db);
+}
+
+function pintar(el, v, mn, mx){
+  const t = mx>mn ? Math.sqrt((v-mn)/(mx-mn)) : 0;
+  el.style.background = `color-mix(in srgb, var(--accent) ${Math.round(t*100)}%, var(--card))`;
+  if(t>0.55) el.classList.add("forte");
+}
+
+function desenhar(){
+  const m = MEDIDAS[atual];
+  const todos = RUNS.flatMap(r => DADOS[r.id].map(d => d[atual]));
+  const mn = Math.min(...todos), mx = Math.max(...todos);
+  const f = v => v.toFixed(m.casas) + m.un;
+
+  document.getElementById("explica").textContent = m.txt;
+  const dg = document.getElementById("degraus"); dg.innerHTML = "";
+  for(const t of [0,0.25,0.5,0.75,1]){
+    const val = mn + (t*t)*(mx-mn);
+    const d = document.createElement("div"); d.className="deg";
+    d.innerHTML = `<i style="background:color-mix(in srgb, var(--accent) ${Math.round(t*100)}%, var(--card))"></i>${f(val)}`;
+    dg.appendChild(d);
+  }
+
+  const raiz = document.getElementById("mapas");
+  raiz.innerHTML = "";
+  for(const r of RUNS){
+    const box = document.createElement("div"); box.className="mapa";
+    box.innerHTML = `<h3>${r.nome}</h3><p class="sub">${r.sub}</p>`;
+    const g = document.createElement("div"); g.className="grade";
+
+    g.appendChild(document.createElement("div"));
+    const gA = document.createElement("div"); gA.className="grupo"; gA.textContent="atenção"; gA.style.gridColumn="span 4";
+    const gM = document.createElement("div"); gM.className="grupo"; gM.textContent="MLP"; gM.style.gridColumn="span 2";
+    g.appendChild(gA); g.appendChild(gM);
+
+    g.appendChild(document.createElement("div"));
+    for(const [,nm] of TIPOS){ const c=document.createElement("div"); c.className="cab"; c.textContent=nm; g.appendChild(c); }
+
+    for(let b=0;b<12;b++){
+      const l=document.createElement("div"); l.className="lin"; l.textContent=b; g.appendChild(l);
+      for(const [tp,nm] of TIPOS){
+        const d = celula(r.id,b,tp); const c=document.createElement("div");
+        c.className="cel"; c.textContent=d[atual].toFixed(m.casas);
+        c.title = `${r.nome} · bloco ${b} · ${nm}: ${f(d[atual])}`;
+        pintar(c, d[atual], mn, mx); g.appendChild(c);
+      }
+    }
+    const lm=document.createElement("div"); lm.className="lin med"; lm.textContent="méd"; lm.style.marginTop="6px"; g.appendChild(lm);
+    for(const [tp,nm] of TIPOS){
+      const v = media(DADOS[r.id].filter(d=>d.t===tp).map(d=>d[atual]));
+      const c=document.createElement("div"); c.className="cel med"; c.style.marginTop="6px";
+      c.textContent=v.toFixed(m.casas); c.title=`${r.nome} · média de ${nm}: ${f(v)}`;
+      pintar(c, v, mn, mx); g.appendChild(c);
+    }
+    box.appendChild(g); raiz.appendChild(box);
+  }
+
+  const chaves = DADOS.s0.map(d => [d.b,d.t]);
+  const a = chaves.map(([b,t]) => celula("s0",b,t)[atual]);
+  const b2 = chaves.map(([b,t]) => celula("s1",b,t)[atual]);
+  document.getElementById("corr").textContent = pearson(a,b2).toFixed(2);
+
+  const mt = tp => media(DADOS.s0.filter(d=>d.t===tp).map(d=>d[atual]));
+  const rt = tp => media(DADOS.ruido.filter(d=>d.t===tp).map(d=>d[atual]));
+  const linhas = TIPOS.map(([tp,nm]) => `${nm}: ${mt(tp).toFixed(m.casas)} contra ${rt(tp).toFixed(m.casas)}`);
+  document.getElementById("nota-especifica").innerHTML =
+    `<b>Nesta medida (${m.nome.toLowerCase()}), treino 1 contra ruído, por tipo:</b> ${linhas.join(" · ")}.`;
+
+  document.querySelectorAll("#controles button").forEach(bt =>
+    bt.setAttribute("aria-pressed", bt.dataset.k===atual ? "true":"false"));
+}
+
+const ctr = document.getElementById("controles");
+for(const k of Object.keys(MEDIDAS)){
+  const bt=document.createElement("button"); bt.textContent=MEDIDAS[k].nome; bt.dataset.k=k;
+  bt.addEventListener("click",()=>{ atual=k; desenhar(); });
+  ctr.appendChild(bt);
+}
+desenhar();
+</script>
+</body>
+</html>

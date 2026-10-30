@@ -1,0 +1,24 @@
+1) baixando e preparando os dados...
+   treino: 3680 fotos | teste: 3669 fotos
+   classes: 37
+
+2) montando o modelo...
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8102.37it/s]
+   acuracia antes de treinar: 3.4%  (cabeca aleatoria)
+
+3) treinando...
+   (o corpo fica congelado nas primeiras 1 epoca(s),
+    para a cabeca aprender a ler antes de poder empurrar o corpo)
+   epoca 1/5  corpo travado  perda 1.403  acuracia 91.1%
+   epoca 2/5  corpo solto   perda 0.993  acuracia 92.0%
+   epoca 3/5  corpo solto   perda 0.844  acuracia 93.5%
+   epoca 4/5  corpo solto   perda 0.786  acuracia 94.2%
+   epoca 5/5  corpo solto   perda 0.769  acuracia 94.1%
+
+4) salvando o 'depois' em models/dinov2-small-pets-s4/ ...
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  9.00it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  8.99it/s]
+
+PRONTO em 1.5 min
+  acuracia: 3.4%  ->  94.1%
+  o 'antes'  continua intocado em models/dinov2-small/
+  o 'depois' esta em models/dinov2-small-pets-s4/

@@ -1,0 +1,11 @@
+1) dados: pele | treino 3680 | teste 2840 | classes 8 | rotulos embaralhados: False
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8303.05it/s]
+   acuracia antes de treinar: 8.0%
+   epoca 1/5  corpo travado  perda 1.738  acc treino 39.8%  acc teste 52.1%
+   epoca 2/5  corpo solto   perda 1.434  acc treino 53.9%  acc teste 60.4%
+   epoca 3/5  corpo solto   perda 1.138  acc treino 69.3%  acc teste 70.1%
+   epoca 4/5  corpo solto   perda 0.999  acc treino 76.1%  acc teste 72.2%
+   epoca 5/5  corpo solto   perda 0.923  acc treino 81.5%  acc teste 73.4%
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  9.14it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  9.12it/s]
+
+PRONTO em 1.5 min | acuracia: 8.0% -> 73.4% | salvo em models/etapa3/s3/

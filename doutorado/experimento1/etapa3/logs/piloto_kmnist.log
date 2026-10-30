@@ -1,0 +1,12 @@
+1) dados: kmnist | treino 3680 | teste 3669 | classes 10 | rotulos embaralhados: False
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 7835.68it/s]
+   acuracia antes de treinar: 9.1%
+   epoca 1/5  corpo travado  perda 1.668  acc treino 50.9%  acc teste 50.0%
+   epoca 2/5  corpo solto   perda 1.116  acc treino 76.9%  acc teste 76.0%
+   epoca 3/5  corpo solto   perda 0.772  acc treino 91.9%  acc teste 84.5%
+   epoca 4/5  corpo solto   perda 0.690  acc treino 95.4%  acc teste 87.6%
+   epoca 5/5  corpo solto   perda 0.653  acc treino 96.8%  acc teste 87.2%
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  9.53it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  9.52it/s]
+
+PRONTO em 2.3 min | acuracia: 9.1% -> 87.2% | salvo em models/etapa3/piloto_kmnist/
+codigo 0

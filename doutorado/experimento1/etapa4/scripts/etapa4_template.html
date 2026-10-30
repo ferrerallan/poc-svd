@@ -1,0 +1,59 @@
+<!-- =============================== ETAPA 4 (inserida por etapa4/construir_resultados_etapa4.py) =============================== -->
+<div class="banner" id="etapa4"><div class="k">Etapa 4</div><h2>Fine-tuning restrito: só σ, só rotação, ou nada nas 72 matrizes</h2><p>A etapa 3 mostrou que, no fine-tuning completo, a função fica na parte que gira direções. Mas ela só avaliou a parte σ que o treino completo depositou. A etapa 4 dá ao treino a liberdade de mudar <b>só</b> os σ (ou só as direções) e mede o que cada liberdade consegue.</p></div>
+<div class="repro"><span class="rot">Reproduzir a etapa 4</span>
+<pre><code>bash doutorado/experimento1/etapa4/reproduzir_etapa4.sh</code></pre>
+<p style="margin:0;font-size:14px">Todo o código e todos os dados desta etapa estão em <code>doutorado/experimento1/etapa4/</code> e <code>models/etapa4/</code>. <b>Nenhum arquivo das etapas 1 a 3 foi alterado</b>: o carregamento de dados da etapa 3 é importado como está; a cópia do <code>resultados.html</code> ao fim da etapa 3 está em <code>etapa4/base/</code>. A referência "completo" são os 10 modelos da etapa 3, reutilizados sem retreino.</p></div>
+
+<section class="sec" id="e4-justificativa">
+  <h3><span class="n">4.0</span>Justificativa</h3>
+  <div class="caixa leia"><span class="rot">O que ficou em aberto na etapa 3</span>
+    <p>O transplante (3.4) mostrou que a parte σ da mudança do fine-tuning completo recupera 0% do ganho, e a parte direções recupera 100%. Mas essa parte σ tinha só 0,24% da energia da mudança: o treino completo <b>não tentou</b> aprender pelos σ, ele simplesmente não os usou. Isso não diz se um treino que <b>só pudesse</b> mudar σ conseguiria aprender a tarefa, que é a aposta de SVDiff (difusão) e SVF/Transformer² (LLMs), nem se um treino que só pudesse girar (OFT) conseguiria.</p></div>
+  <p>Três motivos para esta etapa:</p>
+  <ol>
+    <li><b>Responder a pergunta da tese do lado da intervenção, não só da observação.</b> As etapas 1–3 observaram o que o treino livre faz. A etapa 4 restringe o treino a uma parte e mede o que ela sozinha alcança. Se "só σ" chegar perto do completo, a reponderação dos σ é suficiente para especializar, mesmo que o treino livre não a use; se ficar no nível de "72 matrizes congeladas", ela não carrega a adaptação.</li>
+    <li><b>Separar capacidade de preferência.</b> O treino livre pode preferir girar direções só porque esse caminho tem mais parâmetros (99,7% da energia), não porque seja o único que funciona.</li>
+    <li><b>É o formato do framework de orientação da tese</b>: comparar famílias de adaptação (σ, rotação, completa, nenhuma) no mesmo domínio, protocolo e orçamento, e dizer qual vale a pena.</li>
+  </ol>
+  <h4>Desenho</h4>
+  <div class="rolagem"><table><thead><tr><th>Variante</th><th>O que as 72 matrizes podem fazer</th><th>Parâmetros treináveis nas 72</th><th>O que preserva</th></tr></thead><tbody>
+    <tr><td><code>completo</code></td><td>W livre (etapa 3, reutilizada)</td><td class="n">21,2 M</td><td>nada</td></tr>
+    <tr><td><code>congelado_72</code></td><td>nada: W = W0</td><td class="n">0</td><td>tudo</td></tr>
+    <tr class="dest"><td><code>so_sigma</code></td><td>W = U0 · diag(σ0 · (1 + δ)) · V0ᵀ, treina δ</td><td class="n">[[P_SIG]] (384 por matriz)</td><td>as direções U0 e V0</td></tr>
+    <tr><td><code>so_rotacao</code></td><td>W = R · W0, R ortogonal bloco-diagonal (blocos de 32, parametrização de Cayley), treina R</td><td class="n">[[P_ROT]]</td><td>todos os σ de W0</td></tr>
+  </tbody></table></div>
+  <p>Em todas as variantes, <b>o resto do corpo</b> (bias, LayerNorm, embeddings, LayerScale: [[P_RESTO]] parâmetros) <b>e a cabeça</b> treinam exatamente como na etapa 3 (passo 1e-5 e 1e-3, weight_decay 0, 5 épocas, aquecimento de 1 época, lote 32, label smoothing 0,1, bf16). Só muda a liberdade das 72 matrizes. O passo dos parâmetros restritos (δ ou R) é escolhido por <b>validação</b> (4.1), nunca pelo teste. Dados: os mesmos da etapa 3 (lesões de pele, 3.680 de treino, 2.840 de teste, mesma subamostra).</p>
+</section>
+
+<section class="sec" id="e4-passo">
+  <h3><span class="n">4.1</span>Escolha do passo por validação</h3>
+  <p>Os parâmetros restritos têm escala própria (δ é uma fração de σ; R parte da identidade), então o passo 1e-5 do corpo não serve de referência. Pilotos com a semente 0, separando <b>10% do treino como validação</b> (368 imagens; o teste não entra), uma grade de passos por variante, e a escolha pelo maior acerto de validação na última época (<code>escolher_passo.py</code>).</p>
+  [[TAB_PASSO]]
+  <p>[[TXT_PASSO]]</p>
+</section>
+
+<section class="sec" id="e4-treinos">
+  <h3><span class="n">4.2</span>Treinos: 10 sementes por variante</h3>
+<pre><code>python3 doutorado/experimento1/etapa4/treinar_etapa4.py --variante congelado_72 --semente S --saida models/etapa4/congelado_72_sS
+python3 doutorado/experimento1/etapa4/treinar_etapa4.py --variante so_sigma   --lr-restrito [[LR_SIG]] --semente S --saida models/etapa4/so_sigma_sS
+python3 doutorado/experimento1/etapa4/treinar_etapa4.py --variante so_rotacao --lr-restrito [[LR_ROT]] --semente S --saida models/etapa4/so_rotacao_sS</code></pre>
+  [[TAB_TREINOS]]
+</section>
+
+<section class="sec" id="e4-resultados">
+  <h3><span class="n">4.3</span>Resultados: o que cada liberdade alcança</h3>
+  [[TAB_RESUMO]]
+  <p>[[TXT_RESUMO]]</p>
+  <h4>O que cada variante fez com as 72 matrizes (<code>medir_variantes.py</code>)</h4>
+  [[TAB_MEDIDAS]]
+  <p style="font-size:13.5px;color:var(--ink3)">"Direções preservadas" = para cada direção de W1, o maior |cosseno| com alguma direção de W0 (1,000 = o conjunto de direções é o mesmo, a menos de ordem e sinal). "Subespaço top-10" compara os 10 primeiros de cada lado e por isso acusa <b>reordenação</b> dos σ, mesmo quando as direções são as mesmas; nas variantes só σ é isso que ele mede.</p>
+</section>
+
+<section class="sec" id="e4-achados">
+  <h3><span class="n">4.4</span>Achados da etapa 4</h3>
+  [[ACHADOS4]]
+</section>
+
+<section class="sec" id="e4-problemas">
+  <h3><span class="n">4.5</span>Problemas, limitações e o que ficou validado</h3>
+  [[PROBLEMAS4]]
+</section>

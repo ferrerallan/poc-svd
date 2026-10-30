@@ -1,0 +1,14 @@
+1) variante so_rotacao | treino 3680 | teste 2840 | classes 8 | lr restrito 0.0001
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9892.02it/s]
+   parametros treinaveis: restritos 1,327,104 | resto do corpo 822,912 | cabeca 3,080
+   acuracia antes de treinar (teste): 10.7%
+   epoca 1/5  travado  perda 1.689  acc treino 41.1%  acc teste 52.2%
+   epoca 2/5  solto    perda 1.414  acc treino 54.5%  acc teste 60.4%
+   epoca 3/5  solto    perda 1.158  acc treino 68.3%  acc teste 66.5%
+   epoca 4/5  solto    perda 1.032  acc treino 74.6%  acc teste 69.6%
+   epoca 5/5  solto    perda 0.967  acc treino 79.0%  acc teste 70.7%
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9237.73it/s]
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9778.98it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 29.19it/s]
+
+PRONTO em 2.0 min | so_rotacao | teste: 10.7% -> 70.7% | salvo em models/etapa4/so_rotacao_s7/

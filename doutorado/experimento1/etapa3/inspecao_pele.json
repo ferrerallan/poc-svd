@@ -1,0 +1,54 @@
+{
+  "repo": "Pranavkpba2000/skin_cancer_small_dataset",
+  "class_names": [
+    "AK",
+    "BCC",
+    "BKL",
+    "DF",
+    "MEL",
+    "NV",
+    "SCC",
+    "VASC"
+  ],
+  "train_per_class": [
+    1600,
+    1600,
+    1600,
+    880,
+    1600,
+    1600,
+    1600,
+    880
+  ],
+  "test_per_class": [
+    400,
+    400,
+    400,
+    220,
+    400,
+    400,
+    400,
+    220
+  ],
+  "train_subsample_per_class": [
+    515,
+    526,
+    532,
+    283,
+    515,
+    518,
+    500,
+    291
+  ],
+  "train_rows": 11360,
+  "test_rows": 2840,
+  "largest_test_class_pct": 14.084507042253522,
+  "image_sizes": {
+    "224x224 RGB": 14200
+  },
+  "exact_duplicates_inside_train": 18,
+  "exact_duplicates_test_in_train": 2,
+  "near_duplicates_inside_train": 88,
+  "near_duplicates_test_with_train": 20,
+  "near_duplicates_same_label": 13
+}

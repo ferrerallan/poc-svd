@@ -1,0 +1,14 @@
+1) variante so_sigma | treino 3680 | teste 2840 | classes 8 | lr restrito 0.01
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9408.53it/s]
+   parametros treinaveis: restritos 27,648 | resto do corpo 822,912 | cabeca 3,080
+   acuracia antes de treinar (teste): 17.0%
+   epoca 1/5  travado  perda 1.711  acc treino 40.8%  acc teste 51.5%
+   epoca 2/5  solto    perda 1.414  acc treino 54.4%  acc teste 64.2%
+   epoca 3/5  solto    perda 1.179  acc treino 66.6%  acc teste 67.4%
+   epoca 4/5  solto    perda 1.067  acc treino 72.8%  acc teste 70.1%
+   epoca 5/5  solto    perda 0.999  acc treino 76.6%  acc teste 70.2%
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9920.24it/s]
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9670.29it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 28.57it/s]
+
+PRONTO em 1.2 min | so_sigma | teste: 17.0% -> 70.2% | salvo em models/etapa4/so_sigma_s8/

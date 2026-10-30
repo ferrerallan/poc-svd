@@ -1,0 +1,47 @@
+{
+  "registrado_em": "2026-10-07T02:20:23",
+  "python": "3.10.12",
+  "sistema": "Linux-6.16.3-76061603-generic-x86_64-with-glibc2.35",
+  "pacotes": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "PIL": "12.3.0",
+    "sklearn": "1.7.2",
+    "torch": "2.14.0+cu130",
+    "torchvision": "0.29.0+cu130",
+    "transformers": "5.5.0",
+    "safetensors": "0.7.0",
+    "huggingface_hub": "1.9.2"
+  },
+  "cuda_do_torch": "13.0",
+  "gpu": "NVIDIA GeForce RTX 3060",
+  "driver_nvidia": "580.82.09",
+  "vram_total": "12288 MiB",
+  "git_commit": "7cbc634ac284601738b5943d07453057ef67ed1a",
+  "git_arquivos_nao_versionados": [
+    "?? .gitignore",
+    "?? doutorado/",
+    "?? learning/",
+    "?? wisdom/"
+  ],
+  "sha256_scripts": {
+    "agregar_etapa.py": "c2b660e2ca631f325bec95638329ea1df45c327dc92960cedd062a83d46d070b",
+    "analisar_sementes.py": "ba0b36cc42b4bd1d80709cabf8059fc7627d4bbb60fa636a9e46d380ec0e353e",
+    "baixar_modelo.py": "1ace8d7a9ba459609e430e65f9f0e6a3c20290eaa48a80bcf31348daf6f95b2b",
+    "comparar.py": "c6da6792e0cd7657071412564e326b7b181651dcb7f984ffa90d86971f74da9e",
+    "construir_diario.py": "e5580b8f9d7577ce328583be2451a4273e7faca0c632e26b4f006bb72aa80c91",
+    "cosseno_matriz_inteira.py": "4ac98b3f15a9875ee421c01d31143e6af3fb964996084357d9be18a0d8e11919",
+    "decomposicao_pesos.py": "a866db88f48997ab7119f4b68e973553c75f3656d2f4b0c44f787ae05dbd7a57",
+    "diagnostico_corpo_congelado.py": "06719f496327d439df09782620c71723f14167e55d1b92e66f5427aba96e3765",
+    "etapas.py": "f616fe07e994b9d7d8588ce91611303602866fb99a4ec2fe62da1a89d5757e5f",
+    "registrar_ambiente.py": "a20cd99869eb55f56ab161ef8db276ed1ecf512c060b1f5670129ebe2055323b",
+    "reprodutibilidade_pesos_direcoes.py": "97610bd412d4acbf0372537ee8ea89210cbf459e6f21d58c085c10a1a2a56434",
+    "treinar.py": "ddbfbdba277eeb3d00751269b83aadb8763a14563bd8ef2775d70e67cfdc2ac0",
+    "verificar_repeticao.py": "1507d304fe8efbccc0ccbb8ffa834d7054d9399e8400a8347f11a68500f08c71"
+  },
+  "sha256_modelo_original": "ae1e99fcefd534ed978cdeb8326f08030c96e28b7a81ffcbc98a857c84d14be1",
+  "sha256_dados": {
+    "test-00000-of-00001.parquet": "0997d4744ee6740e96f17f56b40b97c70076a4e4dad565bc63d0ffd03906f754",
+    "train-00000-of-00001.parquet": "b9ff432b33c77f4b50014684f25686a1cd523090686571743a6b7a257af27422"
+  }
+}

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pesos e direções por matriz</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#fff; --ink:#1a1a1c; --ink2:#52535b; --ink3:#86868f;
+  --line:#e5e3de; --accent:#7a4bd0; --accent-bg:#f3edfd; --onacc:#fff;
+  --aviso:#8a5a00; --aviso-bg:#fdf3e1; --ok:#1d6b4a; --ok-bg:#e9f5ee;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#141418; --card:#1d1d23; --ink:#ecebf1; --ink2:#a8a7b3; --ink3:#7c7b87;
+    --line:#2e2e36; --accent:#b699f5; --accent-bg:#26203a; --onacc:#16161a;
+    --aviso:#e6ab5b; --aviso-bg:#332a1b; --ok:#7bcea5; --ok-bg:#1c2f26;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px 70px}
+header{padding:46px 0 12px}
+.kicker{font:600 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:30px;line-height:1.15;margin:13px 0 10px;letter-spacing:-.02em}
+.lede{font-size:16.5px;color:var(--ink2);margin:0;max-width:74ch}
+p{margin:0 0 12px;max-width:78ch}
+b{font-weight:650}
+code{font:13px/1.45 var(--mono);background:var(--accent-bg);border-radius:4px;padding:1.5px 5px}
+.resumo{display:flex;flex-wrap:wrap;gap:8px 30px;margin:22px 0 24px;font-size:15px;color:var(--ink2)}
+.resumo b{font:700 17px var(--mono);color:var(--accent)}
+.mapas{display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start}
+.mapa{flex:1 1 400px;min-width:300px}
+.mapa h2{font-size:18px;margin:0 0 2px}
+.mapa .sub{font-size:13.5px;color:var(--ink3);margin:0 0 12px}
+.grade{display:grid;grid-template-columns:28px repeat(6,1fr);gap:3px}
+.cab{font:600 10px/1.2 var(--mono);color:var(--ink3);text-align:center;align-self:end;padding-bottom:3px}
+.grupo{font:700 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);
+  text-align:center;border-bottom:2px solid var(--accent);padding-bottom:4px;margin-bottom:2px}
+.lin{font:600 11px/30px var(--mono);color:var(--ink3);text-align:right;padding-right:6px}
+.cel{font:11.5px/30px var(--mono);text-align:center;border-radius:4px;border:1px solid var(--line);color:var(--ink);cursor:default}
+.cel.forte{color:var(--onacc)}
+.med .lin{color:var(--ink)}
+.med .cel{border-style:dashed;font-weight:700}
+.leg{margin-top:16px}
+.degraus{display:flex;gap:4px}
+.deg{flex:1;text-align:center;font:11.5px var(--mono);color:var(--ink3);max-width:70px}
+.deg i{display:block;height:14px;border-radius:4px;border:1px solid var(--line);margin-bottom:3px}
+.caixa{border-radius:11px;padding:16px 20px;margin:26px 0 0;max-width:900px}
+.caixa>:last-child{margin-bottom:0}
+.rot{font:700 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:9px}
+.leia{background:var(--accent-bg)} .leia .rot{color:var(--accent)}
+.aviso{background:var(--aviso-bg)} .aviso .rot{color:var(--aviso)}
+.ok{background:var(--ok-bg)} .ok .rot{color:var(--ok)}
+.caixa ul{margin:0;padding-left:20px}
+.cartoes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0 8px}
+.cartao{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.cartao h2{font-size:19px;margin:0 0 3px}
+.cartao .sub{font-size:13.5px;color:var(--ink3);margin:0 0 12px}
+.cartao dl{margin:0;display:grid;grid-template-columns:104px 1fr;gap:8px 12px;font-size:14px}
+.cartao dt{font:700 10.5px/1.7 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);padding-top:2px}
+.cartao dd{margin:0;color:var(--ink2)}
+.cartao dd b{color:var(--ink)}
+.passos{margin:12px 0 8px;padding-left:22px;max-width:90ch}
+.passos li{margin:8px 0}
+.exemplo{font:13px/1.7 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:10px 0 4px;overflow-x:auto;white-space:pre}
+@media (max-width:760px){.cartoes{grid-template-columns:1fr}.cartao dl{grid-template-columns:1fr;gap:2px}.cartao dt{margin-top:8px}}
+.svd{margin:26px 0 8px;padding:20px 22px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.svd h2{font-size:20px;margin:0 0 8px}
+.svd .fluxo{display:grid;grid-template-columns:minmax(150px,1.1fr) 28px minmax(90px,.7fr) 28px 3fr;gap:8px 6px;align-items:stretch;margin:18px 0 6px}
+.svd .sai{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.bx{border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:13px;line-height:1.4;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.bx b{font-size:13.5px}
+.bx small{display:block;color:var(--ink3);font:11px/1.35 var(--mono);margin-top:3px}
+.bx.mat{background:var(--bg)}
+.bx.svdbox{background:var(--accent);border-color:var(--accent);color:var(--onacc)}
+.bx.svdbox small{color:var(--onacc);opacity:.85}
+.bx.usado{background:var(--accent-bg);border-color:var(--accent)}
+.bx.nao{border-style:dashed;color:var(--ink3);background:transparent}
+.seta{align-self:center;text-align:center;color:var(--ink3);font:600 16px var(--mono)}
+.comp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 14px}
+.comp .bx{text-align:left;align-items:flex-start}
+.svd ul{margin:10px 0 0;padding-left:20px;max-width:90ch}
+.svd li{margin:6px 0}
+@media (max-width:760px){.svd .fluxo{grid-template-columns:1fr}.seta{transform:rotate(90deg)}.comp{grid-template-columns:1fr}}
+.concl{margin-top:44px;padding-top:6px;border-top:1px solid var(--line)}
+.concl h2{font-size:24px;margin:22px 0 14px}
+.concl ol{margin:0 0 12px;padding-left:22px;max-width:80ch}
+.concl li{margin:9px 0}
+.caixa li{margin:5px 0}
+footer{padding:24px 0 0;color:var(--ink3);font-size:13px;border-top:1px solid var(--line);margin-top:32px;max-width:900px}
+@media (max-width:640px){h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">Doutorado · Experimento 1</div>
+  <h1>Pesos e direções: quanto mudou em cada matriz</h1>
+  <p class="lede">O DINOv2-Small tem 12 layers, cada um com 6 matrizes, num total de 72. Cada quadradinho mostra
+  <b>em % do valor original</b> quanto mudou uma parte daquela matriz. O percentual vem de <b>comparar a matriz do modelo original
+  com a mesma matriz do modelo fine-tuned</b> e, depois, de tirar a <b>média das diferenças</b>, também sobre
+  <b id="n">10</b> treinos com sementes diferentes.</p>
+</header>
+
+<div class="cartoes">
+  <div class="cartao">
+    <h2>O modelo original</h2>
+    <p class="sub">o ponto de partida, antes de qualquer fine-tuning</p>
+    <dl>
+      <dt>Nome</dt><dd><b>DINOv2-Small</b> (<code>facebook/dinov2-small</code>), da Meta, 2023 (Oquab et al., <a href="https://arxiv.org/abs/2304.07193">arXiv 2304.07193</a>).</dd>
+      <dt>Tipo</dt><dd>Vision Transformer. Vem só com o <b>corpo</b>, sem cabeça de classificação.</dd>
+      <dt>Tamanho</dt><dd><b>22,1 milhões</b> de pesos, 12 layers, 6 matrizes de pesos por layer (<b>72 no total</b>), 6 cabeças de atenção, bitola 384.</dd>
+      <dt>Entrada</dt><dd>Uma foto de 224 × 224 vira 256 patches de 14 × 14 pixels, mais o token CLS: 257 tokens de 384 números.</dd>
+      <dt>Pré-treino</dt><dd>Auto-supervisionado, <b>sem rótulos</b>, em cerca de <b>142 milhões</b> de imagens selecionadas automaticamente (LVD-142M).</dd>
+      <dt>Arquivo</dt><dd><code>model.safetensors</code>, 85 MB, 223 tabelas de números.</dd>
+    </dl>
+  </div>
+  <div class="cartao">
+    <h2>Os dados do fine-tuning</h2>
+    <p class="sub">a tarefa que obriga o modelo a mudar</p>
+    <dl>
+      <dt>Dataset</dt><dd><b>Oxford-IIIT Pet</b> (Parkhi et al., CVPR 2012): fotos de cães e gatos de <b>37 raças</b>, cada foto com a raça como rótulo.</dd>
+      <dt>Quantidade</dt><dd><b>3.680</b> fotos de treino e <b>3.669</b> de teste (7.349 no total), pelo espelho <a href="https://huggingface.co/datasets/timm/oxford-iiit-pet"><code>timm/oxford-iiit-pet</code></a> do HuggingFace.</dd>
+      <dt>Preparo</dt><dd>Treino: recorte aleatório de 224 × 224 (70% a 100% da foto) e espelhamento horizontal. Teste: lado menor em 256 e recorte central de 224 × 224.</dd>
+      <dt>Protocolo</dt><dd>Cabeça nova de 384 → 37, aleatória. 5 épocas, lote 32, AdamW, passo <code>1e-5</code> no corpo e <code>1e-3</code> na cabeça, corpo congelado na 1ª época. <b>10 sementes</b> (0 a 9).</dd>
+      <dt>Resultado</dt><dd>Acurácia no teste de <b id="acc-a">–</b> (cabeça aleatória) para <b id="acc-d">–</b> depois do fine-tuning.</dd>
+    </dl>
+  </div>
+</div>
+
+<section class="svd" id="svd">
+  <h2>Onde o SVD foi usado</h2>
+  <p>O SVD (decomposição em valores singulares) foi aplicado <b>nas matrizes de pesos do modelo</b>, uma por uma, e só nelas. Para cada matriz, ele separa os <b>pesos</b> (σ, os valores singulares) das <b>direções</b> (U e Vᵀ, os vetores singulares).</p>
+  <div class="fluxo">
+    <div class="bx mat"><b>W0</b><small>matriz do modelo original</small></div><div class="seta">→</div>
+    <div class="bx svdbox"><b>SVD</b></div><div class="seta">→</div>
+    <div class="sai"><div class="bx usado"><b>σ0</b><small>pesos</small></div><div class="bx usado"><b>U0</b><small>direções</small></div><div class="bx nao"><b>Vᵀ0</b><small>não usado aqui</small></div></div>
+    <div class="bx mat"><b>W1</b><small>a mesma matriz depois do fine-tuning</small></div><div class="seta">→</div>
+    <div class="bx svdbox"><b>SVD</b></div><div class="seta">→</div>
+    <div class="sai"><div class="bx usado"><b>σ1</b><small>pesos</small></div><div class="bx usado"><b>U1</b><small>direções</small></div><div class="bx nao"><b>Vᵀ1</b><small>não usado aqui</small></div></div>
+  </div>
+  <div class="comp">
+    <div class="bx usado"><b>Mapa Pesos</b><small>compara σ1 com σ0: quanto mudaram os 10 maiores pesos, em %</small></div>
+    <div class="bx usado"><b>Mapa Direções</b><small>compara U1 com U0: quanto giraram as 10 principais direções, em %</small></div>
+  </div>
+  <ul>
+    <li><b>Quais matrizes:</b> as 72 (<code>query</code>, <code>key</code>, <code>value</code>, <code>dense</code>, <code>fc1</code> e <code>fc2</code> dos 12 layers).</li>
+    <li><b>Quantas vezes:</b> em cada matriz do modelo original e em cada um dos 10 modelos depois do fine-tuning. São 72 × 11 = <b>792 SVDs</b>.</li>
+    <li><b>Onde o SVD não foi usado:</b> nos patches, nos tokens, nas fotos, na cabeça de classificação, nem na diferença W1 − W0.</li>
+    <li><b>A concordância entre treinos</b> (na conclusão) também sai dessas mesmas SVDs: ela compara, entre dois treinos, a mudança dos σ e a mudança das direções U.</li>
+  </ul>
+</section>
+
+<section class="svd" id="calculo">
+  <h2>Como cada número do mapa é calculado</h2>
+  <p>Os percentuais vêm de <b>comparar as matrizes do modelo original com as do modelo fine-tuned</b>, e depois de uma <b>média das diferenças</b>. O SVD é feito nas duas versões, e a comparação é feita <b>depois</b>, um valor singular e uma direção por vez (o 1º com o 1º, o 2º com o 2º, e assim por diante).</p>
+  <ol class="passos">
+    <li><b>Par de matrizes:</b> pega-se a matriz do modelo original e a matriz de mesma posição (mesmo layer e mesmo tipo) do modelo fine-tuned.</li>
+    <li><b>SVD nas duas</b>, o que dá σ e U de cada uma.</li>
+    <li><b>Uma diferença por item:</b> para cada um dos 10 maiores σ, a diferença em % do valor original. Para cada uma das 10 principais direções, o ângulo entre a versão original e a fine-tuned, convertido em %.</li>
+    <li><b>Primeira média:</b> a média dessas 10 diferenças. Dá um valor para esse treino.</li>
+    <li><b>Segunda média:</b> repete-se nos 10 treinos e tira-se a média. Esse é o número do quadradinho.</li>
+    <li><b>Médias finais:</b> a linha <code>méd</code> é a média da coluna nos 12 layers, e o resumo no alto é a média das 72 matrizes.</li>
+  </ol>
+  <div class="exemplo">exemplo inventado, com 3 pesos em vez de 10 (matriz com σ0 = 4,000 · 2,000 · 1,000):
+
+  σ0 (original):      4,000     2,000     1,000
+  σ1 (fine-tuned):    4,002     1,999     1,001
+  diferença em %:     0,05%     0,05%     0,10%     →  média = 0,067%   (valor desse treino)
+
+  repetido nos 10 treinos e tirada a média  →  número do quadradinho</div>
+</section>
+
+<div class="resumo" id="resumo"></div>
+<div class="mapas" id="mapas"></div>
+
+<div class="caixa leia">
+  <span class="rot">Como ler</span>
+  <ul>
+    <li><b>Linhas:</b> os 12 layers (0 no começo da rede, 11 no fim). <b>Colunas:</b> as 6 matrizes de cada layer, 4 da atenção e 2 do MLP. <b>Linha <code>méd</code>:</b> a média de cada coluna.</li>
+    <li><b>Pesos:</b> para cada um dos 10 maiores valores singulares, |σ fine-tuned − σ original| ÷ σ original, e a média dessas 10 diferenças.</li>
+    <li><b>Direções:</b> o ângulo entre cada uma das 10 direções principais do original e do fine-tuned, convertido para %, e a média desses 10 ângulos. Uma direção é um vetor de comprimento 1, e girar θ radianos o desloca θ × 100% do comprimento. Por exemplo, 1° vale 1,75%.</li>
+    <li><b>As duas escalas de cor são diferentes</b>, porque os pesos variam bem menos. Entre os dois mapas, compare os <b>números</b>, e não as cores.</li>
+  </ul>
+</div>
+
+<section class="concl" id="conclusao"></section>
+
+<footer>
+  Dados reais gerados por <code>comparar.py</code> e <code>analisar_sementes.py</code> (<code>resultado_10sementes.json</code>),
+  embutidos nesta página. A concordância entre treinos vem de <code>reprodutibilidade_pesos_direcoes.py</code>. A versão com as outras medidas está em
+  <code>mapa-de-calor-detalhado.html</code>.
+</footer>
+</div>
+
+<script>
+const D = {"n":10,"celulas":[{"b":0,"t":"dense","p":0.03,"d":1.2781},{"b":0,"t":"key","p":0.0337,"d":0.6756},{"b":0,"t":"mlp.fc1","p":0.015,"d":0.9353},{"b":0,"t":"mlp.fc2","p":0.0117,"d":1.3252},{"b":0,"t":"query","p":0.0203,"d":0.7126},{"b":0,"t":"value","p":0.0195,"d":1.4012},{"b":1,"t":"dense","p":0.0211,"d":1.5704},{"b":1,"t":"key","p":0.0247,"d":0.6651},{"b":1,"t":"mlp.fc1","p":0.018,"d":1.7651},{"b":1,"t":"mlp.fc2","p":0.0164,"d":1.3317},{"b":1,"t":"query","p":0.0241,"d":1.5038},{"b":1,"t":"value","p":0.0236,"d":1.9703},{"b":2,"t":"dense","p":0.02,"d":1.1359},{"b":2,"t":"key","p":0.0257,"d":1.1378},{"b":2,"t":"mlp.fc1","p":0.0241,"d":1.6118},{"b":2,"t":"mlp.fc2","p":0.0203,"d":2.0883},{"b":2,"t":"query","p":0.0198,"d":0.8678},{"b":2,"t":"value","p":0.0239,"d":1.1498},{"b":3,"t":"dense","p":0.0215,"d":1.8137},{"b":3,"t":"key","p":0.0277,"d":3.1412},{"b":3,"t":"mlp.fc1","p":0.018,"d":0.9133},{"b":3,"t":"mlp.fc2","p":0.0204,"d":2.8889},{"b":3,"t":"query","p":0.0212,"d":4.7443},{"b":3,"t":"value","p":0.0196,"d":1.535},{"b":4,"t":"dense","p":0.0186,"d":2.1118},{"b":4,"t":"key","p":0.0267,"d":1.9417},{"b":4,"t":"mlp.fc1","p":0.0113,"d":1.1776},{"b":4,"t":"mlp.fc2","p":0.0202,"d":1.8216},{"b":4,"t":"query","p":0.0228,"d":2.3136},{"b":4,"t":"value","p":0.0184,"d":1.4834},{"b":5,"t":"dense","p":0.0179,"d":2.2276},{"b":5,"t":"key","p":0.0188,"d":1.3505},{"b":5,"t":"mlp.fc1","p":0.0127,"d":1.0549},{"b":5,"t":"mlp.fc2","p":0.0265,"d":1.8467},{"b":5,"t":"query","p":0.0225,"d":1.2011},{"b":5,"t":"value","p":0.016,"d":2.2483},{"b":6,"t":"dense","p":0.0159,"d":1.8427},{"b":6,"t":"key","p":0.0291,"d":3.1095},{"b":6,"t":"mlp.fc1","p":0.0112,"d":0.9341},{"b":6,"t":"mlp.fc2","p":0.02,"d":2.6004},{"b":6,"t":"query","p":0.0327,"d":4.0726},{"b":6,"t":"value","p":0.016,"d":2.0331},{"b":7,"t":"dense","p":0.0137,"d":1.5006},{"b":7,"t":"key","p":0.018,"d":1.4593},{"b":7,"t":"mlp.fc1","p":0.012,"d":1.5718},{"b":7,"t":"mlp.fc2","p":0.0189,"d":1.4102},{"b":7,"t":"query","p":0.0187,"d":2.4963},{"b":7,"t":"value","p":0.014,"d":2.8639},{"b":8,"t":"dense","p":0.0128,"d":1.1861},{"b":8,"t":"key","p":0.0145,"d":1.0854},{"b":8,"t":"mlp.fc1","p":0.0199,"d":1.5978},{"b":8,"t":"mlp.fc2","p":0.0216,"d":2.0232},{"b":8,"t":"query","p":0.0123,"d":1.3299},{"b":8,"t":"value","p":0.0139,"d":1.3704},{"b":9,"t":"dense","p":0.0117,"d":1.395},{"b":9,"t":"key","p":0.0144,"d":1.124},{"b":9,"t":"mlp.fc1","p":0.0123,"d":1.4083},{"b":9,"t":"mlp.fc2","p":0.0207,"d":2.2665},{"b":9,"t":"query","p":0.0125,"d":1.1434},{"b":9,"t":"value","p":0.0153,"d":0.8419},{"b":10,"t":"dense","p":0.0144,"d":1.4141},{"b":10,"t":"key","p":0.016,"d":0.9112},{"b":10,"t":"mlp.fc1","p":0.0155,"d":1.9508},{"b":10,"t":"mlp.fc2","p":0.0297,"d":1.9094},{"b":10,"t":"query","p":0.0166,"d":1.143},{"b":10,"t":"value","p":0.0149,"d":1.583},{"b":11,"t":"dense","p":0.0133,"d":1.4919},{"b":11,"t":"key","p":0.0117,"d":0.8782},{"b":11,"t":"mlp.fc1","p":0.0104,"d":0.7353},{"b":11,"t":"mlp.fc2","p":0.0348,"d":1.0716},{"b":11,"t":"query","p":0.0268,"d":2.0438},{"b":11,"t":"value","p":0.015,"d":2.4763}],"global":{"p":0.01908,"d":1.6558,"cp":0.5316,"cd":0.322,"pos":72},"treino":{"antes_min":1.5,"antes_max":5.56,"dep_min":93.79,"dep_max":94.66},"colados":363,"pares_top":720};
+const TIPOS = [["query","query"],["key","key"],["value","value"],["dense","dense"],["mlp.fc1","fc1"],["mlp.fc2","fc2"]];
+document.getElementById("n").textContent = D.n;
+const media = a => a.reduce((x,y)=>x+y,0)/a.length;
+const fmt = (v,c) => v.toFixed(c).replace(".",",");
+const cel = (b,t) => D.celulas.find(c => c.b===b && c.t===t);
+
+function pintar(el, v, mn, mx){
+  const t = mx>mn ? Math.sqrt(Math.max(0,(v-mn)/(mx-mn))) : 0;
+  el.style.background = `color-mix(in srgb, var(--accent) ${Math.round(t*100)}%, var(--card))`;
+  if(t>0.55) el.classList.add("forte");
+}
+
+function mapa(titulo, sub, campo, casas){
+  const vals = D.celulas.map(c => c[campo]);
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const box = document.createElement("div"); box.className="mapa";
+  box.innerHTML = `<h2>${titulo}</h2><p class="sub">${sub}</p>`;
+  const g = document.createElement("div"); g.className="grade";
+  g.appendChild(document.createElement("div"));
+  const gA = document.createElement("div"); gA.className="grupo"; gA.textContent="atenção"; gA.style.gridColumn="span 4";
+  const gM = document.createElement("div"); gM.className="grupo"; gM.textContent="MLP"; gM.style.gridColumn="span 2";
+  g.appendChild(gA); g.appendChild(gM); g.appendChild(document.createElement("div"));
+  for(const [,nm] of TIPOS){ const c=document.createElement("div"); c.className="cab"; c.textContent=nm; g.appendChild(c); }
+  for(let b=0;b<12;b++){
+    const l=document.createElement("div"); l.className="lin"; l.textContent=b; g.appendChild(l);
+    for(const [tp,nm] of TIPOS){
+      const v = cel(b,tp)[campo]; const c=document.createElement("div");
+      c.className="cel"; c.textContent=fmt(v,casas); c.title=`layer ${b} · ${nm}: ${fmt(v,casas+1)}%`;
+      pintar(c,v,mn,mx); g.appendChild(c);
+    }
+  }
+  const lm=document.createElement("div"); lm.className="lin med"; lm.textContent="méd"; lm.style.marginTop="6px"; g.appendChild(lm);
+  for(const [tp,nm] of TIPOS){
+    const v = media(D.celulas.filter(c=>c.t===tp).map(c=>c[campo]));
+    const c=document.createElement("div"); c.className="cel med"; c.style.marginTop="6px";
+    c.textContent=fmt(v,casas); c.title=`média de ${nm}: ${fmt(v,casas+1)}%`; pintar(c,v,mn,mx); g.appendChild(c);
+  }
+  box.appendChild(g);
+  const leg = document.createElement("div"); leg.className="leg";
+  const dg = document.createElement("div"); dg.className="degraus";
+  for(const t of [0,0.25,0.5,0.75,1]){
+    const val = mn + t*t*(mx-mn);
+    const d=document.createElement("div"); d.className="deg";
+    d.innerHTML = `<i style="background:color-mix(in srgb, var(--accent) ${Math.round(t*100)}%, var(--card))"></i>${fmt(val,casas)}%`;
+    dg.appendChild(d);
+  }
+  leg.appendChild(dg); box.appendChild(leg);
+  document.getElementById("mapas").appendChild(box);
+}
+
+mapa("Pesos", "SVD: σ (valores singulares). Média das diferenças dos 10 maiores, em % do original", "p", 3);
+mapa("Direções", "SVD: U (vetores singulares). Média dos giros das 10 principais, em % do original", "d", 2);
+
+const G = D.global;
+document.getElementById("acc-a").textContent = fmt(D.treino.antes_min,1)+"% a "+fmt(D.treino.antes_max,1)+"%";
+document.getElementById("acc-d").textContent = fmt(D.treino.dep_min,1)+"% a "+fmt(D.treino.dep_max,1)+"%";
+document.getElementById("resumo").innerHTML =
+  `<span>Pesos, média das 72: <b>${fmt(G.p,3)}%</b></span>` +
+  `<span>Direções, média das 72: <b>${fmt(G.d,2)}%</b></span>` +
+  `<span>Direções ÷ pesos: <b>${fmt(G.d/G.p,0)}×</b></span>` +
+  `<span>Direções mudaram mais em <b>${D.celulas.filter(c=>c.d>c.p).length} de 72</b> matrizes</span>`;
+
+const razao = G.d/G.p;
+document.getElementById("conclusao").innerHTML =
+  `<h2>Conclusão</h2>` +
+  `<div class="caixa ok" style="margin-top:0"><span class="rot">Resposta curta, neste experimento</span>` +
+  `<p>Em tamanho relativo, mudam mais as <b>direções</b> do que os <b>pesos</b> (${fmt(G.d,2)}% contra ${fmt(G.p,3)}%, cerca de ${fmt(razao,0)} vezes). ` +
+  `Mas os pesos mudam de forma mais <b>consistente</b> de um treino para outro (concordância ${fmt(G.cp,2)}) do que as direções (${fmt(G.cd,2)}).</p></div>` +
+  `<h3 style="font-size:17px;margin:22px 0 6px">O que o experimento mostra</h3><ol>` +
+  `<li><b>As direções mudam mais que os pesos</b> em ${D.celulas.filter(c=>c.d>c.p).length} de 72 matrizes: ${fmt(G.d,2)}% (cerca de ${fmt(G.d/1.74533,2)}°) contra ${fmt(G.p,3)}%.</li>` +
+  `<li><b>As duas mudanças são pequenas em termos absolutos.</b> O modelo foi de 2% a 94% de acerto com os pesos mudando ${fmt(G.p,2)}% e as direções girando cerca de 1°.</li>` +
+  `<li><b>A mudança é sistemática, e não aleatória.</b> O cosseno entre as mudanças de dois treinos com sementes diferentes é ${fmt(G.cp,2)} nos pesos e ${fmt(G.cd,2)} nas direções (0 seria nenhuma concordância, 1 seria idêntica), e é positivo nas ${G.pos} matrizes, nas duas partes.</li>` +
+  `<li><b>Os dois lados da resposta não coincidem:</b> as direções mudam mais em tamanho, e os pesos mudam mais de forma repetível.</li></ol>` +
+  `<div class="caixa aviso"><span class="rot">O que ainda não dá para concluir</span><ul>` +
+  `<li><b>Que a mudança seja específica da tarefa.</b> Treinos com os mesmos dados e hiperparâmetros podem concordar por motivos gerais. O controle que separa as duas coisas, treinar com os rótulos embaralhados, ainda não foi feito.</li>` +
+  `<li><b>Que as direções mudem mesmo tanto assim.</b> Quando dois valores singulares vizinhos são quase iguais, a direção correspondente fica mal definida e gira sozinha. Isso acontece em ${D.colados} dos ${D.pares_top} pares de valores singulares vizinhos do topo (diferença menor que 2%).</li>` +
+  `<li><b>Que o tamanho da mudança seja comparável.</b> Cada peso é um número, e cada direção é um vetor de 384 números. A comparação em % diz qual mudou mais em relação ao próprio tamanho, e não quanto do treino foi gasto em cada parte.</li>` +
+  `<li><b>Que isso valha em geral.</b> Só as 10 direções principais de cada matriz entram na conta, num único modelo, num único domínio fácil (raças de pet) e com um único passo de treino.</li></ul></div>` +
+  `<h3 style="font-size:17px;margin:22px 0 6px">Próximos passos</h3><ol>` +
+  `<li>Treinar com os rótulos embaralhados e medir a concordância desse treino com os reais.</li>` +
+  `<li>Repetir em um domínio distante, onde o corpo congelado não basta e a mudança tende a ser maior.</li>` +
+  `<li>Teste funcional: devolver ao modelo só a mudança dos pesos, ou só a das direções, e medir a acurácia de cada um.</li></ol>`;
+</script>
+</body>
+</html>

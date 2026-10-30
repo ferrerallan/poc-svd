@@ -1,0 +1,94 @@
+<!-- =============================== ETAPA 3 (inserida por etapa3/construir_resultados_etapa3.py) =============================== -->
+<div class="banner" id="etapa3"><div class="k">Etapa 3</div><h2>Um domínio onde o corpo precisa mudar, e uma régua corrigida</h2><p>Motivada pela revisão crítica das etapas 1 e 2: a mudança medida em raças de pet não tinha efeito funcional, a razão direções/pesos é estrutural, e o giro vetor a vetor estava inflado. A etapa 3 muda o domínio, corrige a régua, e faz o teste causal.</p></div>
+<div class="repro"><span class="rot">Reproduzir a etapa 3</span>
+<pre><code>bash doutorado/experimento1/etapa3/reproduzir_etapa3.sh</code></pre>
+<p style="margin:0;font-size:14px">Todo o código e todos os dados desta etapa estão em <code>doutorado/experimento1/etapa3/</code> e <code>models/etapa3/</code>. <b>Nenhum arquivo das etapas 1 e 2 foi alterado</b>: os scripts anteriores são chamados como estão (<code>comparar.py</code>) ou copiados e adaptados dentro da etapa 3 (<code>treinar_etapa3.py</code>). A cópia do <code>resultados.html</code> como estava ao fim da etapa 2 está em <code>etapa3/base/</code>.</p></div>
+
+<section class="sec" id="e3-justificativa">
+  <h3><span class="n">3.0</span>Justificativa: revisão crítica das etapas 1 e 2</h3>
+  <p>Antes de desenhar a etapa 3, as conclusões das etapas anteriores foram verificadas contra os próprios modelos e JSONs (<code>etapa3/verificar_conclusoes_etapas12.py</code>, saída em <code>verificacao_etapas12.json</code>). Seis problemas, do mais grave ao menos:</p>
+  <div class="caixa ruim"><span class="rot">Problema 1: a mudança medida não tem efeito funcional demonstrado</span>
+    <p>A conclusão 1.7 diz que "o modelo foi de 2% a 94% com os pesos mudando 0,02% e as direções girando cerca de 1°", sugerindo que essa mudança do corpo produziu a especialização. Mas o corpo <b>congelado</b>, com só uma regressão logística em cima, acerta <b>[[V_CONG]]%</b>, e os modelos fine-tuned acertam <b>[[V_E1]]%</b> (etapa 1) e <b>[[V_E2]]%</b> (etapa 2): o fine-tuning do corpo deu <b>[[V_GANHO]] ponto</b>. Em raças de pet o corpo não precisava mudar, e toda a mudança medida é o que acontece quando ele pode se mover com passo 1e-5 por 4 épocas, sem benefício mensurável. O salto de 2% para 94% vem da cabeça. Isso esvazia a pergunta "pesos ou direções" <b>neste domínio</b>, e é a razão principal da etapa 3.</p></div>
+  <div class="caixa ruim"><span class="rot">Problema 2: "as direções mudam ~87 vezes mais que os pesos" é estrutural, não um achado</span>
+    <p>O ruído entre treinos dá a mesma razão (<b>[[V_RZ_RUIDO]]×</b>). E somando às matrizes originais um <b>ruído isotrópico</b> de 0,5%, sem nenhum aprendizado, a razão sai <b>[[V_RZ_ISO]]×</b> (mediana nas 72 matrizes; de [[V_RZ_ISO_MIN]]× a [[V_RZ_ISO_MAX]]×). Um σ é um número; a direção acumula mudança em 383 componentes. O 87–95× é o <b>zero</b> da régua, não o resultado. As "respostas curtas" de 1.7 e 2.7 o apresentam como resposta.</p></div>
+  <div class="caixa ruim"><span class="rot">Problema 3: o giro vetor a vetor está inflado pela degenerescência dos σ</span>
+    <p>O número de pares de σ vizinhos "colados" por matriz correlaciona com o giro (r = <b>[[V_R_COL]]</b>; [[V_GIRO_ATE3]]° nas [[V_N_ATE3]] matrizes com até 3 pares, [[V_GIRO_MAIS3]]° nas outras [[V_N_MAIS3]]). Medindo o giro do <b>subespaço</b> top-10 (ângulos principais, que não dependem de qual vetor é qual nem de sinal), o giro médio é <b>[[V_SUB_MED]]°</b>, contra [[V_VET]]° vetor a vetor: cerca de <b>[[V_SUB_PCT_PERDA]]%</b> do giro reportado é rearranjo de vetores dentro do mesmo subespaço, não movimento do subespaço.</p></div>
+  <div class="caixa aviso"><span class="rot">Problema 4: "os pesos mudam de forma mais consistente que as direções" é uma comparação viciada</span>
+    <p>O ruído de degenerescência derruba o cosseno das direções e não o dos pesos. A ordem pode se manter com a métrica de subespaço, mas com a régua das etapas 1 e 2 não dá para afirmar.</p></div>
+  <div class="caixa aviso"><span class="rot">Problema 5: um achado da etapa 2 ficou subdeclarado, e favorece os σ</span>
+    <p>Sem weight decay, a página diz que a escala geral "deixa de ter um sentido único". Globalmente é verdade, mas <b>por matriz</b> o sinal da escala geral é o mesmo em 9 ou 10 dos 10 treinos em <b>[[V_ESC_37]] das 72 matrizes</b> (acaso: ~[[V_ESC_ACASO]]). Existe uma reescala por matriz, sistemática e independente do otimizador, que a etapa 2 não interpretou.</p></div>
+  <div class="caixa aviso"><span class="rot">Problema 6 (menor): estatística e uma imprecisão na concentração</span>
+    <p>As etapas usam as mesmas sementes 0–9, então a comparação é pareada: o t pareado dos pesos é <b>[[V_T_PAR]]</b> (positivo em [[V_T_POS]]/10 sementes), e não o Welch de 12,6. A conclusão não muda. Além disso, a "concentração" das etapas 1 e 2 projetava a mudança em span(U0): nas matrizes retangulares (<code>fc1</code>, <code>fc2</code>) isso descarta a parte da mudança fora desse espaço, e a fração "parte σ" saía um pouco maior do que é. A etapa 3 mede com a norma completa (3.3).</p></div>
+  <div class="caixa ok"><span class="rot">O que se sustenta das etapas 1 e 2</span>
+    <p>A identificação do weight decay (−0,0092% observado contra −0,0088% previsto, e sumindo na etapa 2); a parte diferencial dos σ não depender do weight decay; o registro de reprodutibilidade; as acurácias; a proveniência de modelo e dados.</p></div>
+  <h4>O que a etapa 3 faz a respeito</h4>
+  <ol>
+    <li><b>Domínio onde o corpo precisa mudar</b> (3.1): triagem com o corpo congelado e um fine-tuning piloto; só vale um domínio em que o fine-tuning ganhe claramente do corpo congelado.</li>
+    <li><b>Mesmo protocolo da etapa 2</b> (3.2), com <code>weight_decay = 0</code>, 10 sementes, e o controle com <b>rótulos embaralhados</b>.</li>
+    <li><b>Régua corrigida</b> (3.3): ângulos principais de subespaço (k = 10, 50, 100) em vez do giro vetor a vetor; σ no espectro completo; escala geral por matriz; tudo reportado contra um <b>zero isotrópico</b> de mesma energia; concordância entre sementes separada em parte σ e parte direções; aplicada também aos modelos das etapas 1 e 2.</li>
+    <li><b>Teste funcional</b> (3.4): transplantar só a parte σ ou só a parte direções da mudança e medir a acurácia, no domínio novo e, como controle negativo, em raças de pet.</li></ol>
+</section>
+
+<section class="sec" id="e3-triagem">
+  <h3><span class="n">3.1</span>Triagem do domínio</h3>
+  <p>Quatro candidatos distantes de raças de pet, todos em parquet no HuggingFace (<code>etapa3/dados/</code>). Para cada um, a <b>mesma subamostra</b> que o treino usará (até 3.680 de treino e 3.669 de teste, sorteio fixo), o token CLS do corpo <b>congelado</b> e uma regressão logística em cima (<code>triagem_dominio.py</code>).</p>
+  [[TAB_TRIAGEM]]
+  <p>[[TXT_TRIAGEM]]</p>
+  <h4>Fine-tuning piloto</h4>
+  [[TAB_PILOTO]]
+  <p>[[TXT_PILOTO]]</p>
+  <div class="caixa ok"><span class="rot">Domínio escolhido</span><p>[[TXT_ESCOLHA]]</p></div>
+</section>
+
+<section class="sec" id="e3-treinos">
+  <h3><span class="n">3.2</span>Treinos da etapa 3</h3>
+  <div class="cartoes">
+    <div class="cartao"><h4>Os dados do fine-tuning</h4><p class="sub">[[DOM_NOME]]</p>
+      <dl><dt>Dataset</dt><dd>[[DOM_DESC]]</dd><dt>Origem</dt><dd>[[DOM_ORIGEM]]</dd><dt>Quantidade</dt><dd>[[DOM_QTD]]</dd><dt>Preparo</dt><dd>Igual às etapas 1 e 2: recorte aleatório de 224 × 224 (70% a 100%) e espelhamento no treino; lado menor em 256 e recorte central de 224 no teste; normalização do ImageNet. Imagens menores são ampliadas.</dd><dt>Protocolo</dt><dd>Igual à etapa 2: cabeça nova 384 → [[DOM_K]] aleatória, 5 épocas, lote 32, AdamW, passo 1e-5 no corpo e 1e-3 na cabeça, cosseno, label smoothing 0,1, bf16, corpo congelado na 1ª época, <b>weight_decay = 0</b>, sementes 0 a 9.</dd></dl></div>
+    <div class="cartao"><h4>Controle: rótulos embaralhados</h4><p class="sub">mesmo domínio, mesmos dados, rótulos permutados</p>
+      <dl><dt>O que é</dt><dd>Os rótulos de treino são permutados uma vez (sorteio fixo, igual para todas as sementes) e o treino é idêntico. Os dados e o otimizador são os mesmos; só a relação imagem → rótulo deixa de existir.</dd><dt>Para que serve</dt><dd>Separar a parte da mudança que depende dos rótulos reais da parte que qualquer treino com estes dados produziria. Se a concordância real × embaralhado for tão alta quanto real × real, a mudança não é específica da tarefa.</dd><dt>Sementes</dt><dd>0 a 9 (10 treinos).</dd></dl></div>
+  </div>
+<pre><code>python3 doutorado/experimento1/etapa3/treinar_etapa3.py --dataset [[DOM_AP]] --treino [[DOM_TREINO]] --teste [[DOM_TESTE]] --semente S --saida models/etapa3/sS
+python3 doutorado/experimento1/etapa3/treinar_etapa3.py --dataset [[DOM_AP]] --treino ... --teste ... --semente S --embaralhar-rotulos --saida models/etapa3/embaralhado_sS</code></pre>
+  [[TAB_E3]]
+</section>
+
+<section class="sec" id="e3-regua">
+  <h3><span class="n">3.3</span>A régua corrigida, aplicada às três etapas</h3>
+  <p>As medidas abaixo (<code>medir_regua.py</code>) foram calculadas da mesma forma para os modelos das etapas 1, 2 e 3 e para o controle embaralhado. Cada valor é a média das 72 matrizes e dos 10 treinos. A coluna <b>zero</b> é a mesma medida para um ruído gaussiano isotrópico com a <b>mesma energia</b> da mudança real daquela matriz e semente: o que a régua marca quando não há aprendizado nenhum.</p>
+  [[TAB_REGUA]]
+  <h4>Concordância entre treinos (cosseno médio dos 45 pares de sementes)</h4>
+  [[TAB_CONC]]
+  <p style="font-size:13.5px;color:var(--ink3)">"Inteira" é a mudança completa da matriz; "parte σ" é a projeção na diagonal da base da SVD original (o que só muda valores singulares); "fora" é o resto; "espectro" é o vetor de mudança relativa de todos os valores singulares.</p>
+  <div class="mapas" id="e3-mapas"></div>
+  <p style="font-size:13.5px;color:var(--ink3)">Mapas da etapa 3 com a régua corrigida: parte σ (mudança relativa dos 10 maiores valores singulares, em %) e subespaço top-10 (ângulo principal médio, em graus). Mesma leitura das etapas anteriores.</p>
+</section>
+
+<section class="sec" id="e3-funcional">
+  <h3><span class="n">3.4</span>Teste funcional: transplante da parte σ e da parte direções</h3>
+  <p>Para cada modelo fine-tuned, as 72 matrizes são substituídas por uma variante da mudança (<code>transplante.py</code>); bias, LayerNorm, embeddings e a cabeça ficam os do modelo fine-tuned. Mede-se a acurácia de teste de cada variante.</p>
+  <div class="rolagem"><table><thead><tr><th>Variante</th><th>As 72 matrizes recebem</th></tr></thead><tbody>
+    <tr><td><code>completo</code></td><td>W1, a mudança inteira</td></tr>
+    <tr><td><code>so_sigma</code></td><td>W0 + D, só a parte que muda valores singulares (D = U0·diag(diag(U0ᵀΔW V0))·V0ᵀ)</td></tr>
+    <tr><td><code>so_direcoes</code></td><td>W0 + (ΔW − D), tudo o que não é parte σ</td></tr>
+    <tr><td><code>direcoes_eq</code></td><td>W0 + (ΔW − D) reescalada para a <b>mesma energia</b> de D: compara as duas partes por unidade de mudança</td></tr>
+    <tr><td><code>nenhuma</code></td><td>W0, as matrizes originais</td></tr></tbody></table></div>
+  [[TAB_TRANSPLANTE]]
+  <p>[[TXT_TRANSPLANTE]]</p>
+</section>
+
+<section class="sec" id="e3-controle">
+  <h3><span class="n">3.5</span>Controle com rótulos embaralhados</h3>
+  [[TAB_CONTROLE]]
+  <p>[[TXT_CONTROLE]]</p>
+</section>
+
+<section class="sec" id="e3-achados">
+  <h3><span class="n">3.6</span>Achados da etapa 3</h3>
+  [[ACHADOS3]]
+</section>
+
+<section class="sec" id="e3-problemas">
+  <h3><span class="n">3.7</span>Problemas, limitações e o que ficou validado</h3>
+  [[PROBLEMAS3]]
+</section>

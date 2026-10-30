@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>As duas sementes concordam?</title>
+<style>
+:root{
+  --bg:#faf9f6; --card:#fff; --ink:#1a1a1c; --ink2:#52535b; --ink3:#86868f;
+  --line:#e5e3de; --accent:#7a4bd0; --accent-bg:#f3edfd; --onacc:#fff;
+  --aviso:#8a5a00; --aviso-bg:#fdf3e1; --ok:#1d6b4a; --ok-bg:#e9f5ee;
+  --c0:#7a4bd0; --c1:#1a6fb5; --c2:#1d8a6a; --c3:#c47a00; --c4:#c0408a; --c5:#6b7280;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#141418; --card:#1d1d23; --ink:#ecebf1; --ink2:#a8a7b3; --ink3:#7c7b87;
+    --line:#2e2e36; --accent:#b699f5; --accent-bg:#26203a; --onacc:#16161a;
+    --aviso:#e6ab5b; --aviso-bg:#332a1b; --ok:#7bcea5; --ok-bg:#1c2f26;
+    --c0:#b699f5; --c1:#7cb8ea; --c2:#6fcfa7; --c3:#e6ab5b; --c4:#ee8cbf; --c5:#a3a9b5;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px 80px}
+header{padding:48px 0 16px}
+.kicker{font:600 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:32px;line-height:1.15;margin:13px 0 10px;letter-spacing:-.02em}
+.lede{font-size:17px;color:var(--ink2);margin:0;max-width:64ch}
+h2{font-size:21px;margin:34px 0 10px;letter-spacing:-.01em}
+p{margin:0 0 13px;max-width:70ch}
+b{font-weight:650}
+code{font:13px/1.45 var(--mono);background:var(--accent-bg);border-radius:4px;padding:1.5px 5px}
+.caixa{border-radius:11px;padding:16px 19px;margin:20px 0;max-width:840px}
+.caixa>:last-child{margin-bottom:0}
+.rot{font:700 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:9px}
+.analogia{background:var(--accent-bg)} .analogia .rot{color:var(--accent)}
+.aviso{background:var(--aviso-bg)} .aviso .rot{color:var(--aviso)}
+.ok{background:var(--ok-bg)} .ok .rot{color:var(--ok)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:11px;margin:22px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+.kpi .v{font:700 25px/1.1 var(--mono);letter-spacing:-.02em;color:var(--accent)}
+.kpi .k{font-size:12.5px;color:var(--ink3);margin-top:5px;line-height:1.45}
+
+.controles{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 12px}
+.controles button{font:600 13px/1 inherit;color:var(--ink2);background:var(--card);
+  border:1px solid var(--line);border-radius:999px;padding:10px 16px;cursor:pointer}
+.controles button:hover{border-color:var(--accent);color:var(--accent)}
+.controles button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--onacc)}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:10px 8px 6px;overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:640px;height:auto}
+.g{stroke:var(--line);stroke-width:1}
+.zero{stroke:var(--ink2);stroke-width:1.6}
+.med{stroke:var(--accent);stroke-width:1.4;stroke-dasharray:5 4}
+.gl{fill:var(--ink3);font:11px var(--mono)}
+.ax{fill:var(--ink2);font:600 11.5px var(--mono)}
+.rz{fill:var(--ink2);font:600 11px var(--mono)}
+.rm{fill:var(--accent);font:600 11px var(--mono)}
+.tend{fill:none;stroke:var(--ink);stroke-width:1.6;opacity:.55}
+.mbar{stroke:var(--ink);stroke-width:2.6;stroke-linecap:round}
+.pt{stroke:var(--card);stroke-width:1.2}
+.c0{fill:var(--c0)} .c1{fill:var(--c1)} .c2{fill:var(--c2)} .c3{fill:var(--c3)} .c4{fill:var(--c4)} .c5{fill:var(--c5)}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;margin:12px 2px 4px;font:12px var(--mono);color:var(--ink2);align-items:center}
+.leg span{display:flex;align-items:center;gap:6px}
+.leg i{width:11px;height:11px;border-radius:50%;display:inline-block;border:1px solid var(--line)}
+.cap{font-size:13px;color:var(--ink3);margin:8px 2px 0;max-width:78ch}
+footer{padding:26px 0 0;color:var(--ink3);font-size:13px;border-top:1px solid var(--line);margin-top:38px;max-width:840px}
+@media (max-width:620px){h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Doutorado · Experimento 1 · Visualização</div>
+  <h1>As duas rodadas de treino concordam?</h1>
+  <p class="lede">Treinamos o mesmo modelo duas vezes, mudando só a semente. Aqui, para cada uma das
+  72 matrizes, medimos o quanto as duas rodadas mudaram <b>na mesma direção</b>.</p>
+</header>
+
+<div class="caixa analogia">
+  <span class="rot">Analogia</span>
+  <p>Dois alunos recebem o mesmo livro e fazem a mesma revisão, cada um grifando o que acha
+  importante. Se os grifos dos dois coincidirem em parte, aquela parte veio do <b>livro</b>, não da
+  mania de cada um. Se não coincidirem em nada, cada um grifou ao acaso.</p>
+  <p>Aqui o livro é a tarefa de reconhecer raças, e o grifo é a mudança nos pesos. A nota de
+  concordância é o <b>cosseno</b>: <b>0</b> significa que as duas rodadas não têm nada a ver uma com
+  a outra, e <b>1</b> significa que mudaram exatamente igual.</p>
+</div>
+
+<div class="grid" id="kpis"></div>
+
+<div class="controles" id="controles" role="group" aria-label="Como agrupar os pontos">
+  <button data-m="bloco">Por bloco (profundidade)</button>
+  <button data-m="tipo">Por tipo de matriz</button>
+</div>
+
+<div class="chart" id="chart"></div>
+<div class="leg" id="leg"></div>
+<p class="cap" id="cap"></p>
+
+<h2>O que o gráfico mostra</h2>
+<p><b>1. Todos os pontos estão acima de zero.</b> Nas 72 matrizes, as duas rodadas mudaram, ao menos
+em parte, na mesma direção. Se fossem completamente independentes, os pontos ficariam em torno de
+zero.</p>
+<p id="t-prof"></p>
+<p id="t-tipo"></p>
+
+<div class="caixa ok">
+  <span class="rot">O que isso quer dizer</span>
+  <p>Com duas rodadas de mesmo tamanho, o cosseno é aproximadamente a <b>fração da mudança que é
+  compartilhada</b> (medida pela energia, o tamanho ao quadrado). Então, em média, cerca de um quinto
+  da mudança de cada rodada é reprodutível, e o resto é específico de cada rodada. Essa é a
+  correção da leitura anterior do piso de ruído.</p>
+</div>
+
+<div class="caixa aviso">
+  <span class="rot">O que este gráfico não prova</span>
+  <p><b>1. Concordar entre rodadas não é o mesmo que ser específico da tarefa.</b> Duas rodadas
+  podem concordar por causa de algo comum a qualquer treino com este otimizador e estes dados. O
+  controle que separa as duas coisas é treinar com os <b>rótulos embaralhados</b> (as raças trocadas
+  de lugar) e medir o cosseno desse treino com os reais.</p>
+  <p><b>2. Só duas sementes.</b> Com três ou mais dá para ver o quanto o próprio cosseno varia.</p>
+  <p><b>3. A explicação da tendência é uma hipótese.</b> Uma ideia plausível é que os blocos finais
+  ficam mais perto da cabeça nova e recebem um sinal de aprendizado mais consistente, mas isto não
+  foi testado.</p>
+</div>
+
+<footer>
+  Cosseno entre as mudanças de cada matriz (treino 1 menos original, treino 2 menos original),
+  calculado diretamente sobre os arquivos <code>model.safetensors</code> das três pastas em
+  <code>models/</code>. Dados embutidos nesta página.
+</footer>
+</div>
+
+<script>
+const DADOS = [{"b":0,"t":"key","cos":0.1617},{"b":0,"t":"query","cos":0.0567},{"b":0,"t":"value","cos":0.1566},{"b":0,"t":"dense","cos":0.1206},{"b":0,"t":"mlp.fc1","cos":0.035},{"b":0,"t":"mlp.fc2","cos":0.1141},{"b":1,"t":"key","cos":0.06},{"b":1,"t":"query","cos":0.0525},{"b":1,"t":"value","cos":0.0637},{"b":1,"t":"dense","cos":0.0571},{"b":1,"t":"mlp.fc1","cos":0.0634},{"b":1,"t":"mlp.fc2","cos":0.123},{"b":2,"t":"key","cos":0.1573},{"b":2,"t":"query","cos":0.1255},{"b":2,"t":"value","cos":0.17},{"b":2,"t":"dense","cos":0.1611},{"b":2,"t":"mlp.fc1","cos":0.1085},{"b":2,"t":"mlp.fc2","cos":0.1704},{"b":3,"t":"key","cos":0.152},{"b":3,"t":"query","cos":0.1722},{"b":3,"t":"value","cos":0.2153},{"b":3,"t":"dense","cos":0.2077},{"b":3,"t":"mlp.fc1","cos":0.1514},{"b":3,"t":"mlp.fc2","cos":0.2345},{"b":4,"t":"key","cos":0.1697},{"b":4,"t":"query","cos":0.1451},{"b":4,"t":"value","cos":0.2254},{"b":4,"t":"dense","cos":0.2153},{"b":4,"t":"mlp.fc1","cos":0.1664},{"b":4,"t":"mlp.fc2","cos":0.2155},{"b":5,"t":"key","cos":0.1178},{"b":5,"t":"query","cos":0.1122},{"b":5,"t":"value","cos":0.2222},{"b":5,"t":"dense","cos":0.2108},{"b":5,"t":"mlp.fc1","cos":0.2195},{"b":5,"t":"mlp.fc2","cos":0.2696},{"b":6,"t":"key","cos":0.2384},{"b":6,"t":"query","cos":0.2344},{"b":6,"t":"value","cos":0.2844},{"b":6,"t":"dense","cos":0.2851},{"b":6,"t":"mlp.fc1","cos":0.2347},{"b":6,"t":"mlp.fc2","cos":0.3137},{"b":7,"t":"key","cos":0.2252},{"b":7,"t":"query","cos":0.2227},{"b":7,"t":"value","cos":0.2625},{"b":7,"t":"dense","cos":0.2729},{"b":7,"t":"mlp.fc1","cos":0.2637},{"b":7,"t":"mlp.fc2","cos":0.3422},{"b":8,"t":"key","cos":0.262},{"b":8,"t":"query","cos":0.2721},{"b":8,"t":"value","cos":0.3133},{"b":8,"t":"dense","cos":0.3323},{"b":8,"t":"mlp.fc1","cos":0.2891},{"b":8,"t":"mlp.fc2","cos":0.3556},{"b":9,"t":"key","cos":0.2873},{"b":9,"t":"query","cos":0.3012},{"b":9,"t":"value","cos":0.3222},{"b":9,"t":"dense","cos":0.3331},{"b":9,"t":"mlp.fc1","cos":0.2998},{"b":9,"t":"mlp.fc2","cos":0.3614},{"b":10,"t":"key","cos":0.3342},{"b":10,"t":"query","cos":0.3327},{"b":10,"t":"value","cos":0.3122},{"b":10,"t":"dense","cos":0.3147},{"b":10,"t":"mlp.fc1","cos":0.2931},{"b":10,"t":"mlp.fc2","cos":0.3352},{"b":11,"t":"key","cos":0.4151},{"b":11,"t":"query","cos":0.4325},{"b":11,"t":"value","cos":0.2574},{"b":11,"t":"dense","cos":0.2591},{"b":11,"t":"mlp.fc1","cos":0.1374},{"b":11,"t":"mlp.fc2","cos":0.2064}];
+const TIPOS = [["query","query"],["key","key"],["value","value"],["dense","dense"],["mlp.fc1","fc1"],["mlp.fc2","fc2"]];
+const media = a => a.reduce((x,y)=>x+y,0)/a.length;
+const f2 = v => v.toFixed(2).replace(".",",");
+const f3 = v => v.toFixed(3).replace(".",",");
+const todos = DADOS.map(d=>d.cos);
+const mGeral = media(todos);
+const idx = t => TIPOS.findIndex(x=>x[0]===t);
+let modo = "bloco";
+
+// ---------- cartoes
+const mn = DADOS.reduce((a,b)=>a.cos<b.cos?a:b), mx = DADOS.reduce((a,b)=>a.cos>b.cos?a:b);
+const nm = d => `bloco ${d.b}, ${TIPOS[idx(d.t)][1]}`;
+const ini = media(DADOS.filter(d=>d.b<=2).map(d=>d.cos)), fim = media(DADOS.filter(d=>d.b>=9).map(d=>d.cos));
+document.getElementById("kpis").innerHTML = [
+  [f2(mGeral),"concordância média das 72 matrizes"],
+  [`${DADOS.filter(d=>d.cos>0).length} de ${DADOS.length}`,"matrizes com concordância acima de zero"],
+  [f2(ini),"média nos blocos 0 a 2 (começo da rede)"],
+  [f2(fim),"média nos blocos 9 a 11 (fim da rede)"]
+].map(([v,k])=>`<div class="kpi"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+
+// ---------- gráfico
+const W=900,H=410,ml=60,mr=24,mt=26,mb=62,YMAX=0.5;
+const y = v => mt+(H-mt-mb)*(1-v/YMAX);
+function desenhar(){
+  const porBloco = modo==="bloco";
+  const grupos = porBloco ? [...Array(12).keys()] : TIPOS.map(t=>t[0]);
+  const G = grupos.length, gw=(W-ml-mr)/G;
+  const cx = i => ml+gw*(i+0.5);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Concordância entre as duas sementes para cada matriz">`;
+  for(const v of [0,0.1,0.2,0.3,0.4,0.5]){
+    s += `<line x1="${ml}" y1="${y(v)}" x2="${W-mr}" y2="${y(v)}" class="${v===0?'zero':'g'}"/>`;
+    s += `<text x="${ml-8}" y="${y(v)+4}" class="gl" text-anchor="end">${f2(v)}</text>`;
+  }
+  s += `<line x1="${ml}" y1="${y(mGeral)}" x2="${W-mr}" y2="${y(mGeral)}" class="med"/>`;
+  s += `<text x="${W-mr}" y="${y(mGeral)-6}" class="rm" text-anchor="end">média geral ${f2(mGeral)}</text>`;
+  s += `<text x="${ml+6}" y="${y(0)-6}" class="rz">0 = nenhuma concordância</text>`;
+
+  const medias=[];
+  grupos.forEach((g,i)=>{
+    const itens = DADOS.filter(d => porBloco ? d.b===g : d.t===g)
+                       .sort((a,b)=> porBloco ? idx(a.t)-idx(b.t) : a.b-b.b);
+    const n=itens.length;
+    itens.forEach((d,j)=>{
+      const x = cx(i) + (n>1 ? (j/(n-1)-0.5)*gw*0.62 : 0);
+      const cls = porBloco ? `c${idx(d.t)}` : "";
+      const fill = porBloco ? "" : `style="fill:color-mix(in srgb, var(--accent) ${Math.round((0.12+0.88*d.b/11)*100)}%, var(--card))"`;
+      s += `<circle cx="${x.toFixed(1)}" cy="${y(d.cos).toFixed(1)}" r="5.6" class="pt ${cls}" ${fill}><title>bloco ${d.b} · ${TIPOS[idx(d.t)][1]}: cosseno ${f3(d.cos)}</title></circle>`;
+    });
+    const m = media(itens.map(d=>d.cos)); medias.push([cx(i),m]);
+    s += `<line x1="${cx(i)-gw*0.40}" y1="${y(m)}" x2="${cx(i)+gw*0.40}" y2="${y(m)}" class="mbar"><title>média: ${f3(m)}</title></line>`;
+    s += `<text x="${cx(i)}" y="${H-mb+17}" class="gl" text-anchor="middle">${porBloco?g:TIPOS[i][1]}</text>`;
+  });
+  if(porBloco) s += `<polyline class="tend" points="${medias.map(([x,m])=>x.toFixed(1)+","+y(m).toFixed(1)).join(" ")}"/>`;
+  s += `<text x="${(ml+W-mr)/2}" y="${H-10}" class="ax" text-anchor="middle">${porBloco?"bloco (0 = começo da rede, 11 = fim)":"tipo de matriz"}</text>`;
+  s += `<text transform="translate(16 ${(mt+H-mb)/2}) rotate(-90)" class="ax" text-anchor="middle">cosseno entre as duas rodadas</text>`;
+  s += `</svg>`;
+  document.getElementById("chart").innerHTML = s;
+
+  document.getElementById("leg").innerHTML = porBloco
+    ? TIPOS.map(([,nome],i)=>`<span><i style="background:var(--c${i})"></i>${nome}</span>`).join("")
+      + `<span style="margin-left:6px">▬ média do bloco</span>`
+    : `<span>cor do ponto = profundidade:</span>` +
+      [0,3,6,9,11].map(b=>`<span><i style="background:color-mix(in srgb, var(--accent) ${Math.round((0.12+0.88*b/11)*100)}%, var(--card))"></i>bloco ${b}</span>`).join("")
+      + `<span style="margin-left:6px">▬ média do tipo</span>`;
+  document.getElementById("cap").textContent = porBloco
+    ? "Cada ponto é uma matriz, e cada coluna é um bloco, com 6 pontos (um por tipo). A linha escura liga as médias dos blocos."
+    : "Cada ponto é uma matriz, e cada coluna é um tipo, com 12 pontos (um por bloco). Os tons mais escuros são os blocos mais fundos.";
+  document.querySelectorAll("#controles button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.m===modo?"true":"false"));
+}
+document.querySelectorAll("#controles button").forEach(b=>b.addEventListener("click",()=>{modo=b.dataset.m;desenhar();}));
+desenhar();
+
+// ---------- textos que dependem dos dados
+const mt_ = TIPOS.map(([t,n])=>[n, media(DADOS.filter(d=>d.t===t).map(d=>d.cos))]);
+document.getElementById("t-prof").innerHTML =
+  `<b>2. A concordância cresce com a profundidade.</b> Nos blocos 0 a 2 a média é ${f2(ini)}, e nos blocos 9 a 11 é ${f2(fim)}, ` +
+  `cerca de ${(fim/ini).toFixed(1).replace(".",",")} vezes maior. O menor valor é ${f3(mn.cos)} (${nm(mn)}) e o maior é ${f3(mx.cos)} (${nm(mx)}).`;
+document.getElementById("t-tipo").innerHTML =
+  `<b>3. Entre os tipos de matriz, quase não há diferença.</b> As médias ficam entre ${f2(Math.min(...mt_.map(x=>x[1])))} e ${f2(Math.max(...mt_.map(x=>x[1])))}. ` +
+  `A concordância depende muito mais do bloco do que do tipo.`;
+</script>
+</body>
+</html>

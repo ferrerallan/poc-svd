@@ -1,0 +1,14 @@
+1) variante congelado_72 | treino 3680 | teste 2840 | classes 8 | lr restrito None
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9682.20it/s]
+   parametros treinaveis: restritos 0 | resto do corpo 822,912 | cabeca 3,080
+   acuracia antes de treinar (teste): 13.8%
+   epoca 1/5  travado  perda 1.680  acc treino 41.1%  acc teste 49.9%
+   epoca 2/5  solto    perda 1.433  acc treino 53.6%  acc teste 54.6%
+   epoca 3/5  solto    perda 1.329  acc treino 59.4%  acc teste 57.0%
+   epoca 4/5  solto    perda 1.253  acc treino 63.7%  acc teste 59.2%
+   epoca 5/5  solto    perda 1.232  acc treino 64.7%  acc teste 60.0%
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9372.79it/s]
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9419.14it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 13.58it/s]
+
+PRONTO em 1.1 min | congelado_72 | teste: 13.8% -> 60.0% | salvo em models/etapa4/congelado_72_s2/

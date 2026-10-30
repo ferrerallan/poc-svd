@@ -1,0 +1,20 @@
+query of A, B, C: [[2.0, 0.0], [0.0, 1.0], [2.0, 1.0]]
+key of A, B, C: [[1.0, 0.0], [0.0, 2.0], [1.0, 2.0]]
+value of A, B, C: [[1.0, 1.0], [0.0, 1.0], [1.0, 2.0]]
+
+scores (row = whose query, column = whose key):
+  A: [2.0, 0.0, 2.0]
+  B: [0.0, 2.0, 2.0]
+  C: [2.0, 2.0, 4.0]
+
+softmax weights (each row sums to 1):
+  A: [0.4683, 0.0634, 0.4683]  sum = 1.0000
+  B: [0.0634, 0.4683, 0.4683]  sum = 1.0000
+  C: [0.1065, 0.1065, 0.787]  sum = 1.0000
+
+new tokens (weights times values):
+  A: [0.94 ; 1.47]
+  B: [0.53 ; 1.47]
+  C: [0.89 ; 1.79]
+
+all numbers of session 5 confirmed

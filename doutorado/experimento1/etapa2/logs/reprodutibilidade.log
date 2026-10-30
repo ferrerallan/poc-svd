@@ -1,0 +1,10 @@
+cos_pesos      media 0.447 | mediana 0.445 | min -0.013 | max 0.971 | positivos 71 de 72
+cos_direcoes   media 0.321 | mediana 0.299 | min 0.002 | max 0.941 | positivos 72 de 72
+  dense    pesos 0.497 | direcoes 0.271
+  key      pesos 0.415 | direcoes 0.289
+  mlp.fc1  pesos 0.440 | direcoes 0.291
+  mlp.fc2  pesos 0.565 | direcoes 0.406
+  query    pesos 0.444 | direcoes 0.391
+  value    pesos 0.321 | direcoes 0.274
+por bloco, direcoes: [0.2, 0.47, 0.22, 0.47, 0.25, 0.23, 0.27, 0.41, 0.28, 0.28, 0.35, 0.43]
+por bloco, pesos:    [0.4, 0.45, 0.53, 0.5, 0.31, 0.44, 0.3, 0.37, 0.45, 0.44, 0.58, 0.58]

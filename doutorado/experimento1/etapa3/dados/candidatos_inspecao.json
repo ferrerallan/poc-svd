@@ -1,0 +1,141 @@
+{
+  "dtd": {
+    "repo": "tanganke/dtd",
+    "arquivos": {
+      "teste": "dtd/data/test-00000-of-00001.parquet",
+      "treino": "dtd/data/train-00000-of-00001.parquet"
+    },
+    "segundos": 32,
+    "treino": {
+      "linhas": 3760,
+      "colunas": [
+        "image",
+        "label"
+      ],
+      "col_imagem": "image",
+      "col_rotulo": "label",
+      "classes": 47,
+      "exemplo_rotulo": "0",
+      "imagem": "640x480 RGB",
+      "tipo_img": "dict"
+    },
+    "teste": {
+      "linhas": 1880,
+      "colunas": [
+        "image",
+        "label"
+      ],
+      "col_imagem": "image",
+      "col_rotulo": "label",
+      "classes": 47,
+      "exemplo_rotulo": "0",
+      "imagem": "300x300 RGB",
+      "tipo_img": "dict"
+    }
+  },
+  "eurosat": {
+    "repo": "blanchon/EuroSAT_RGB",
+    "arquivos": {
+      "teste": "eurosat/data/test-00000-of-00001.parquet",
+      "treino": "eurosat/data/train-00000-of-00001.parquet",
+      "validation-00000-of-00001": "eurosat/data/validation-00000-of-00001.parquet"
+    },
+    "segundos": 9,
+    "treino": {
+      "linhas": 16200,
+      "colunas": [
+        "image",
+        "label",
+        "filename"
+      ],
+      "col_imagem": "image",
+      "col_rotulo": "label",
+      "classes": 10,
+      "exemplo_rotulo": "0",
+      "imagem": "64x64 RGB",
+      "tipo_img": "dict"
+    },
+    "teste": {
+      "linhas": 5400,
+      "colunas": [
+        "image",
+        "label",
+        "filename"
+      ],
+      "col_imagem": "image",
+      "col_rotulo": "label",
+      "classes": 10,
+      "exemplo_rotulo": "0",
+      "imagem": "64x64 RGB",
+      "tipo_img": "dict"
+    }
+  },
+  "pele": {
+    "repo": "Pranavkpba2000/skin_cancer_small_dataset",
+    "arquivos": {
+      "teste": "pele/data/test-00000-of-00001-3a9b253c406a4af7.parquet",
+      "treino": "pele/data/train-00000-of-00001-2b84ce2361bc8c42.parquet"
+    },
+    "segundos": 3,
+    "treino": {
+      "linhas": 11360,
+      "colunas": [
+        "image",
+        "label"
+      ],
+      "col_imagem": "image",
+      "col_rotulo": "label",
+      "classes": 8,
+      "exemplo_rotulo": "0",
+      "imagem": "224x224 RGB",
+      "tipo_img": "dict"
+    },
+    "teste": {
+      "linhas": 2840,
+      "colunas": [
+        "image",
+        "label"
+      ],
+      "col_imagem": "image",
+      "col_rotulo": "label",
+      "classes": 8,
+      "exemplo_rotulo": "0",
+      "imagem": "224x224 RGB",
+      "tipo_img": "dict"
+    }
+  },
+  "kmnist": {
+    "repo": "tanganke/kmnist",
+    "arquivos": {
+      "teste": "kmnist/kmnist/test-00000-of-00001.parquet",
+      "treino": "kmnist/kmnist/train-00000-of-00001.parquet"
+    },
+    "segundos": 3,
+    "treino": {
+      "linhas": 60000,
+      "colunas": [
+        "image",
+        "label"
+      ],
+      "col_imagem": "image",
+      "col_rotulo": "label",
+      "classes": 10,
+      "exemplo_rotulo": "8",
+      "imagem": "28x28 L",
+      "tipo_img": "dict"
+    },
+    "teste": {
+      "linhas": 10000,
+      "colunas": [
+        "image",
+        "label"
+      ],
+      "col_imagem": "image",
+      "col_rotulo": "label",
+      "classes": 10,
+      "exemplo_rotulo": "2",
+      "imagem": "28x28 L",
+      "tipo_img": "dict"
+    }
+  }
+}

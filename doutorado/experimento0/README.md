@@ -49,7 +49,7 @@ numbers** in the original image.
 
 ## Configuration
 
-The three variables live at the top of [svd_image.py:24-26](svd_image.py#L24-L26):
+The three variables live at the top of [svd_image.py:31-33](svd_image.py#L31-L33):
 
 | Variable     | Default         | What it is                                              |
 | ------------ | --------------- | ------------------------------------------------------- |
@@ -73,27 +73,47 @@ The three variables live at the top of [svd_image.py:24-26](svd_image.py#L24-L26
 
 ## How it works
 
-SVD decomposes the image matrix `W` into `W = U · Σ · Vᵀ`. Each layer `i` is the
-outer product of a column of `U` with a row of `Vᵀ`, scaled by the weight `σᵢ`:
+The whole decomposition is one NumPy call, wrapped in
+[`decompose_into_layers`](svd_image.py#L51-L67):
 
 ```python
-layer_i = σᵢ * np.outer(U[:, i], Vt[i])
+matrix_U, sigmas, matrix_Vt = np.linalg.svd(matrix, full_matrices=False)
+```
+
+`np.linalg.svd` takes the image matrix (here 296 rows × 336 columns) and returns
+three arrays such that `matrix == U · diag(σ) · Vᵀ`:
+
+| Returned     | Shape     | What it is                                                                                        |
+| ------------ | --------- | ------------------------------------------------------------------------------------------------- |
+| `matrix_U`   | 296 × 296 | the matrix `U`: one **column** per layer; column `i` has one number per image row, the layer's pattern down the height |
+| `sigmas`     | 296       | the `σ`: one number per layer, sorted largest to smallest; `σᵢ` is how much layer `i` weighs      |
+| `matrix_Vt`  | 296 × 336 | the matrix `Vᵀ` (`V` transposed, as NumPy returns it): one **row** per layer; row `i` has one number per image column, the layer's pattern across the width |
+
+`full_matrices=False` keeps only the `k = min(height, width) = 296` layers that
+can carry weight. Without it, `Vᵀ` would come back square (336 × 336), padded
+with 40 rows that belong to no layer and have no `σ`.
+
+Each layer `i` is the outer product of column `i` of `U` with row `i` of `Vᵀ`,
+scaled by the weight `σᵢ` ([`build_layer`](svd_image.py#L70-L89)):
+
+```python
+layer_i = sigmas[i] * np.outer(matrix_U[:, i], matrix_Vt[i])   # pixel (r, c) = sigma_i * U[r, i] * Vt[i, c]
 ```
 
 The `σ` weights come out sorted largest to smallest — which is why layer 1
 carries the "skeleton" of the image and the later ones only add fine detail.
-
-Summing the first `N` layers is the same as the truncated matrix multiplication:
+Adding all 296 layers gives the exact image back; summing only the first `N`
+is the same as the truncated matrix multiplication:
 
 ```python
-reconstructed = (U[:, :N] * σ[:N]) @ Vt[:N, :]
+reconstructed = (matrix_U[:, :N] * sigmas[:N]) @ matrix_Vt[:N, :]
 ```
 
 ### About the layer PNGs
 
 A single layer has **both negative and positive** values. To turn it into an
 image, the script centers zero on mid gray (128) and rescales by the largest
-absolute value ([`to_visible_image`](svd_image.py#L66-L77)). That's **for
+absolute value ([`to_visible_image`](svd_image.py#L92-L104)). That's **for
 visualization only** — the real numbers only survive in the `.npy` files.
 
 ## Report metrics

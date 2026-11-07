@@ -1,0 +1,401 @@
+{
+ "ks": [
+  10,
+  33,
+  100
+ ],
+ "rows": [
+  {
+   "seed": 0,
+   "footprint_mean_abs_pct": 0.20584185039196098,
+   "previsto": {
+    "10": {
+     "validacao": 53.26,
+     "teste": 56.51
+    },
+    "33": {
+     "validacao": 53.53,
+     "teste": 56.62
+    },
+    "100": {
+     "validacao": 55.16,
+     "teste": 58.56
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 45.11,
+     "teste": 48.84
+    },
+    "33": {
+     "validacao": 36.68,
+     "teste": 34.51
+    },
+    "100": {
+     "validacao": 27.72,
+     "teste": 26.48
+    }
+   },
+   "aprendido_mean_abs_pct": 17.76248492921392,
+   "aprendido": {
+    "validacao": 66.03,
+    "teste": 64.26
+   }
+  },
+  {
+   "seed": 1,
+   "footprint_mean_abs_pct": 0.2641504339307074,
+   "previsto": {
+    "10": {
+     "validacao": 52.45,
+     "teste": 56.76
+    },
+    "33": {
+     "validacao": 53.26,
+     "teste": 55.88
+    },
+    "100": {
+     "validacao": 56.52,
+     "teste": 56.83
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 35.33,
+     "teste": 36.51
+    },
+    "33": {
+     "validacao": 30.43,
+     "teste": 32.57
+    },
+    "100": {
+     "validacao": 25.82,
+     "teste": 28.24
+    }
+   },
+   "aprendido_mean_abs_pct": 17.948192078620195,
+   "aprendido": {
+    "validacao": 67.66,
+    "teste": 64.51
+   }
+  },
+  {
+   "seed": 2,
+   "footprint_mean_abs_pct": 0.24970857262410895,
+   "previsto": {
+    "10": {
+     "validacao": 53.26,
+     "teste": 56.51
+    },
+    "33": {
+     "validacao": 52.17,
+     "teste": 56.58
+    },
+    "100": {
+     "validacao": 55.16,
+     "teste": 59.08
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 44.02,
+     "teste": 48.31
+    },
+    "33": {
+     "validacao": 23.37,
+     "teste": 29.93
+    },
+    "100": {
+     "validacao": 23.37,
+     "teste": 24.01
+    }
+   },
+   "aprendido_mean_abs_pct": 18.080974204672707,
+   "aprendido": {
+    "validacao": 66.3,
+    "teste": 67.15
+   }
+  },
+  {
+   "seed": 3,
+   "footprint_mean_abs_pct": 0.24111776032845633,
+   "previsto": {
+    "10": {
+     "validacao": 52.45,
+     "teste": 56.51
+    },
+    "33": {
+     "validacao": 52.99,
+     "teste": 56.44
+    },
+    "100": {
+     "validacao": 56.52,
+     "teste": 58.8
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 30.16,
+     "teste": 33.1
+    },
+    "33": {
+     "validacao": 26.63,
+     "teste": 27.99
+    },
+    "100": {
+     "validacao": 22.55,
+     "teste": 25.74
+    }
+   },
+   "aprendido_mean_abs_pct": 17.884241458442478,
+   "aprendido": {
+    "validacao": 67.66,
+    "teste": 65.0
+   }
+  },
+  {
+   "seed": 4,
+   "footprint_mean_abs_pct": 0.21563328269217485,
+   "previsto": {
+    "10": {
+     "validacao": 53.26,
+     "teste": 56.37
+    },
+    "33": {
+     "validacao": 53.8,
+     "teste": 56.27
+    },
+    "100": {
+     "validacao": 55.71,
+     "teste": 58.42
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 41.03,
+     "teste": 40.28
+    },
+    "33": {
+     "validacao": 34.78,
+     "teste": 36.41
+    },
+    "100": {
+     "validacao": 23.37,
+     "teste": 27.22
+    }
+   },
+   "aprendido_mean_abs_pct": 18.18639982698692,
+   "aprendido": {
+    "validacao": 67.39,
+    "teste": 64.72
+   }
+  },
+  {
+   "seed": 5,
+   "footprint_mean_abs_pct": 0.2345918045850542,
+   "previsto": {
+    "10": {
+     "validacao": 52.45,
+     "teste": 56.48
+    },
+    "33": {
+     "validacao": 53.8,
+     "teste": 55.67
+    },
+    "100": {
+     "validacao": 53.26,
+     "teste": 57.75
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 30.71,
+     "teste": 34.79
+    },
+    "33": {
+     "validacao": 30.71,
+     "teste": 35.85
+    },
+    "100": {
+     "validacao": 26.9,
+     "teste": 27.78
+    }
+   },
+   "aprendido_mean_abs_pct": 18.39418144275745,
+   "aprendido": {
+    "validacao": 64.4,
+    "teste": 65.56
+   }
+  },
+  {
+   "seed": 6,
+   "footprint_mean_abs_pct": 0.21445474585561897,
+   "previsto": {
+    "10": {
+     "validacao": 52.45,
+     "teste": 56.8
+    },
+    "33": {
+     "validacao": 53.53,
+     "teste": 57.08
+    },
+    "100": {
+     "validacao": 54.08,
+     "teste": 58.59
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 43.75,
+     "teste": 42.96
+    },
+    "33": {
+     "validacao": 34.51,
+     "teste": 38.42
+    },
+    "100": {
+     "validacao": 23.64,
+     "teste": 23.84
+    }
+   },
+   "aprendido_mean_abs_pct": 17.97780240368512,
+   "aprendido": {
+    "validacao": 67.66,
+    "teste": 66.3
+   }
+  },
+  {
+   "seed": 7,
+   "footprint_mean_abs_pct": 0.20434380688432915,
+   "previsto": {
+    "10": {
+     "validacao": 51.9,
+     "teste": 56.65
+    },
+    "33": {
+     "validacao": 52.17,
+     "teste": 57.25
+    },
+    "100": {
+     "validacao": 57.88,
+     "teste": 58.56
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 51.09,
+     "teste": 57.18
+    },
+    "33": {
+     "validacao": 38.59,
+     "teste": 43.13
+    },
+    "100": {
+     "validacao": 31.79,
+     "teste": 33.63
+    }
+   },
+   "aprendido_mean_abs_pct": 18.10503634106782,
+   "aprendido": {
+    "validacao": 64.67,
+    "teste": 65.32
+   }
+  },
+  {
+   "seed": 8,
+   "footprint_mean_abs_pct": 0.22189502124092542,
+   "previsto": {
+    "10": {
+     "validacao": 51.9,
+     "teste": 56.34
+    },
+    "33": {
+     "validacao": 52.17,
+     "teste": 56.48
+    },
+    "100": {
+     "validacao": 58.15,
+     "teste": 57.96
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 37.5,
+     "teste": 38.7
+    },
+    "33": {
+     "validacao": 32.07,
+     "teste": 31.2
+    },
+    "100": {
+     "validacao": 23.91,
+     "teste": 29.05
+    }
+   },
+   "aprendido_mean_abs_pct": 18.09027965904938,
+   "aprendido": {
+    "validacao": 66.3,
+    "teste": 63.63
+   }
+  },
+  {
+   "seed": 9,
+   "footprint_mean_abs_pct": 0.2317631104536607,
+   "previsto": {
+    "10": {
+     "validacao": 52.17,
+     "teste": 56.65
+    },
+    "33": {
+     "validacao": 53.53,
+     "teste": 57.18
+    },
+    "100": {
+     "validacao": 58.15,
+     "teste": 59.15
+    }
+   },
+   "aleatorio": {
+    "10": {
+     "validacao": 41.03,
+     "teste": 43.56
+    },
+    "33": {
+     "validacao": 28.26,
+     "teste": 34.47
+    },
+    "100": {
+     "validacao": 26.9,
+     "teste": 27.46
+    }
+   },
+   "aprendido_mean_abs_pct": 18.29270948138502,
+   "aprendido": {
+    "validacao": 62.77,
+    "teste": 64.33
+   }
+  }
+ ],
+ "summary": {
+  "base_test": 56.65,
+  "k_escolhido": 100,
+  "previsto_teste": {
+   "10": 56.558,
+   "33": 56.545,
+   "100": 58.37
+  },
+  "aleatorio_teste": {
+   "10": 42.423,
+   "33": 34.448,
+   "100": 27.345
+  },
+  "previsto_validacao": {
+   "10": 52.555,
+   "33": 53.095,
+   "100": 56.059
+  },
+  "aprendido_teste": 65.078,
+  "footprint_mean_abs_pct": 0.2283500388986997,
+  "aprendido_mean_abs_pct": 18.0722301825881
+ }
+}

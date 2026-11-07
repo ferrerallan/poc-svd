@@ -1,0 +1,174 @@
+{
+ "congelado_72": {
+  "acuracia": {
+   "media": 60.313,
+   "dp": 0.6017760750016944,
+   "min": 59.33,
+   "max": 61.23,
+   "por_semente": [
+    59.33,
+    60.14,
+    60.0,
+    60.39,
+    60.85,
+    61.23,
+    60.49,
+    61.02,
+    59.68,
+    60.0
+   ]
+  },
+  "acuracia_treino_final": 64.626,
+  "params_restritos_efetivos": 0,
+  "lr_restrito": null,
+  "bloco_oft": null,
+  "minutos": 1.1,
+  "desloc_pct": 0.0,
+  "sigma_top10_abs_pct": 0.0,
+  "direcoes_preservadas": 1.000000009106265
+ },
+ "so_sigma": {
+  "acuracia": {
+   "media": 70.30199999999999,
+   "dp": 0.6312034361264018,
+   "min": 69.08,
+   "max": 71.13,
+   "por_semente": [
+    70.21,
+    70.14,
+    70.42,
+    69.58,
+    71.13,
+    70.63,
+    71.13,
+    69.08,
+    70.21,
+    70.49
+   ]
+  },
+  "acuracia_treino_final": 76.656,
+  "params_restritos_efetivos": 27648,
+  "lr_restrito": 0.01,
+  "bloco_oft": null,
+  "minutos": 1.25,
+  "desloc_pct": 9.276983343685666,
+  "sigma_top10_abs_pct": 3.6876010329514326,
+  "direcoes_preservadas": 0.9999645847413275
+ },
+ "so_rotacao_bloco32": {
+  "acuracia": {
+   "media": 71.257,
+   "dp": 0.5566976039307362,
+   "min": 70.39,
+   "max": 72.25,
+   "por_semente": [
+    71.76,
+    70.99,
+    71.13,
+    71.02,
+    71.83,
+    72.25,
+    71.16,
+    70.7,
+    71.34,
+    70.39
+   ]
+  },
+  "acuracia_treino_final": 78.595,
+  "params_restritos_efetivos": 642816,
+  "lr_restrito": 0.0001,
+  "bloco_oft": 32,
+  "minutos": 2.0,
+  "desloc_pct": 2.217287558467231,
+  "sigma_top10_abs_pct": 2.9902806222281697e-05,
+  "direcoes_preservadas": 0.9997820956839455
+ },
+ "so_rotacao_bloco3": {
+  "acuracia": {
+   "media": 69.466,
+   "dp": 0.6539316987779878,
+   "min": 68.63,
+   "max": 70.56,
+   "por_semente": [
+    69.3,
+    70.07,
+    69.23,
+    68.63,
+    70.56,
+    69.3,
+    70.35,
+    68.7,
+    69.15,
+    69.37
+   ]
+  },
+  "acuracia_treino_final": 75.853,
+  "params_restritos_efetivos": 41472,
+  "lr_restrito": 0.001,
+  "bloco_oft": 3,
+  "minutos": 2.01,
+  "desloc_pct": 5.5947719801527755,
+  "sigma_top10_abs_pct": 3.0003344789382897e-05,
+  "direcoes_preservadas": 0.9983975398043792
+ },
+ "completo": {
+  "acuracia": {
+   "media": 72.845,
+   "dp": 0.5408891856111638,
+   "min": 71.87,
+   "max": 73.63,
+   "por_semente": [
+    72.99,
+    72.92,
+    72.64,
+    73.42,
+    72.89,
+    73.63,
+    73.27,
+    71.87,
+    72.64,
+    72.18
+   ]
+  },
+  "acuracia_treino_final": 81.554,
+  "params_restritos_efetivos": null,
+  "lr_restrito": null,
+  "bloco_oft": null,
+  "minutos": 1.48,
+  "desloc_pct": 0.5448378037221523,
+  "sigma_top10_abs_pct": 0.017521264453534968,
+  "direcoes_preservadas": 0.9910359215405252
+ },
+ "so_sigma_passo_novo": {
+  "acuracia": {
+   "media": 71.513,
+   "dp": 0.5372987995519802,
+   "min": 70.42,
+   "max": 72.25,
+   "por_semente": [
+    71.3,
+    71.06,
+    71.94,
+    72.25,
+    72.11,
+    71.58,
+    71.44,
+    71.34,
+    70.42,
+    71.69
+   ]
+  },
+  "acuracia_treino_final": 78.30799999999999,
+  "params_restritos_efetivos": 27648,
+  "lr_restrito": 0.03,
+  "bloco_oft": null,
+  "minutos": 1.25,
+  "desloc_pct": 21.592646435730988,
+  "sigma_top10_abs_pct": 10.705533704927397,
+  "direcoes_preservadas": 0.9999632168975141
+ },
+ "rotacao_bloco3_menos_so_sigma": {
+  "media": -0.8359999999999971,
+  "sementes_rotacao_acima": 0
+ }
+}

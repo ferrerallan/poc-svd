@@ -1,0 +1,8 @@
+congelado_72         acc 60.31 +- 0.60 | params 0 | lr None | disp 0.000% | s10 0.00000% | preserved 1.0000 | 1.1 min
+so_sigma             acc 70.30 +- 0.63 | params 27648 | lr 0.01 | disp 9.277% | s10 3.68760% | preserved 1.0000 | 1.2 min
+so_rotacao_bloco32   acc 71.26 +- 0.56 | params 642816 | lr 0.0001 | disp 2.217% | s10 0.00003% | preserved 0.9998 | 2.0 min
+so_rotacao_bloco3    acc 69.47 +- 0.65 | params 41472 | lr 0.001 | disp 5.595% | s10 0.00003% | preserved 0.9984 | 2.0 min
+completo             acc 72.84 +- 0.54 | params None | lr None | disp 0.545% | s10 0.01752% | preserved 0.9910 | 1.5 min
+so_sigma_passo_novo  acc 71.51 +- 0.54 | params 27648 | lr 0.03 | disp 21.593% | s10 10.70553% | preserved 1.0000 | 1.2 min
+rotation(3) - sigma: {'media': -0.8359999999999971, 'sementes_rotacao_acima': 0}
+written: doutorado/experimento1/etapa5/resumo_etapa5.json

@@ -1,0 +1,154 @@
+{
+  "so_rotacao_bloco3": {
+    "lr": "1e-3",
+    "pilotos": [
+      {
+        "lr": 1e-05,
+        "lr_str": "1e-5",
+        "validacao_final": 57.88,
+        "validacao_por_epoca": [
+          45.11,
+          47.28,
+          53.8,
+          57.88,
+          58.7
+        ],
+        "treino_final": 64.65,
+        "pasta": "models/etapa5/piloto_rotacao3_lr1e-5"
+      },
+      {
+        "lr": 0.0001,
+        "lr_str": "1e-4",
+        "validacao_final": 58.15,
+        "validacao_por_epoca": [
+          45.11,
+          50.27,
+          55.71,
+          58.42,
+          59.51
+        ],
+        "treino_final": 67.42,
+        "pasta": "models/etapa5/piloto_rotacao3_lr1e-4"
+      },
+      {
+        "lr": 0.001,
+        "lr_str": "1e-3",
+        "validacao_final": 62.5,
+        "validacao_por_epoca": [
+          45.11,
+          54.35,
+          60.33,
+          64.4,
+          65.22
+        ],
+        "treino_final": 75.88,
+        "pasta": "models/etapa5/piloto_rotacao3_lr1e-3"
+      },
+      {
+        "lr": 0.01,
+        "lr_str": "1e-2",
+        "validacao_final": 59.24,
+        "validacao_por_epoca": [
+          45.11,
+          40.22,
+          55.98,
+          59.51,
+          60.87
+        ],
+        "treino_final": 70.05,
+        "pasta": "models/etapa5/piloto_rotacao3_lr1e-2"
+      }
+    ]
+  },
+  "so_sigma": {
+    "lr": "3e-2",
+    "lr_etapa4": "1e-2",
+    "novo_passo_venceu": true,
+    "pilotos": [
+      {
+        "lr": 1e-05,
+        "lr_str": "1e-5",
+        "validacao_final": 57.61,
+        "validacao_por_epoca": [
+          45.11,
+          47.55,
+          53.8,
+          55.98,
+          59.78
+        ],
+        "treino_final": 64.32,
+        "pasta": "models/etapa4/piloto_so_sigma_lr1e-5"
+      },
+      {
+        "lr": 0.0001,
+        "lr_str": "1e-4",
+        "validacao_final": 56.25,
+        "validacao_por_epoca": [
+          45.11,
+          46.47,
+          54.35,
+          54.35,
+          57.61
+        ],
+        "treino_final": 65.05,
+        "pasta": "models/etapa4/piloto_so_sigma_lr1e-4"
+      },
+      {
+        "lr": 0.001,
+        "lr_str": "1e-3",
+        "validacao_final": 57.61,
+        "validacao_por_epoca": [
+          45.11,
+          49.73,
+          56.25,
+          60.87,
+          59.78
+        ],
+        "treino_final": 67.81,
+        "pasta": "models/etapa4/piloto_so_sigma_lr1e-3"
+      },
+      {
+        "lr": 0.01,
+        "lr_str": "1e-2",
+        "validacao_final": 64.95,
+        "validacao_por_epoca": [
+          45.11,
+          52.45,
+          61.41,
+          66.58,
+          63.59
+        ],
+        "treino_final": 77.18,
+        "pasta": "models/etapa4/piloto_so_sigma_lr1e-2"
+      },
+      {
+        "lr": 0.03,
+        "lr_str": "3e-2",
+        "validacao_final": 65.49,
+        "validacao_por_epoca": [
+          45.11,
+          51.09,
+          61.68,
+          66.58,
+          66.3
+        ],
+        "treino_final": 79.95,
+        "pasta": "models/etapa5/piloto_so_sigma_lr3e-2"
+      },
+      {
+        "lr": 0.1,
+        "lr_str": "1e-1",
+        "validacao_final": 47.83,
+        "validacao_por_epoca": [
+          45.11,
+          32.61,
+          42.66,
+          45.92,
+          48.37
+        ],
+        "treino_final": 54.0,
+        "pasta": "models/etapa5/piloto_so_sigma_lr1e-1"
+      }
+    ]
+  }
+}

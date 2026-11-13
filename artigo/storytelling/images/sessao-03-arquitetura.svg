@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="660" viewBox="0 0 760 660" role="img" aria-labelledby="title"><title id="title">Encontrar os pesos que vamos estudar</title>
+<rect width="760" height="660" rx="20" fill="#f3f6f1"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8" fill="none" stroke="#237a63" stroke-width="1.5"/></marker></defs>
+<text x="30" y="42" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">01  O caminho desta sessão</text>
+<rect x="30" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="140.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Arquivo do modelo</text>
+<text x="140.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Nomes e tamanhos</text>
+<path d="M254 112 H266" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="270" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="380.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Contar os pesos</text>
+<text x="380.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Linhas × colunas</text>
+<path d="M494 112 H506" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="510" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="620.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Escolher o foco</text>
+<text x="620.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">72 matrizes</text>
+<path d="M380 171 V202" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="30" y="235" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">02  Dentro dos 12 blocos</text>
+<text x="45" y="269" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 1</text>
+<rect x="45" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="72" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="99" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="45" y="304" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="72" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="99" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="163" y="269" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 2</text>
+<rect x="163" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="190" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="217" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="163" y="304" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="190" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="217" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="281" y="269" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 3</text>
+<rect x="281" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="308" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="335" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="281" y="304" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="308" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="335" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="399" y="269" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 4</text>
+<rect x="399" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="426" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="453" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="399" y="304" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="426" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="453" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="517" y="269" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 5</text>
+<rect x="517" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="544" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="571" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="517" y="304" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="544" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="571" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="635" y="269" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 6</text>
+<rect x="635" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="662" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="689" y="279" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="635" y="304" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="662" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="689" y="304" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="45" y="360" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 7</text>
+<rect x="45" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="72" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="99" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="45" y="395" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="72" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="99" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="163" y="360" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 8</text>
+<rect x="163" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="190" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="217" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="163" y="395" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="190" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="217" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="281" y="360" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 9</text>
+<rect x="281" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="308" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="335" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="281" y="395" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="308" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="335" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="399" y="360" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 10</text>
+<rect x="399" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="426" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="453" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="399" y="395" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="426" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="453" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="517" y="360" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 11</text>
+<rect x="517" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="544" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="571" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="517" y="395" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="544" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="571" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="635" y="360" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#233b49">Bloco 12</text>
+<rect x="635" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="662" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="689" y="370" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="635" y="395" width="21" height="19" rx="10" fill="#cfdfed"/>
+<rect x="662" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<rect x="689" y="395" width="21" height="19" rx="10" fill="#e1ebe2"/>
+<text x="30" y="466" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">6 matrizes por bloco × 12 blocos = 72 matrizes</text>
+<text x="30" y="540" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">03  O que ficou desta sessão</text>
+<rect x="30" y="560" width="700" height="76" rx="10" fill="#e1ebe2"/>
+<text x="48" y="588" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="start" fill="#233b49">72 matrizes concentram 96% dos pesos</text>
+<text x="48" y="616" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">Os outros pesos também podem afetar a resposta.</text>
+</svg>

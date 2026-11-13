@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="660" viewBox="0 0 760 660" role="img" aria-labelledby="title"><title id="title">Separar o aprendizado do encolhimento</title>
+<rect width="760" height="660" rx="20" fill="#f3f6f1"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8" fill="none" stroke="#237a63" stroke-width="1.5"/></marker></defs>
+<text x="30" y="42" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">01  O caminho desta sessão</text>
+<rect x="30" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="140.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Mesmos dados</text>
+<text x="140.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Mesmos dez sorteios</text>
+<path d="M254 112 H266" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="270" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="380.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Mudar uma regra</text>
+<text x="380.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Sem encolhimento</text>
+<path d="M494 112 H506" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="510" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="620.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Reavaliar</text>
+<text x="620.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Pesos e acerto</text>
+<path d="M380 171 V202" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="30" y="235" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">02  O efeito de desligar o encolhimento</text>
+<text x="30" y="280" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="start" fill="#233b49">Redução comum dos σ</text>
+<rect x="30" y="303" width="310" height="94" rx="10" fill="#cfdfed"/>
+<text x="185.0" y="343.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Com encolhimento</text>
+<text x="185.0" y="371.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">−0,0092%</text>
+<path d="M351 350 H398" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="410" y="303" width="320" height="94" rx="10" fill="#ffe2a4"/>
+<text x="570.0" y="343.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Sem encolhimento</text>
+<text x="570.0" y="371.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">−0,0002%</text>
+<text x="30" y="442" font-family="DejaVu Sans,sans-serif" font-size="22" font-weight="700" text-anchor="start" fill="#233b49">Acerto no teste: 94,15% → 94,13%</text>
+<text x="30" y="474" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="400" text-anchor="start" fill="#233b49">O movimento diminuiu; o acerto quase não mudou.</text>
+<text x="30" y="540" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">03  O que ficou desta sessão</text>
+<rect x="30" y="560" width="700" height="76" rx="10" fill="#e1ebe2"/>
+<text x="48" y="588" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="start" fill="#233b49">O encolhimento explicava parte do movimento</text>
+<text x="48" y="616" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">Para pets, o corpo original já era uma boa base.</text>
+</svg>

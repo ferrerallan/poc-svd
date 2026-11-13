@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="660" viewBox="0 0 760 660" role="img" aria-labelledby="title"><title id="title">Ensinar apenas a cabeça do modelo</title>
+<rect width="760" height="660" rx="20" fill="#f3f6f1"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8" fill="none" stroke="#237a63" stroke-width="1.5"/></marker></defs>
+<text x="30" y="42" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">01  O caminho desta sessão</text>
+<rect x="30" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="140.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Fotos de pets</text>
+<text x="140.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Raça conhecida</text>
+<path d="M254 112 H266" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="270" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="380.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Corpo fixo</text>
+<text x="380.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Produzir o resumo</text>
+<path d="M494 112 H506" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="510" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="620.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Cabeça linear</text>
+<text x="620.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Dar notas às raças</text>
+<path d="M380 171 V202" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="30" y="235" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">02  Regressão logística multinomial: 37 raças</text>
+<rect x="30" y="279" width="180" height="91" rx="10" fill="#cfdfed"/>
+<text x="120.0" y="317.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Corpo fixo</text>
+<text x="120.0" y="345.5" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Pesos preservados</text>
+<path d="M220 324 H257" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="269" y="279" width="210" height="91" rx="10" fill="#ffe2a4"/>
+<text x="374.0" y="317.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Cabeça</text>
+<text x="374.0" y="345.5" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Uma nota por raça</text>
+<path d="M489 324 H527" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="539" y="279" width="191" height="91" rx="10" fill="#e1ebe2"/>
+<text x="634.5" y="317.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Resposta</text>
+<text x="634.5" y="345.5" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Notas por raça</text>
+<rect x="405" y="409" width="325" height="65" rx="10" fill="#e1ebe2"/>
+<text x="567.5" y="448.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Comparar com a raça correta</text>
+<path d="M635 380 V399" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M395 442 H374 V380" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="66" y="443" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="start" fill="#233b49">O corpo não recebe ajustes.</text>
+<text x="30" y="540" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">03  O que ficou desta sessão</text>
+<rect x="30" y="560" width="700" height="76" rx="10" fill="#e1ebe2"/>
+<text x="48" y="588" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="start" fill="#233b49">93,82% de acerto, sem alterar o corpo</text>
+<text x="48" y="616" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">Média de dez treinos; apenas a cabeça foi ajustada.</text>
+</svg>

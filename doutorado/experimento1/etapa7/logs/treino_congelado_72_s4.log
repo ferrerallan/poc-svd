@@ -1,0 +1,14 @@
+1) variant congelado_72 | train 3680 | teste 3669 | classes 10 | restricted lr None
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9878.44it/s]
+   trainable parameters: restricted 0 | rest of the body 822,912 | head 3,850
+   accuracy before training (teste): 11.3%
+   epoch 1/5  frozen   loss 1.629  train acc 52.3%  acc teste 53.6%
+   epoch 2/5  free     loss 1.233  train acc 72.1%  acc teste 62.1%
+   epoch 3/5  free     loss 1.049  train acc 80.3%  acc teste 66.4%
+   epoch 4/5  free     loss 0.968  train acc 84.2%  acc teste 70.1%
+   epoch 5/5  free     loss 0.933  train acc 85.5%  acc teste 70.7%
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9756.84it/s]
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9784.81it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 13.66it/s]
+
+DONE in 1.2 min | congelado_72 | teste: 11.3% -> 70.7% | saved in models/etapa7/congelado_72_s4/

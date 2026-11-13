@@ -1,0 +1,18 @@
+environment recorded in doutorado/experimento1/etapa7/ambiente.json
+{
+  "python": "3.10.12",
+  "pacotes": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "PIL": "12.3.0",
+    "sklearn": "1.7.2",
+    "torch": "2.14.0+cu130",
+    "torchvision": "0.29.0+cu130",
+    "transformers": "5.5.0",
+    "safetensors": "0.7.0",
+    "huggingface_hub": "1.9.2"
+  },
+  "gpu": "NVIDIA GeForce RTX 3060",
+  "driver_nvidia": "580.178.04",
+  "git_commit": "b4fd156a297250be117786c9bae690fad9737a18"
+}

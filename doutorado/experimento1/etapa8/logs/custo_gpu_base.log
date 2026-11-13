@@ -1,0 +1,11 @@
+gpu: NVIDIA GeForce RTX 3060 | batch 32 | 30 steps per variant (5 warm-up) | preloaded photos 919 MB (excluded from the memory figures)
+      variant   trainable weights MB  grads MB  adam MB  peak MB  s/step s/eval64
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8811.98it/s]
+ congelado_72   1,651,976      331.1       6.3     12.6   2711.8  0.2216   0.1762
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 7224.80it/s]
+     so_sigma   1,707,272      509.2       6.5     13.0   4176.6  0.3042   0.1869
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 10600.20it/s]
+   so_rotacao   1,900,808      347.8       7.2     14.5   4050.0  0.3647   0.2187
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9876.14it/s]
+     completo  86,586,632      346.8     330.3    660.6   4840.6  0.3009   0.1762
+written: doutorado/experimento1/etapa8/custo_gpu_base.json

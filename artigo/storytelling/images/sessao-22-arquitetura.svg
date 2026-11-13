@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="660" viewBox="0 0 760 660" role="img" aria-labelledby="title desc">
+<title id="title">Checkpoint: desempenho, disco e memória</title>
+<desc id="desc">Em cinco pares de modelo e tarefa, treinar só sigma recuperou de 76 a 94,4 por cento do ganho das 72 matrizes, ficando de 0,17 a 2,81 pontos abaixo do treino livre. Com modelo original compartilhado, a atualização completa por tarefa ocupa cerca de 3,4 megabytes no Small contra 84,2 megabytes do modelo inteiro, e 6,6 no Base contra 330,3. O pico de memória na GPU caiu 7,8 e 13,7 por cento, sem ganho de velocidade.</desc>
+<rect width="760" height="660" rx="20" fill="#f3f6f1"/>
+<text x="30" y="42" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">CHECKPOINT · 5 PARES MEDIDOS</text>
+<rect x="30" y="66" width="335" height="125" rx="11" fill="#e1ebe2"/>
+<rect x="395" y="66" width="335" height="125" rx="11" fill="#ffe2a4"/>
+<text x="52" y="104" font-family="DejaVu Sans,sans-serif" font-size="27" font-weight="700" text-anchor="start" fill="#233b49">76% a 94,4%</text>
+<text x="52" y="135" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="start" fill="#233b49">do ganho recuperado por só σ</text>
+<text x="52" y="163" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="start" fill="#233b49">nas 72 matrizes</text>
+<text x="417" y="104" font-family="DejaVu Sans,sans-serif" font-size="27" font-weight="700" text-anchor="start" fill="#233b49">0,17 a 2,81</text>
+<text x="417" y="135" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="start" fill="#233b49">pontos a menos que o treino livre</text>
+<text x="417" y="163" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="start" fill="#233b49">é o preço em acerto</text>
+<text x="30" y="240" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">MENOS DISCO POR TAREFA</text>
+<text x="30" y="270" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">Modelo original compartilhado; atualização inclui σ, cabeça e restante.</text>
+<rect x="30" y="290" width="700" height="56" rx="11" fill="#e1ebe2"/>
+<text x="46" y="325" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">Small</text>
+<text x="168" y="325" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">Modelo inteiro</text>
+<text x="312" y="325" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">84,2 MB</text>
+<text x="447" y="325" font-family="DejaVu Sans,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#233b49">→</text>
+<text x="492" y="325" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">Atualização</text>
+<text x="715" y="325" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="end" fill="#233b49">≈3,4 MB</text>
+<rect x="30" y="359" width="700" height="56" rx="11" fill="#e1ebe2"/>
+<text x="46" y="394" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">Base</text>
+<text x="168" y="394" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">Modelo inteiro</text>
+<text x="312" y="394" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">330,3 MB</text>
+<text x="447" y="394" font-family="DejaVu Sans,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#233b49">→</text>
+<text x="492" y="394" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">Atualização</text>
+<text x="715" y="394" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="end" fill="#233b49">≈6,6 MB</text>
+<text x="30" y="462" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">MENOR PICO NA GPU</text>
+<rect x="30" y="482" width="700" height="49" rx="11" fill="#cfdfed"/>
+<text x="46" y="513" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="start" fill="#233b49">Small</text>
+<text x="184" y="513" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="400" text-anchor="start" fill="#233b49">2.056 MB</text>
+<text x="322" y="513" font-family="DejaVu Sans,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#233b49">→</text>
+<text x="375" y="513" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#233b49">1.894 MB</text>
+<text x="715" y="513" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="end" fill="#233b49">−7,8%</text>
+<rect x="30" y="541" width="700" height="49" rx="11" fill="#cfdfed"/>
+<text x="46" y="572" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="start" fill="#233b49">Base</text>
+<text x="184" y="572" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="400" text-anchor="start" fill="#233b49">4.841 MB</text>
+<text x="322" y="572" font-family="DejaVu Sans,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#233b49">→</text>
+<text x="375" y="572" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#233b49">4.177 MB</text>
+<text x="715" y="572" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="end" fill="#233b49">−13,7%</text>
+<text x="30" y="632" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#233b49">Tempo por passo praticamente igual ao treino livre.</text>
+</svg>

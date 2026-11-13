@@ -1,0 +1,6 @@
+congelado_72       acc 95.12 +- 0.22 | params 0 | lr None | disp 0.000% | s10 0.00000% | preserved 1.0000 | 1.1 min
+so_sigma           acc 98.00 +- 0.17 | params 27648 | lr 0.01 | disp 8.610% | s10 3.28837% | preserved 1.0000 | 1.3 min
+so_rotacao_bloco3  acc 97.78 +- 0.19 | params 41472 | lr 0.001 | disp 5.131% | s10 0.00003% | preserved 0.9986 | 2.2 min
+completo           acc 98.17 +- 0.17 | params 0 | lr None | disp 0.471% | s10 0.01741% | preserved 0.9931 | 1.3 min
+rotation(3) - sigma: {'media': -0.21700000000000585, 'sementes_rotacao_acima': 3} | full - sigma: {'media': 0.1700000000000003, 'sementes_completo_acima': 8}
+written: doutorado/experimento1/etapa10/resumo_etapa10.json

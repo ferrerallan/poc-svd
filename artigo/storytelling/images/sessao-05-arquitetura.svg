@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="660" viewBox="0 0 760 660" role="img" aria-labelledby="title"><title id="title">Fazer as partes da foto trocarem informação</title>
+<rect width="760" height="660" rx="20" fill="#f3f6f1"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8" fill="none" stroke="#237a63" stroke-width="1.5"/></marker></defs>
+<text x="30" y="42" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">01  O caminho desta sessão</text>
+<rect x="30" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="140.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Tokens de entrada</text>
+<text x="140.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">A, B e C</text>
+<path d="M254 112 H266" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="270" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="380.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Comparar</text>
+<text x="380.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Calcular os pesos</text>
+<path d="M494 112 H506" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="510" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="620.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Misturar</text>
+<text x="620.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Atualizar cada token</text>
+<path d="M380 171 V202" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="30" y="235" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">02  Atenção: a ideia central do Transformer</text>
+<rect x="30" y="268" width="135" height="48" rx="10" fill="#cfdfed"/>
+<text x="97.5" y="299.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Token A</text>
+<path d="M175 292 H218 V359 H250" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="30" y="333" width="135" height="48" rx="10" fill="#cfdfed"/>
+<text x="97.5" y="364.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Token B</text>
+<path d="M175 357 H218 V359 H250" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="30" y="398" width="135" height="48" rx="10" fill="#cfdfed"/>
+<text x="97.5" y="429.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Token C</text>
+<path d="M175 422 H218 V359 H250" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="262" y="309" width="219" height="102" rx="10" fill="#ffe2a4"/>
+<text x="371.5" y="353.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Pesos da atenção</text>
+<text x="371.5" y="381.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Quanto usar de cada</text>
+<path d="M491 359 H529" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="540" y="309" width="190" height="102" rx="10" fill="#e1ebe2"/>
+<text x="635.0" y="353.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Token A novo</text>
+<text x="635.0" y="381.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Mistura de A, B e C</text>
+<text x="30" y="472" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="400" text-anchor="start" fill="#233b49">O mesmo cálculo é feito para atualizar B, C e os demais.</text>
+<text x="30" y="540" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">03  O que ficou desta sessão</text>
+<rect x="30" y="560" width="700" height="76" rx="10" fill="#e1ebe2"/>
+<text x="48" y="588" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="start" fill="#233b49">Cada parte passa a usar o contexto das outras</text>
+<text x="48" y="616" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">No modelo, continuam 257 listas de 384 números.</text>
+</svg>

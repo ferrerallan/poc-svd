@@ -1,0 +1,14 @@
+1) variant so_rotacao | train 3312 | validacao 368 | classes 10 | restricted lr 0.01
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8620.15it/s]
+   trainable parameters: restricted 124,416 | rest of the body 822,912 | head 3,850
+   accuracy before training (validacao): 5.7%
+   epoch 1/5  frozen   loss 1.099  train acc 77.8%  acc validacao 91.3%
+   epoch 2/5  free     loss 1.111  train acc 76.1%  acc validacao 92.7%
+   epoch 3/5  free     loss 0.681  train acc 93.8%  acc validacao 94.8%
+   epoch 4/5  free     loss 0.595  train acc 97.2%  acc validacao 97.6%
+   epoch 5/5  free     loss 0.563  train acc 98.5%  acc validacao 97.3%
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8499.13it/s]
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8874.94it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 25.64it/s]
+
+DONE in 1.6 min | so_rotacao | validacao: 5.7% -> 96.7% | saved in models/etapa10/piloto_so_rotacao_bloco3_lr1e-2/

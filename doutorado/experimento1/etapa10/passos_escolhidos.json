@@ -1,0 +1,103 @@
+{
+  "so_sigma": {
+    "lr": "1e-2",
+    "pilotos": [
+      {
+        "lr": 0.001,
+        "lr_str": "1e-3",
+        "validacao_final": 94.84,
+        "validacao_por_epoca": [
+          91.3,
+          93.48,
+          94.57,
+          94.57,
+          95.11
+        ],
+        "treino_final": 97.66
+      },
+      {
+        "lr": 0.01,
+        "lr_str": "1e-2",
+        "validacao_final": 97.28,
+        "validacao_por_epoca": [
+          91.3,
+          96.74,
+          95.65,
+          97.55,
+          97.01
+        ],
+        "treino_final": 99.09
+      },
+      {
+        "lr": 0.03,
+        "lr_str": "3e-2",
+        "validacao_final": 97.01,
+        "validacao_por_epoca": [
+          91.3,
+          92.39,
+          96.74,
+          96.74,
+          97.28
+        ],
+        "treino_final": 99.3
+      },
+      {
+        "lr": 0.1,
+        "lr_str": "1e-1",
+        "validacao_final": 94.57,
+        "validacao_por_epoca": [
+          91.3,
+          79.89,
+          88.59,
+          91.85,
+          94.29
+        ],
+        "treino_final": 96.33
+      }
+    ]
+  },
+  "so_rotacao_bloco3": {
+    "lr": "1e-3",
+    "pilotos": [
+      {
+        "lr": 0.0001,
+        "lr_str": "1e-4",
+        "validacao_final": 95.38,
+        "validacao_por_epoca": [
+          91.3,
+          94.57,
+          95.11,
+          95.92,
+          95.11
+        ],
+        "treino_final": 97.57
+      },
+      {
+        "lr": 0.001,
+        "lr_str": "1e-3",
+        "validacao_final": 97.01,
+        "validacao_por_epoca": [
+          91.3,
+          96.2,
+          96.74,
+          97.55,
+          97.55
+        ],
+        "treino_final": 99.06
+      },
+      {
+        "lr": 0.01,
+        "lr_str": "1e-2",
+        "validacao_final": 96.74,
+        "validacao_por_epoca": [
+          91.3,
+          92.66,
+          94.84,
+          97.55,
+          97.28
+        ],
+        "treino_final": 98.51
+      }
+    ]
+  }
+}

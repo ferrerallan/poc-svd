@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="660" viewBox="0 0 760 660" role="img" aria-labelledby="title"><title id="title">Medir a economia de verdade</title>
+<rect width="760" height="660" rx="20" fill="#f3f6f1"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8" fill="none" stroke="#237a63" stroke-width="1.5"/></marker></defs>
+<text x="30" y="42" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">01  O caminho desta sessão</text>
+<rect x="30" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="140.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Mesma placa</text>
+<text x="140.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Mesmo lote de fotos</text>
+<path d="M254 112 H266" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="270" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="380.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Medir o treino</text>
+<text x="380.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Tempo e memória</text>
+<path d="M494 112 H506" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="510" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="620.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Inspecionar arquivos</text>
+<text x="620.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">O que precisa salvar</text>
+<path d="M380 171 V202" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="30" y="235" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">02  Só σ comparado ao treino livre</text>
+<text x="395" y="282" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="700" text-anchor="middle" fill="#233b49">Livre</text>
+<text x="620" y="282" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="700" text-anchor="middle" fill="#233b49">Só σ</text>
+<text x="30" y="328" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="700" text-anchor="start" fill="#233b49">Por passo</text>
+<rect x="300" y="300" width="190" height="43" rx="10" fill="#cfdfed"/>
+<text x="395.0" y="328.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">0,1225 s</text>
+<rect x="525" y="300" width="190" height="43" rx="10" fill="#ffe2a4"/>
+<text x="620.0" y="328.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">0,1229 s</text>
+<text x="30" y="385" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="700" text-anchor="start" fill="#233b49">Pico de memória</text>
+<rect x="300" y="357" width="190" height="43" rx="10" fill="#cfdfed"/>
+<text x="395.0" y="385.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">2.056 MB</text>
+<rect x="525" y="357" width="190" height="43" rx="10" fill="#ffe2a4"/>
+<text x="620.0" y="385.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">1.894 MB</text>
+<text x="30" y="442" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="700" text-anchor="start" fill="#233b49">Gradientes + otimizador</text>
+<rect x="300" y="414" width="190" height="43" rx="10" fill="#cfdfed"/>
+<text x="395.0" y="442.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">252,4 MB</text>
+<rect x="525" y="414" width="190" height="43" rx="10" fill="#ffe2a4"/>
+<text x="620.0" y="442.5" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">9,8 MB</text>
+<text x="30" y="494" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="start" fill="#233b49">O pico cai menos: outras partes do treino ainda usam memória.</text>
+<text x="30" y="540" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">03  O que ficou desta sessão</text>
+<rect x="30" y="560" width="700" height="76" rx="10" fill="#e1ebe2"/>
+<text x="48" y="588" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="start" fill="#233b49">Menos memória; tempo praticamente igual</text>
+<text x="48" y="616" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">O arquivo de σ sozinho não é o modelo adaptado completo.</text>
+</svg>

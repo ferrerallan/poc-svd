@@ -1,0 +1,1384 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Aulas com desenhos das sessões 1 a 21: SVD, DINOv2, treinos restritos e testes em diferentes modelos e domínios.">
+<title>Sessões 1 a 21 · Caderno de estudo</title>
+<style>
+:root{--ink:#233b49;--green:#237a63;--line:#dce2d9}*{box-sizing:border-box}body{margin:0;background:#fbfaf6;color:var(--ink);font:20px/1.65 system-ui,sans-serif}main{max-width:820px;margin:auto;padding:45px 35px 60px}header{padding-bottom:25px}.label{color:var(--green);font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}h1{font-size:clamp(34px,5vw,50px);line-height:1.15;letter-spacing:-.035em;margin:15px 0}header p{font-size:22px}nav{display:flex;gap:22px;flex-wrap:wrap;font-size:16px}a{color:var(--green);text-underline-offset:4px}section{border-top:1px solid var(--line);padding-top:30px;margin-top:25px}h2{font-size:30px;margin:0 0 28px}h3{font-size:23px;line-height:1.35;margin:0 0 12px}article{margin:0 0 42px}p{margin:12px 0 17px}figure{margin:20px 0}figure img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line)}figcaption{font-size:14px;line-height:1.5;color:#53656a;margin:9px 3px}.takeaway{padding:17px 22px;background:#eaf1e9;border-left:4px solid var(--green);border-radius:0 8px 8px 0}.small{font-size:16px}.formula{font-size:23px;font-weight:650}details{font-size:16px;border-top:1px solid var(--line);padding:18px 0}summary{cursor:pointer;font-weight:650}footer{font-size:15px;color:#53656a;border-top:1px solid var(--line);padding-top:20px}.session-nav{padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:25px}.session-heading{border-top:3px solid var(--green);padding-top:35px;margin-top:55px;scroll-margin-top:20px}html{scroll-behavior:auto;overflow-anchor:none}section{scroll-margin-top:20px}@media(max-width:550px){main{padding:25px 18px}body{font-size:18px}h2{font-size:27px}h3{font-size:21px}header p{font-size:20px}article{margin-bottom:32px}}@media print{body{font-size:12pt}main{padding:0;max-width:none}nav{display:none}article{break-inside:avoid}h1{font-size:28pt}}
+</style>
+</head>
+<body>
+<main>
+<nav class="session-nav" aria-label="Sessões disponíveis"><a href="#sessao-1">Sessão 1 · Uma foto em peças</a><a href="#sessao-2">Sessão 2 · Escolher o modelo</a><a href="#sessao-3">Sessão 3 · Abrir o modelo</a><a href="#sessao-4">Sessão 4 · Da foto aos tokens</a><a href="#sessao-5">Sessão 5 · Atenção</a><a href="#sessao-6">Sessão 6 · MLP</a><a href="#sessao-7">Sessão 7 · As fotos</a><a href="#sessao-8">Sessão 8 · A cabeça aprende</a><a href="#sessao-9">Sessão 9 · O corpo aprende</a><a href="#sessao-10">Sessão 10 · Primeiros resultados</a><a href="#sessao-11">Sessão 11 · Sem encolhimento</a><a href="#sessao-12">Sessão 12 · Conferir as medidas</a><a href="#sessao-13">Sessão 13 · Treino restrito</a><a href="#sessao-14">Sessão 14 · Custo do treino</a><a href="#sessao-15">Sessão 15 · Pistas do treino livre</a><a href="#sessao-16">Sessão 16 · Comparação equilibrada</a><a href="#sessao-17">Sessão 17 · Adaptador previsto</a><a href="#sessao-18">Sessão 18 · Letras japonesas</a><a href="#sessao-19">Sessão 19 · Modelo maior</a><a href="#sessao-20">Sessão 20 · Texturas</a><a href="#sessao-21">Sessão 21 · Satélite</a></nav>
+<header id="sessao-1">
+<div class="label">Sessão 1 · Aprender com desenhos</div>
+<h1>Uma foto em peças</h1>
+<p>A pergunta: podemos guardar menos números e ainda montar uma foto parecida?</p>
+<nav aria-label="Partes da aula"><a href="#problema">1. Problema</a><a href="#metodo">2. Método</a><a href="#resultado">3. Resultado</a></nav>
+</header>
+<section id="problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Uma foto é uma grade de números</h3>
+<p>Uma foto é feita de quadradinhos chamados <strong>pixels</strong>. Em tons de cinza, cada pixel tem um número: 0 é preto; 255 é branco. Os valores entre eles são tons de cinza.</p>
+<figure><img src="images/11-pixels.svg" width="640" height="320" alt="A foto de uma árvore leva a uma grade de quadrados claros e escuros, cada um com um número de brilho."><figcaption>A grade é um exemplo ampliado. Uma tabela assim recebe o nome de matriz.</figcaption></figure>
+</article>
+<article>
+<h3>1.2 A foto usa muitos números</h3>
+<p>A foto do experimento tem 296 linhas e 336 colunas. São <strong>99.456 números</strong>. O pesquisador quis descobrir se poderia descrevê-la com menos números.</p>
+<figure><img src="images/12-pergunta.svg" width="640" height="325" alt="Muitos quadradinhos verdes dão lugar a um grupo menor de quadradinhos amarelos, representando a busca por uma descrição menor."><figcaption>Os grupos ilustram a ideia de guardar menos. A quantidade exata será calculada no resultado.</figcaption></figure>
+<p class="takeaway"><strong>O palpite:</strong> poucas peças podem bastar para montar uma imagem parecida.</p>
+</article>
+</section>
+<section id="metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Separar a foto em padrões</h3>
+<p>O pesquisador usou a <strong>SVD</strong>, um cálculo que divide uma tabela em peças. Cada peça é um padrão de áreas claras e escuras. Somar todas devolve a foto.</p>
+<figure><img src="images/21-pecas.svg" width="640" height="320" alt="Três peças reais da SVD da foto, mostrando diferentes padrões de áreas claras e escuras."><figcaption>Peças reais, com o contraste ajustado para enxergar os padrões. Uma peça não precisa mostrar um objeto inteiro.</figcaption></figure>
+<p>No diário, essas peças também são chamadas de <strong>camadas da SVD</strong>.</p>
+</article>
+<article>
+<h3>2.2 Montar cada peça como uma tabuada</h3>
+<p>Cada peça usa <strong>duas listas e um peso</strong>. Uma lista fica na vertical; outra, na horizontal. Multiplicamos os números em cada cruzamento. O peso, chamado <strong>σ (sigma)</strong>, multiplica o padrão inteiro.</p>
+<figure><img src="images/22-tabuada.svg" width="640" height="320" alt="Uma lista vertical com 1 e 2 cruza uma lista horizontal com 3, 4 e 5. O cruzamento de 2 com 4 produz 8."><figcaption>Tabuada ilustrativa: duas listas geram uma tabela. Na SVD, os valores das listas e o σ são calculados a partir da própria foto.</figcaption></figure>
+<p><strong>Guarde a diferença:</strong> as listas definem o padrão; o σ controla sua intensidade.</p>
+</article>
+<article>
+<h3>2.3 Somar as peças</h3>
+<p>Somamos os números da mesma posição. Uma peça pode <strong>acrescentar ou retirar brilho</strong>. Por isso aparecem números negativos nas peças.</p>
+<figure><img src="images/23-soma.svg" width="640" height="325" alt="Uma tabela com quatro valores 2 é somada a uma correção com 1 e menos 1. O resultado tem 3 na diagonal e 1 nas outras posições."><figcaption>Exemplo: no canto de cima à esquerda, 2 + 1 = 3. Ao lado, 2 − 1 = 1.</figcaption></figure>
+</article>
+<article>
+<h3>2.4 Escolher as primeiras 35 peças</h3>
+<p>Nesta foto, a SVD calcula até 296 peças. Elas vêm ordenadas do maior σ para o menor. O pesquisador <strong>pegou as primeiras 35 e somou</strong>.</p>
+<figure><img src="images/24-escolher.svg" width="640" height="340" alt="Uma pilha de folhas representa as peças escolhidas. Uma seta leva à fotografia reconstruída com 35 peças."><figcaption>As folhas são uma analogia: as peças matemáticas também podem retirar brilho.</figcaption></figure>
+<p>O computador fez esse cálculo diretamente. Nenhuma inteligência artificial foi treinada nesta sessão.</p>
+</article>
+</section>
+<section id="resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 Mais peças trazem mais detalhes</h3>
+<p>Com uma peça, a imagem fica muito simples. Ao somar outras peças, <strong>a árvore e as sombras ficam mais nítidas</strong>.</p>
+<figure><img src="images/31-reconstruir.svg" width="640" height="325" alt="A mesma foto reconstruída com uma, dez e trinta e cinco peças. A árvore fica mais nítida a cada etapa."><figcaption>Reconstruções reais do experimento. Compare o tronco e os galhos.</figcaption></figure>
+</article>
+<article>
+<h3>3.2 As 35 peças precisam de menos números</h3>
+<p>Para guardar uma peça, precisamos de 296 números na lista vertical, 336 na horizontal e um σ: <strong>633 números</strong>.</p>
+<p>Para 35 peças: <strong>35 × 633 = 22.155 números</strong>.</p>
+<figure><img src="images/32-economia.svg" width="640" height="340" alt="Uma barra representa os 99.456 números da foto original. Outra, cerca de quatro vezes menor, representa os 22.155 números das listas e pesos de 35 peças."><figcaption>Guardando as listas e os pesos, usamos 22,3% da quantidade original de números.</figcaption></figure>
+<p class="small">Essa conta compara quantos números guardar. O tamanho do arquivo também depende de como esses números são salvos.</p>
+</article>
+<article>
+<h3>3.3 O que foi preservado?</h3>
+<p>O pesquisador mediu a <strong>energia</strong>: uma conta que soma os quadrados dos σ. Veja um exemplo pequeno antes do resultado da foto.</p>
+<figure><img src="images/33-energia.svg" width="640" height="325" alt="Vinte quadrados representam a energia total: dezesseis verdes vêm de sigma 4 e quatro amarelos vêm de sigma 2. A primeira peça representa 80% do total."><figcaption>Exemplo: 4² + 2² = 20. A primeira peça fica com 16 ÷ 20 = 80% da energia.</figcaption></figure>
+<p>Na foto real, as 35 peças preservaram <strong>99,8% da energia</strong>. Isso não significa 99,8% dos detalhes que nossos olhos percebem: o brilho geral também pesa bastante nessa conta.</p>
+<p class="takeaway"><strong>O que aprendemos:</strong> nesta foto, 35 peças produziram uma imagem parecida usando 22,3% da quantidade de números. Outras fotos podem precisar de mais peças.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s1">Sessão 1 do diário original</a> · <a href="../../doutorado/experimento0/README.md">Descrição do experimento</a> · <a href="../../doutorado/experimento0/svd_image.py">Programa usado</a> · <a href="images/original.png">Foto original</a>.</p>
+<p>As reconstruções usam a fotografia original. Os desenhos da tabuada, da soma e dos quadrados de energia são exemplos para explicar as contas.</p>
+</details>
+<p class="small"><a href="#sessao-2">Continuar para a sessão 2: escolher o modelo.</a></p>
+<div id="sessao-2" class="session-heading">
+<div class="label">Sessão 2 · Aprender com desenhos</div>
+<h1>Qual modelo vamos estudar?</h1>
+<p>Já usamos a SVD numa foto. Agora precisamos escolher um modelo de visão para estudar seus pesos.</p>
+<nav aria-label="Partes da sessão 2"><a href="#s2-problema">1. Problema</a><a href="#s2-metodo">2. Método</a><a href="#s2-resultado">3. Resultado</a></nav>
+</div>
+<section id="s2-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Precisamos de um modelo para observar</h3>
+<p>Um modelo de visão recebe uma imagem e faz cálculos com ela. Esses cálculos usam tabelas de números chamados <strong>pesos</strong>. O treino ajusta esses números.</p>
+<p>A tese quer observar o que muda nessas tabelas quando o modelo aprende uma tarefa nova. Mas <strong>qual modelo escolher?</strong></p>
+<figure><img src="images/s2-11-escolha.svg" width="640" height="320" alt="Uma fotografia entra em um modelo. Dentro dele aparecem tabelas coloridas, representando os pesos guardados que a pesquisa quer estudar."><figcaption>Na sessão 1, a tabela guardava o brilho da foto. Agora queremos estudar as tabelas usadas nos cálculos do modelo.</figcaption></figure>
+<p class="takeaway"><strong>O palpite:</strong> um modelo pequeno e que possa receber tarefas diferentes é um bom começo.</p>
+</article>
+</section>
+<section id="s2-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Ler três artigos de base</h3>
+<p>O pesquisador leu três artigos. Cada um ajuda a entender uma parte da escolha: <strong>como relacionar informações, como trabalhar com fotos e como reaproveitar um modelo já treinado.</strong></p>
+<figure><img src="images/s2-21-leituras.svg" width="640" height="320" alt="Três livros em sequência: Transformer, de 2017; ViT, de 2020; DINOv2, de 2023."><figcaption>As três leituras formam o caminho até o modelo escolhido.</figcaption></figure>
+</article>
+<article>
+<h3>2.2 Transformer: relacionar partes</h3>
+<p>O primeiro artigo, <em>Attention Is All You Need</em> (2017), apresentou o <strong>Transformer</strong>. Uma ideia central é a <strong>atenção</strong>: cada parte da entrada pode usar informações de outras partes.</p>
+<figure><img src="images/s2-22-atencao.svg" width="640" height="320" alt="Na frase O gato bebe leite, uma seta liga gato a leite para ilustrar uma relação entre palavras."><figcaption>A seta ilustra uma relação possível. Na prática, o modelo calcula quanto considerar de cada parte.</figcaption></figure>
+<p>Essa ideia apareceu no trabalho com textos e depois foi usada com imagens.</p>
+</article>
+<article>
+<h3>2.3 ViT: usar essa ideia numa foto</h3>
+<p>O segundo artigo, <em>An Image Is Worth 16x16 Words</em> (2020), apresentou o <strong>Vision Transformer</strong>, ou ViT. Ele divide a foto em pedaços, chamados <strong>patches</strong>, e transforma cada pedaço numa lista de números.</p>
+<figure><img src="images/s2-23-patches.svg" width="640" height="320" alt="Uma fotografia inteira aparece ao lado da mesma foto dividida em dezesseis pedaços por uma grade."><figcaption>A grade é ilustrativa. Cada pedaço reúne vários pixels; ele não é um único pixel.</figcaption></figure>
+<p>O Transformer passa a relacionar esses pedaços. Assim, uma região da foto pode usar informações de outras regiões.</p>
+</article>
+<article>
+<h3>2.4 DINOv2: aproveitar o que já foi aprendido</h3>
+<p>O terceiro artigo, <em>DINOv2</em> (2023), apresentou modelos de visão treinados com cerca de <strong>142 milhões de imagens, sem depender de rótulos escritos por pessoas para esse treino</strong>.</p>
+<p>Uma das ideias é aproximar os resumos numéricos de versões da mesma imagem. O treino aprende padrões visuais sem precisar receber a palavra “árvore” junto de cada foto.</p>
+<figure><img src="images/s2-24-pretreino.svg" width="640" height="330" alt="Duas versões de uma fotografia passam por um modelo. Barras parecidas representam os resumos numéricos que o treino procura aproximar."><figcaption>Desenho simplificado de uma parte do treino. As barras representam números, não nomes de objetos.</figcaption></figure>
+<p>Esse aprendizado anterior é o <strong>pré-treino</strong>. A pesquisa pode começar com esses pesos prontos e depois ajustá-los para outra tarefa.</p>
+</article>
+</section>
+<section id="s2-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 A escolha: DINOv2-Small</h3>
+<p>O pesquisador escolheu a versão <strong>Small</strong>, que significa “pequena”. Ela tem cerca de <strong>22 milhões de pesos</strong> e permite realizar os experimentos com a placa de vídeo de 12 GB disponível.</p>
+<figure><img src="images/s2-31-small.svg" width="640" height="320" alt="Um chip que representa o modelo aparece dentro do desenho de uma placa de vídeo com 12 GB de memória."><figcaption>Pequeno aqui é em comparação com outros modelos. Ainda há milhões de números para estudar.</figcaption></figure>
+</article>
+<article>
+<h3>3.2 Um corpo pronto, uma cabeça para cada tarefa</h3>
+<p>O DINOv2 escolhido vem sem um classificador final para a tarefa da pesquisa. Chamamos essa parte final de <strong>cabeça</strong>: ela usa os números produzidos pelo corpo para dar uma nota a cada resposta possível.</p>
+<figure><img src="images/s2-32-cabeca.svg" width="640" height="330" alt="O corpo do modelo recebe uma cabeça nova, que pode ser treinada para classificar raças de animais ou tipos de lesão."><figcaption>Raças e lesões são exemplos de tarefas diferentes. Cada uma precisa de sua própria cabeça treinada.</figcaption></figure>
+<p>A cabeça não chega sabendo a tarefa: precisa aprender com exemplos. Mais adiante, a pesquisa também ajustará o corpo do modelo.</p>
+</article>
+<article>
+<h3>3.3 A escolha foi feita. Falta abrir o modelo.</h3>
+<p>Nesta sessão, o resultado foi uma <strong>decisão de pesquisa</strong>. Ainda não houve um novo treino nem uma medida de acerto.</p>
+<figure><img src="images/s2-33-proximo.svg" width="640" height="340" alt="Um arquivo com tabelas aparece ao lado de uma lupa, mostrando o próximo passo: encontrar e contar os pesos."><figcaption>A sessão 3 vai procurar as tabelas dentro do modelo e contar seus números.</figcaption></figure>
+<p class="takeaway"><strong>O que aprendemos:</strong> o DINOv2-Small já aprendeu padrões visuais, cabe no equipamento disponível e pode receber uma cabeça para a tarefa escolhida.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s2">Sessão 2 do diário original</a> · <a href="../../doutorado/referencias/index.html">Lista de leitura da pesquisa</a>.</p>
+<p>Os desenhos explicam as ideias de forma simplificada. Esta sessão apresenta os motivos da escolha; o funcionamento interno será aberto nas próximas sessões.</p>
+</details>
+<p class="small"><a href="#sessao-3">Continuar para a sessão 3: abrir o modelo.</a></p>
+<div id="sessao-3" class="session-heading">
+<div class="label">Sessão 3 · Aprender com desenhos</div>
+<h1>O que tem dentro do modelo?</h1>
+<p>Escolhemos o DINOv2-Small. Agora vamos encontrar suas tabelas e contar os números que elas guardam.</p>
+<nav aria-label="Partes da sessão 3"><a href="#s3-problema">1. Problema</a><a href="#s3-metodo">2. Método</a><a href="#s3-resultado">3. Resultado</a></nav>
+</div>
+<section id="s3-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Antes de medir, precisamos localizar</h3>
+<p>Na sessão anterior, falamos em cerca de 22 milhões de pesos. Mas esse total não diz <strong>onde os números estão nem quais tabelas vamos estudar</strong>.</p>
+<p>O pesquisador precisava fazer um inventário: listar as tabelas, ver seus tamanhos e contar os pesos.</p>
+<figure><img src="images/s3-11-inventario.svg" width="640" height="320" alt="Um arquivo do modelo aparece ao lado de uma lupa com uma interrogação: quantas tabelas e quantos números existem ali?"><figcaption>Pense em abrir um armário e conferir o que há em cada gaveta.</figcaption></figure>
+<p class="takeaway"><strong>O palpite:</strong> os arquivos do modelo informam os tamanhos das tabelas. Com isso, podemos contar seus números.</p>
+</article>
+</section>
+<section id="s3-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Abrir dois arquivos</h3>
+<p>O pesquisador baixou o modelo e consultou dois arquivos. O <strong>config.json</strong> é a ficha técnica. O <strong>model.safetensors</strong> guarda os pesos e uma lista com os nomes e os tamanhos das tabelas.</p>
+<figure><img src="images/s3-21-arquivos.svg" width="640" height="320" alt="Dois documentos: config.json mostra características do modelo; model.safetensors guarda tabelas de números."><figcaption>Para contar os pesos, basta ler os tamanhos registrados na lista. Não é preciso treinar o modelo.</figcaption></figure>
+</article>
+<article>
+<h3>2.2 Encontrar 12 blocos em sequência</h3>
+<p>O modelo tem <strong>12 blocos</strong>. Cada bloco recebe as listas de números da imagem, faz cálculos e entrega listas atualizadas ao próximo.</p>
+<figure><img src="images/s3-22-blocos.svg" width="640" height="320" alt="Doze blocos numerados de 1 a 12, ligados em sequência por setas."><figcaption>Os blocos têm o mesmo desenho interno. Os pesos guardados em cada um são próprios.</figcaption></figure>
+<p>Essas listas são chamadas de <strong>tokens</strong>. Aqui, cada token tem 384 números. A próxima sessão vai mostrar de onde eles vêm.</p>
+<p class="small">Bloco é uma parte da rede. As “camadas da SVD” da sessão 1 são peças de uma decomposição matemática.</p>
+</article>
+<article>
+<h3>2.3 Encontrar seis tabelas grandes em cada bloco</h3>
+<p>Dentro de cada bloco há dois trechos. A <strong>atenção</strong> relaciona os tokens e usa quatro tabelas grandes. O <strong>MLP</strong> faz cálculos em cada token separadamente e usa outras duas.</p>
+<figure><img src="images/s3-23-seis.svg" width="640" height="350" alt="Dentro de um bloco, quatro tabelas azuis chamadas query, key, value e dense representam a atenção. Duas verdes chamadas fc1 e fc2 representam o MLP."><figcaption>Os nomes são as etiquetas encontradas no arquivo. Por enquanto, basta reconhecer os dois grupos.</figcaption></figure>
+<p>As sessões 5 e 6 vão abrir essas contas. Aqui, queremos localizar e contar as tabelas.</p>
+</article>
+<article>
+<h3>2.4 Contar linhas e colunas</h3>
+<p>Uma tabela com 384 linhas e 384 colunas guarda <strong>384 × 384 = 147.456 pesos</strong>. Cada uma das quatro tabelas da atenção tem esse tamanho.</p>
+<p>As duas tabelas do MLP são retangulares: 1536 × 384 e 384 × 1536. Cada uma guarda <strong>589.824 pesos</strong>.</p>
+<figure><img src="images/s3-24-tamanhos.svg" width="640" height="365" alt="Uma tabela quadrada de 384 por 384 e duas retangulares de 1536 por 384 e 384 por 1536 ilustram os tamanhos encontrados."><figcaption>O desenho mostra os formatos. Multiplicar linhas por colunas dá a quantidade de números.</figcaption></figure>
+<p>Somando as seis tabelas: <strong>1.769.472 pesos por bloco</strong>.</p>
+</article>
+</section>
+<section id="s3-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 A pesquisa vai acompanhar 72 matrizes</h3>
+<p>São <strong>12 blocos × 6 tabelas grandes = 72 matrizes</strong>. “Matriz” é o nome matemático de uma tabela com linhas e colunas.</p>
+<figure><img src="images/s3-31-setentaeduas.svg" width="640" height="310" alt="Doze linhas de seis quadrados: quatro azuis da atenção e dois verdes do MLP em cada linha. Ao todo, setenta e dois quadrados."><figcaption>Cada quadrado representa uma matriz inteira, com milhares de pesos.</figcaption></figure>
+<p>São essas 72 matrizes que o pesquisador escolheu para analisar com a SVD.</p>
+</article>
+<article>
+<h3>3.2 Elas guardam quase todos os pesos</h3>
+<p>O modelo inteiro tem <strong>22.056.576 pesos em 223 conjuntos de números</strong>. O diário chama esses conjuntos de tabelas; alguns são listas, outros têm duas ou mais dimensões.</p>
+<p>As 72 matrizes escolhidas guardam <strong>21.233.664 pesos</strong>: cerca de 96% do total.</p>
+<figure><img src="images/s3-32-proporcao.svg" width="640" height="340" alt="Uma barra quase toda verde mostra os pesos das 72 matrizes; uma pequena faixa amarela mostra os pesos das outras tabelas."><figcaption>A faixa amarela reúne os outros 822.912 pesos do modelo.</figcaption></figure>
+<p>O restante inclui números que ajustam as contas, registram posições e ajudam a transformar a foto em tokens. <strong>Ter menos pesos não significa ter pouco efeito.</strong></p>
+</article>
+<article>
+<h3>3.3 Já sabemos onde olhar. Falta seguir a foto.</h3>
+<p>Nesta sessão, o resultado foi um mapa do modelo. Ainda não medimos aprendizado: <strong>localizamos os pesos que serão estudados</strong>.</p>
+<figure><img src="images/s3-33-proxima.svg" width="640" height="340" alt="Uma fotografia aponta para tabelas do modelo, levantando a pergunta de como a imagem é transformada antes de chegar a elas."><figcaption>A sessão 4 vai acompanhar o caminho da foto até os tokens.</figcaption></figure>
+<p class="takeaway"><strong>O que aprendemos:</strong> as 72 matrizes vêm de 12 blocos com seis matrizes cada. Elas concentram cerca de 96% dos pesos do DINOv2-Small.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s3">Sessão 3 do diário original</a> · <a href="../../doutorado/experimento1/etapa1/scripts/download_model.py">Programa que baixa o modelo</a>.</p>
+<p>As contagens foram conferidas na ficha técnica e na lista de tamanhos do arquivo de pesos local. Os desenhos simplificam a organização do modelo.</p>
+</details>
+<p class="small"><a href="#sessao-4">Continuar para a sessão 4: da foto aos tokens.</a></p>
+<div id="sessao-4" class="session-heading">
+<div class="label">Sessão 4 · Aprender com desenhos</div>
+<h1>Como a foto entra no modelo?</h1>
+<p>O modelo trabalha com listas de números. Vamos seguir a transformação da foto até essas listas.</p>
+<nav aria-label="Partes da sessão 4"><a href="#s4-problema">1. Problema</a><a href="#s4-metodo">2. Método</a><a href="#s4-resultado">3. Resultado</a></nav>
+</div>
+<section id="s4-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Pixels e tokens são coisas diferentes</h3>
+<p>Na sessão 3, encontramos as tabelas do modelo. Elas recebem <strong>tokens</strong>: listas com 384 números. Mas a foto começa como pixels.</p>
+<p><strong>Como passamos dos pixels para os tokens?</strong> O pesquisador seguiu uma foto pelo modelo para entender essa tradução.</p>
+<figure><img src="images/s4-11-traduzir.svg" width="640" height="320" alt="Uma fotografia aponta para várias listas de números: o problema é entender essa transformação."><figcaption>Os números desenhados são exemplos. Um token não é uma palavra escrita nem um quadradinho de imagem.</figcaption></figure>
+<p class="takeaway"><strong>A ideia:</strong> acompanhar o tamanho da foto, seus pedaços e as listas produzidas em cada passo.</p>
+</article>
+</section>
+<section id="s4-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Dividir a foto em 256 pedaços</h3>
+<p>Neste experimento, a foto é preparada para ficar com <strong>224 × 224 pixels</strong>. Depois, o modelo a divide em pedaços de <strong>14 × 14 pixels</strong>, chamados patches.</p>
+<p>Cabem 224 ÷ 14 = 16 pedaços em cada lado. No total: <strong>16 × 16 = 256 patches</strong>.</p>
+<figure><img src="images/s4-21-patches.svg" width="640" height="335" alt="Uma foto com uma grade de dezesseis por dezesseis pedaços. Um pedaço é ampliado para mostrar seus quatorze por quatorze pixels."><figcaption>Um patch contém vários pixels. O desenho amplia um deles para mostrar essa diferença.</figcaption></figure>
+</article>
+<article>
+<h3>2.2 Traduzir cada pedaço em um token</h3>
+<p>O modelo recebe três valores de cor por pixel: vermelho, verde e azul. Um patch tem <strong>14 × 14 × 3 = 588 valores</strong>. Até uma foto cinza é apresentada com esses três canais.</p>
+<p>Uma transformação com pesos aprendidos converte esses 588 valores em <strong>uma lista de 384 números: o token</strong>.</p>
+<figure><img src="images/s4-22-token.svg" width="640" height="320" alt="Três canais de cor formam 588 valores. Uma transformação aprendida os converte em um token de 384 valores."><figcaption>Patch é o pedaço da foto. Token é sua representação numérica, calculada pelo modelo.</figcaption></figure>
+</article>
+<article>
+<h3>2.3 Acrescentar a informação de lugar</h3>
+<p>O conteúdo de um patch não informa sozinho em qual lugar da grade ele está. Para registrar isso, o modelo <strong>soma uma lista de posição ao token</strong>.</p>
+<p>São 384 números somados a outros 384, posição por posição. O token continua com 384 números.</p>
+<figure><img src="images/s4-23-posicao.svg" width="640" height="320" alt="Uma lista de conteúdo mais uma lista de posição produz uma lista do mesmo tamanho. No exemplo, 0,2 mais 0,1 dá 0,3."><figcaption>Os valores são ilustrativos. A posição também é representada por números aprendidos; não é uma etiqueta escrita.</figcaption></figure>
+<p>Essas listas vêm de uma tabela de posições, ajustada para a grade de 16 × 16 usada aqui.</p>
+</article>
+<article>
+<h3>2.4 Adicionar uma ficha para o resumo</h3>
+<p>Além dos 256 tokens da foto, entra um token extra: o <strong>CLS</strong>. Ele começa com a mesma lista aprendida para toda foto e não vem de um patch.</p>
+<p>Ao passar pelos 12 blocos, essa lista recebe informações da imagem. <strong>No final, ela serve de resumo da foto.</strong></p>
+<figure><img src="images/s4-24-cls.svg" width="640" height="335" alt="Uma ficha amarela chamada CLS é adicionada ao grupo de tokens dos patches: um mais 256 dá 257."><figcaption>As fichas verdes representam o grupo inteiro de 256 tokens. Não estão todas desenhadas.</figcaption></figure>
+</article>
+<article>
+<h3>2.5 Testar se a posição faz diferença</h3>
+<p>O pesquisador embaralhou os 256 patches em <strong>dez ordens diferentes</strong>. Os pedaços continuaram iguais; só mudaram de lugar.</p>
+<p>Fez a comparação duas vezes: com o modelo normal e com uma cópia cuja tabela de posição foi zerada. Em cada caso, comparou o resumo da foto original com o da foto embaralhada.</p>
+<figure><img src="images/s4-25-teste.svg" width="640" height="320" alt="A foto original aparece ao lado de uma montagem com seus mesmos 256 patches em posições embaralhadas."><figcaption>A montagem ilustra o teste com uma ordem própria. Os resultados abaixo vêm das dez ordens registradas no experimento.</figcaption></figure>
+</article>
+</section>
+<section id="s4-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 A entrada tem 257 tokens</h3>
+<p>A conta final é <strong>256 tokens de patches + 1 CLS = 257 tokens</strong>. Cada um tem 384 números.</p>
+<figure><img src="images/s4-31-entrada.svg" width="640" height="340" alt="Um conjunto de fichas numéricas segue para uma sequência de blocos. São 257 tokens de 384 valores entrando em doze blocos."><figcaption>O desenho representa o conjunto e o começo da sequência de blocos.</figcaption></figure>
+<p>Os tokens são atualizados em cada bloco. A posição da ficha na sequência continua, mas seus números mudam conforme as contas são feitas.</p>
+</article>
+<article>
+<h3>3.2 Com posição, embaralhar muda o resumo</h3>
+<p>A semelhança foi medida pelo <strong>cosseno</strong>, que compara a direção de duas listas de números. Valor 1 significa a mesma direção; valores menores indicam uma diferença maior nessa medida.</p>
+<figure><img src="images/s4-32-resultado.svg" width="640" height="335" alt="Duas barras mostram o cosseno entre os resumos: sem posição, aproximadamente 1; com posição, 0,44 em média."><figcaption>Com posição, os resultados variaram de 0,35 a 0,54 nas dez ordens. Sem posição, ficaram em 1 dentro da precisão numérica.</figcaption></figure>
+<p>Sem a informação de lugar, trocar os patches de posição praticamente não alterou a direção do resumo. Com ela, a troca passou a fazer diferença.</p>
+<p class="small">O valor 0,44 mede semelhança entre resumos. Não significa 44% de acerto numa tarefa.</p>
+<p class="takeaway"><strong>O que aprendemos:</strong> a foto vira 256 tokens, recebe informação de posição e ganha o CLS. Os 257 tokens seguem para os blocos. A próxima pergunta é o que a atenção faz com eles.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s4">Sessão 4 do diário original</a> · <a href="../../doutorado/experimento1/etapa1/scripts/position_shuffle_test.py">Programa do teste</a> · <a href="../../doutorado/experimento1/etapa1/estudos/posicao_embaralhada.json">Resultados das dez ordens</a>.</p>
+<p>As dimensões foram conferidas nos arquivos do modelo. As listas curtas e os grupos de fichas são desenhos simplificados. A montagem embaralhada ilustra o procedimento; não é uma das dez saídas registradas.</p>
+</details>
+<p class="small"><a href="#sessao-5">Continuar para a sessão 5: a conta da atenção.</a></p>
+<div id="sessao-5" class="session-heading">
+<div class="label">Sessão 5 · Aprender com desenhos</div>
+<h1>Como os tokens trocam informação?</h1>
+<p>A atenção calcula quanto cada token vai aproveitar das informações dos outros.</p>
+<nav aria-label="Partes da sessão 5"><a href="#s5-problema">1. Problema</a><a href="#s5-metodo">2. Método</a><a href="#s5-resultado">3. Resultado</a></nav>
+</div>
+<section id="s5-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 O que significa “os tokens conversam”?</h3>
+<p>Na sessão 4, chegamos a 257 tokens. Agora cada token pode usar informações de outros, inclusive do próprio token.</p>
+<p>“Conversar” é uma forma de falar. Na prática, o modelo faz uma conta: <strong>decide quanto usar de cada contribuição e mistura os números</strong>.</p>
+<figure><img src="images/s5-11-conversa.svg" width="640" height="330" alt="Os tokens B e C apontam para A, que precisa calcular quanto aproveitar de cada contribuição."><figcaption>As setas representam informações chegando. O token A também pode usar sua própria contribuição.</figcaption></figure>
+<p class="takeaway"><strong>A ideia da sessão:</strong> usar listas pequenas para enxergar a conta inteira.</p>
+</article>
+</section>
+<section id="s5-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Começar com três tokens pequenos</h3>
+<p>O pesquisador inventou três tokens: <strong>A = [1; 0], B = [0; 1] e C = [1; 1]</strong>. Cada um tem só dois números.</p>
+<figure><img src="images/s5-21-exemplo.svg" width="640" height="320" alt="Três fichas mostram os tokens A, B e C com dois números em cada uma."><figcaption>É um exemplo didático. Esses números não foram extraídos da foto.</figcaption></figure>
+</article>
+<article>
+<h3>2.2 Gerar três versões de cada token</h3>
+<p>Cada token passa por três tabelas de pesos. Surgem três listas:</p>
+<p><strong>Q, a query:</strong> usada para procurar relações.<br><strong>K, a key:</strong> usada para ser comparada com as queries.<br><strong>V, o value:</strong> a informação que será misturada.</p>
+<figure><img src="images/s5-22-qkv.svg" width="640" height="325" alt="Do token A saem três caminhos: query igual a 2 e 0, key igual a 1 e 0, e value igual a 1 e 1."><figcaption>Q, K e V saem do mesmo token, mas de três transformações diferentes.</figcaption></figure>
+<p>As tabelas deste exemplo foram inventadas. No modelo real, elas foram aprendidas durante o treino e ficam fixas enquanto ele analisa uma foto.</p>
+</article>
+<article>
+<h3>2.3 Dar uma nota para cada relação</h3>
+<p>Vamos acompanhar A. Sua query é <strong>[2; 0]</strong>. Ela é comparada com a key de cada token: multiplicamos os números da mesma posição e somamos.</p>
+<figure><img src="images/s5-23-notas.svg" width="640" height="335" alt="A query de A é comparada às keys de A, B e C, produzindo as notas 2, 0 e 2."><figcaption>Essa conta se chama produto escalar. Para C: 2 × 1 + 0 × 2 = 2.</figcaption></figure>
+<p>A compara com todos, inclusive consigo mesmo. Não há uma escolha antecipada de quais tokens consultar.</p>
+</article>
+<article>
+<h3>2.4 Transformar as notas em participações</h3>
+<p>Uma conta chamada <strong>softmax</strong> transforma as notas em números positivos que somam 100%. Notas maiores recebem mais participação.</p>
+<figure><img src="images/s5-24-pesos.svg" width="640" height="335" alt="As notas 2, 0 e 2 viram aproximadamente 47%, 6% e 47% de participação."><figcaption>Porcentagens arredondadas. A nota zero ainda recebe uma pequena participação.</figcaption></figure>
+<p>Essas são as <strong>porcentagens de atenção</strong>. Elas são calculadas para a entrada atual. São diferentes dos pesos guardados nas tabelas do modelo.</p>
+</article>
+<article>
+<h3>2.5 Misturar os values</h3>
+<p>Agora usamos as porcentagens para misturar os <strong>values</strong>. Para A, entram aproximadamente 47% do value de A, 6% do de B e 47% do de C.</p>
+<figure><img src="images/s5-25-mistura.svg" width="640" height="310" alt="Os values de A, B e C chegam a uma mistura com participações de 47%, 6% e 47%. A mistura produz a lista 0,94 e 1,47."><figcaption>Q e K definem as participações. V fornece os números que são misturados.</figcaption></figure>
+<p>No primeiro número: <strong>0,47 × 1 + 0,06 × 0 + 0,47 × 1 ≈ 0,94</strong>. No segundo: <strong>0,47 × 1 + 0,06 × 1 + 0,47 × 2 ≈ 1,47</strong>.</p>
+</article>
+</section>
+<section id="s5-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 Cada token recebe uma mistura diferente</h3>
+<p>Repetindo a conta para B e C, encontramos três listas novas. Cada uma usa as participações calculadas pela sua própria query.</p>
+<figure><img src="images/s5-31-saidas.svg" width="640" height="330" alt="Antes e depois do exemplo: A vira 0,94 e 1,47; B vira 0,53 e 1,47; C vira 0,89 e 1,79."><figcaption>Resultados arredondados, conferidos pelo programa do diário. São as saídas da mistura simplificada.</figcaption></figure>
+</article>
+<article>
+<h3>3.2 No modelo real, há seis atenções em paralelo</h3>
+<p>No DINOv2-Small, Q, K e V têm 384 números por token. Cada lista é dividida em <strong>seis fatias de 64 números</strong>. Cada grupo faz sua própria conta de atenção.</p>
+<figure><img src="images/s5-32-cabecas.svg" width="640" height="340" alt="Seis grupos de 64 números passam por seis atenções em paralelo. Os resultados são reunidos e combinados pela matriz dense."><figcaption>Esses seis grupos são as cabeças de atenção. Não são a cabeça de classificação que dá a resposta da tarefa.</figcaption></figure>
+<p>Os resultados são reunidos e passam por uma quarta tabela, a <strong>dense</strong>, que combina suas informações.</p>
+<p class="small">No modelo real, as notas também são divididas por 8 antes do softmax e há números adicionais somados nas transformações. O exemplo pequeno deixa esses detalhes de fora.</p>
+</article>
+<article>
+<h3>3.3 A lista muda, mas seu tamanho continua igual</h3>
+<p>No bloco real, a contribuição da atenção, depois da dense, é <strong>somada ao token que já existia</strong>. Essa soma ajuda a manter informações anteriores enquanto acrescenta as novas.</p>
+<figure><img src="images/s5-33-formato.svg" width="640" height="330" alt="O token segue por dois caminhos: um passa pela atenção e pela dense; o outro vai direto a uma soma. As duas contribuições formam o token atualizado."><figcaption>Caminho simplificado da soma, chamada conexão residual. Ajustes de escala foram omitidos do desenho.</figcaption></figure>
+<p>Continuam sendo <strong>257 tokens de 384 números</strong>. O que muda é o conteúdo das listas.</p>
+<p class="takeaway"><strong>O que aprendemos:</strong> Q e K calculam as participações; essas participações misturam os V. Depois dessa troca, o MLP vai trabalhar em cada token separadamente.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s5">Sessão 5 do diário original</a> · <a href="../../doutorado/experimento1/etapa1/scripts/attention_example.py">Programa das contas</a> · <a href="../../doutorado/experimento1/etapa1/estudos/atencao_exemplo.json">Valores do exemplo</a>.</p>
+<p>Os desenhos usam o exemplo didático de três tokens. O trecho sobre seis cabeças e a soma residual explica como a ideia aparece no modelo real.</p>
+</details>
+<p class="small"><a href="#sessao-6">Continuar para a sessão 6: como o MLP reescreve cada token.</a></p>
+<div id="sessao-6" class="session-heading">
+<div class="label">Sessão 6 · Aprender com desenhos</div>
+<h1>Como cada token é reescrito?</h1>
+<p>Depois da troca de informações pela atenção, o MLP transforma cada token separadamente.</p>
+<nav aria-label="Partes da sessão 6"><a href="#s6-problema">1. Problema</a><a href="#s6-metodo">2. Método</a><a href="#s6-resultado">3. Resultado</a></nav>
+</div>
+<section id="s6-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Por que aumentar e depois diminuir?</h3>
+<p>O <strong>MLP</strong> é a segunda parte de cada bloco. Ele recebe um token com 384 números, aumenta a lista para 1536 e depois volta para 384.</p>
+<p><strong>Para que fazer esse caminho?</strong> O pesquisador usou exemplos pequenos para entender as duas transformações e o ajuste entre elas.</p>
+<figure><img src="images/s6-11-expandir.svg" width="640" height="320" alt="Uma lista de 384 números se expande para 1536 e depois volta a 384."><figcaption>A lista maior permite calcular mais padrões antes de produzir a alteração do token.</figcaption></figure>
+</article>
+</section>
+<section id="s6-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Seguir três passos</h3>
+<p>A primeira tabela, <strong>fc1</strong>, transforma 384 números em 1536. Depois, uma função chamada <strong>GELU</strong> ajusta cada valor. A segunda tabela, <strong>fc2</strong>, combina os resultados e produz 384 números.</p>
+<figure><img src="images/s6-21-caminho.svg" width="640" height="320" alt="O token passa pela expansão fc1, pela função GELU e pela transformação fc2, voltando ao tamanho inicial."><figcaption>O fator quatro vem do desenho do modelo: 1536 = 4 × 384.</figcaption></figure>
+</article>
+<article>
+<h3>2.2 A primeira tabela testa padrões</h3>
+<p>Imagine que cada linha da fc1 faz uma pergunta: <strong>quanto esta lista combina com este padrão?</strong> A conta multiplica os números da mesma posição e soma.</p>
+<p>No exemplo, o token é <strong>[1; 2]</strong>. Quatro padrões produzem as respostas 1, 2, 3 e −1.</p>
+<figure><img src="images/s6-22-padroes.svg" width="640" height="310" alt="O token 1 e 2 passa por quatro comparações: com 1 e 0 dá 1; com 0 e 1 dá 2; com 1 e 1 dá 3; com 1 e menos 1 dá menos 1."><figcaption>Última comparação: 1 × 1 + 2 × (−1) = −1. No modelo real, a fc1 produz 1536 respostas.</figcaption></figure>
+<p>“Perguntas” é uma analogia. Os padrões são listas de números aprendidas durante o treino.</p>
+</article>
+<article>
+<h3>2.3 Ajustar as respostas antes de continuar</h3>
+<p>Para facilitar as contas, o exemplo usa uma regra simples: <strong>se o valor é negativo, troque por zero</strong>. Essa regra se chama ReLU.</p>
+<figure><img src="images/s6-23-filtro.svg" width="640" height="315" alt="Comparação entre a regra ReLU, que transforma menos 1 em zero, e GELU, que transforma menos 1 em aproximadamente menos 0,159."><figcaption>O exemplo usa o corte simples. O DINOv2-Small usa GELU, um ajuste suave que não zera todos os negativos.</figcaption></figure>
+<p>As duas funções mudam a resposta de um jeito que uma multiplicação por tabela, sozinha, não faz.</p>
+</article>
+<article>
+<h3>2.4 A segunda tabela monta a alteração</h3>
+<p>Depois do corte simples, a lista <strong>[1; 2; 3; −1]</strong> vira <strong>[1; 2; 3; 0]</strong>.</p>
+<p>A fc2 do exemplo soma o primeiro valor com o terceiro, e o primeiro com o quarto. Assim, produz a alteração <strong>[4; 1]</strong>.</p>
+<figure><img src="images/s6-24-corrigir.svg" width="640" height="325" alt="As respostas 1, 2, 3 e menos 1 passam pelo corte de negativos, viram 1, 2, 3 e zero, e a fc2 produz 4 e 1. Somados ao token inicial, produzem 5 e 3."><figcaption>A alteração [4; 1] é somada à entrada [1; 2]. O token atualizado fica [5; 3].</figcaption></figure>
+<p>Cada resposta pode contribuir com uma alteração diferente. É como reconhecer um padrão e aplicar uma correção associada a ele.</p>
+<p class="small">Esses resultados são do exemplo com ReLU, sem os ajustes extras do bloco real. Com GELU, os valores seriam diferentes.</p>
+</article>
+<article>
+<h3>2.5 Por que o ajuste no meio importa?</h3>
+<p>Sem esse ajuste, duas multiplicações por tabelas podem ser reunidas numa só. Aumentar e diminuir a lista, por si só, não cria esse novo tipo de transformação.</p>
+<p>Veja uma tarefa simples: fazer <strong>3 e −3 virarem 3</strong>, o valor sem sinal. Expandimos cada entrada para [x; −x], zeramos os negativos e somamos.</p>
+<figure><img src="images/s6-25-naolinear.svg" width="640" height="320" alt="O número 3 vira 3 e menos 3, depois 3 e zero, somando 3. O número menos 3 vira menos 3 e 3, depois zero e 3, também somando 3."><figcaption>Esse exemplo com ReLU calcula o valor absoluto. O corte permite tratar entradas positivas e negativas de formas diferentes.</figcaption></figure>
+<p>Uma simples multiplicação por um número fixo não consegue fazer isso: multiplicar por 1 mantém o −3 negativo; multiplicar por −1 torna o 3 negativo.</p>
+</article>
+</section>
+<section id="s6-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 Cada token faz o caminho sozinho</h3>
+<p>O MLP usa <strong>as mesmas tabelas para todos os tokens daquele bloco</strong>. Mas processa cada lista separadamente: nesta etapa, não busca os números dos outros tokens.</p>
+<figure><img src="images/s6-31-sozinho.svg" width="640" height="320" alt="Os tokens A, B e C passam por caminhos separados do mesmo MLP. Não há setas entre os tokens."><figcaption>Mesmo procedimento, entradas diferentes e resultados diferentes. As tabelas mudam de um bloco para outro.</figcaption></figure>
+<p>O token já traz informações recebidas na atenção. Trabalhar sozinho agora não apaga essa troca anterior.</p>
+</article>
+<article>
+<h3>3.2 O MLP guarda muitos pesos</h3>
+<p>A fc1 e a fc2 têm <strong>589.824 pesos cada</strong>. Juntas, guardam 1.179.648 pesos: dois terços dos pesos das seis matrizes grandes de um bloco.</p>
+<figure><img src="images/s6-32-pesos.svg" width="640" height="340" alt="Uma barra tem dois terços verdes para os pesos do MLP e um terço azul para os pesos da atenção."><figcaption>A comparação considera as seis matrizes da SVD. Listas adicionais de ajuste ficam fora dessa conta.</figcaption></figure>
+</article>
+<article>
+<h3>3.3 Agora entendemos as duas partes do bloco</h3>
+<p>A <strong>atenção mistura informações entre tokens</strong>. Depois, o <strong>MLP transforma cada token separadamente</strong> e sua contribuição é somada à lista que já existia.</p>
+<figure><img src="images/s6-33-bloco.svg" width="640" height="320" alt="Dentro de um bloco, a atenção mistura os tokens e o MLP trata um token por vez."><figcaption>Ao final, continuam 257 tokens de 384 números. O conteúdo das listas foi atualizado.</figcaption></figure>
+<p class="takeaway"><strong>O que aprendemos:</strong> a fc1 testa padrões, a função do meio ajusta as respostas e a fc2 combina as alterações. Nesta sessão, o resultado é entender essas contas; não houve um novo treino.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s6">Sessão 6 do diário original</a> · <a href="../generate_figures.py">Programa que confere as contas e desenha os exemplos originais</a>.</p>
+<p>O exemplo numérico do diário usa o corte de negativos da ReLU. Esta aula distingue essa simplificação da GELU indicada na ficha técnica do modelo. Os desenhos omitem normalizações e outros ajustes para mostrar o caminho principal.</p>
+</details>
+<p class="small"><a href="#sessao-7">Continuar para a sessão 7: as fotos do experimento.</a></p>
+<div id="sessao-7" class="session-heading">
+<div class="label">Sessão 7 · Aprender com desenhos</div>
+<h1>Que fotos vamos usar?</h1>
+<p>Já entendemos o modelo. Agora precisamos de uma tarefa com exemplos e respostas certas para treiná-lo.</p>
+<nav aria-label="Partes da sessão 7"><a href="#s7-problema">1. Problema</a><a href="#s7-metodo">2. Método</a><a href="#s7-resultado">3. Resultado</a></nav>
+</div>
+<section id="s7-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Escolher uma tarefa para começar</h3>
+<p>A tarefa escolhida foi <strong>identificar a raça de cães e gatos numa foto</strong>. O conjunto se chama Oxford-IIIT Pet e oferece 37 respostas possíveis.</p>
+<figure><img src="images/s7-11-tarefa.svg" width="640" height="320" alt="Uma foto real de beagle aparece ao lado de 37 opções, com uma delas destacada."><figcaption>A resposta esperada é a raça. Dizer apenas “cão” ainda não resolve a tarefa.</figcaption></figure>
+<p class="takeaway"><strong>O palpite:</strong> começar com uma tarefa próxima do que o modelo já conhece pode servir de referência para os próximos testes. Ainda precisamos medir se ela é fácil para ele.</p>
+</article>
+</section>
+<section id="s7-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Ligar cada foto à resposta certa</h3>
+<p>O pesquisador baixou uma cópia do conjunto no HuggingFace e examinou os arquivos. Cada registro guarda a imagem, o número da raça, o nome do arquivo original e a indicação de gato ou cão.</p>
+<p>O número da resposta é o <strong>rótulo</strong>. Por exemplo, <strong>4 significa beagle</strong>. Os números vão de 0 a 36; os nomes correspondentes ficam no índice do arquivo.</p>
+<figure><img src="images/s7-21-rotulo.svg" width="640" height="330" alt="Uma foto de beagle é ligada a uma ficha com label 4 e indicação de que é um cão."><figcaption>O número da raça identifica uma categoria. Ele não indica tamanho, qualidade ou semelhança entre raças.</figcaption></figure>
+</article>
+<article>
+<h3>2.2 Separar as fotos de treino e de teste</h3>
+<p>O conjunto já vem dividido: <strong>3.680 fotos para aprender e 3.669 para conferir o resultado</strong>.</p>
+<p>Durante o treino, o modelo pode usar as respostas do primeiro grupo para ajustar os pesos. As fotos de teste ficam fora desse ajuste.</p>
+<figure><img src="images/s7-22-separacao.svg" width="640" height="320" alt="Dois grupos de fotos separados: treino com 3.680 e teste com 3.669."><figcaption>O pesquisador conferiu os identificadores: nenhum nome de foto aparece nos dois grupos.</figcaption></figure>
+<p>É como estudar com uma lista de exercícios e depois fazer uma prova com outros exemplos.</p>
+</article>
+<article>
+<h3>2.3 Conferir se as raças têm quantidades parecidas</h3>
+<p>Se uma raça tivesse muito mais fotos que as outras, o resultado poderia esconder essa diferença. Por isso, o pesquisador contou as imagens de cada raça.</p>
+<figure><img src="images/s7-23-equilibrio.svg" width="640" height="320" alt="As contagens por raça ficam entre 93 e 100 no treino e entre 88 e 100 no teste."><figcaption>As barras destacam a faixa de contagens encontrada em cada grupo.</figcaption></figure>
+<p>As quantidades são <strong>próximas, mas não exatamente iguais</strong>. O conjunto é bastante equilibrado entre as 37 raças.</p>
+</article>
+<article>
+<h3>2.4 Olhar fotos diferentes da mesma raça</h3>
+<p>O mesmo rótulo pode acompanhar fotos muito diferentes. Mudam a pose do animal, a iluminação, o fundo e a distância da câmera.</p>
+<figure><img src="images/s7-24-variacao.svg" width="640" height="470" alt="Quatro fotografias reais de beagle mostram animais em poses e cenários diferentes, todos com o mesmo rótulo."><figcaption>Fotos do grupo de treino: beagle_178, beagle_143, beagle_157 e beagle_188. Os enquadramentos foram ajustados apenas para caber no desenho.</figcaption></figure>
+<p>O desafio é reconhecer a raça <strong>apesar dessas mudanças</strong>, em vez de depender de um fundo ou de uma posição específica.</p>
+</article>
+<article>
+<h3>2.5 Preparar as fotos para o mesmo tamanho</h3>
+<p>As fotos originais têm tamanhos variados. A largura vai de 114 a 3.264 pixels; a altura, de 103 a 2.606. Nenhuma já está em 224 × 224.</p>
+<figure><img src="images/s7-25-tamanhos.svg" width="640" height="335" alt="Uma foto retangular passa para um enquadramento quadrado de 224 por 224 pixels, ilustrando a preparação da entrada."><figcaption>O desenho ilustra o formato final. O recorte exato depende da preparação usada no treino ou no teste.</figcaption></figure>
+<p>No <strong>treino</strong>, o programa varia o recorte e pode espelhar a foto. No <strong>teste</strong>, usa um recorte central fixo. Nos dois casos, a imagem chega com 224 × 224 pixels.</p>
+</article>
+</section>
+<section id="s7-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 Um conjunto conhecido antes de treinar</h3>
+<p>O levantamento encontrou <strong>7.349 fotos de 37 raças: 12 raças de gato e 25 de cão</strong>.</p>
+<figure><img src="images/s7-31-conjunto.svg" width="640" height="340" alt="37 quadrados representam as raças: 12 azuis de gatos e 25 amarelos de cães. O conjunto possui 7.349 fotografias."><figcaption>Cada quadrado representa uma raça, não uma única foto.</figcaption></figure>
+<p>O resultado desta sessão é conhecer os dados: o significado dos rótulos, as quantidades, a separação dos grupos e a variedade das imagens.</p>
+</article>
+<article>
+<h3>3.2 Ter uma referência para os acertos</h3>
+<p>Quem escolhe uma das 37 raças ao acaso, com chances iguais, acerta em média <strong>1 ÷ 37 ≈ 2,7%</strong> das vezes.</p>
+<figure><img src="images/s7-32-acaso.svg" width="640" height="320" alt="Uma opção destacada entre 37 ilustra a chance de aproximadamente 2,7% de acertar com um chute uniforme."><figcaption>Essa é uma referência de acaso. Não é um resultado do modelo.</figcaption></figure>
+<p>Para avaliar o modelo, vamos medir a <strong>acurácia</strong>: número de respostas certas dividido pelo total de fotos, vezes 100.</p>
+<p class="takeaway"><strong>O que aprendemos:</strong> temos fotos com respostas conhecidas e grupos separados para aprender e avaliar. Na próxima sessão, vamos ver como uma resposta errada faz a cabeça do modelo aprender.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s7">Sessão 7 do diário original</a> · <a href="../../doutorado/experimento1/etapa1/scripts/oxfordpet_exploration.py">Programa que explora os dados</a> · <a href="../../doutorado/experimento1/etapa1/exploracao_oxfordpet/resumo.json">Resumo das contagens</a> · <a href="../../doutorado/experimento1/etapa1/exploracao_oxfordpet/rotulos.json">Números e nomes das raças</a>.</p>
+<p>As fotografias desta aula vêm dos arquivos locais do conjunto. Os desenhos de opções e grupos são representações didáticas.</p>
+</details>
+<p class="small"><a href="#sessao-8">Continuar para a sessão 8: como a cabeça aprende.</a></p>
+<div id="sessao-8" class="session-heading">
+<div class="label">Sessão 8 · Aprender com desenhos</div>
+<h1>Como a cabeça aprende?</h1>
+<p>A cabeça recebe o resumo da foto, dá notas às raças e aprende ao comparar sua resposta com o rótulo certo.</p>
+<nav aria-label="Partes da sessão 8"><a href="#s8-problema">1. Problema</a><a href="#s8-metodo">2. Método</a><a href="#s8-resultado">3. Resultado</a></nav>
+</div>
+<section id="s8-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 O corpo já sabe olhar. A cabeça ainda precisa aprender.</h3>
+<p>O DINOv2 já veio treinado para produzir informações sobre imagens. Mas a <strong>cabeça nova</strong>, que dá uma nota a cada raça, começa com pesos aleatórios.</p>
+<p>O pesquisador quis testar: <strong>é possível reconhecer as raças treinando apenas essa parte final?</strong></p>
+<figure><img src="images/s8-11-cabeca.svg" width="640" height="320" alt="O corpo do modelo aparece com um cadeado e pesos parados. A cabeça aparece ao lado, com pesos ajustáveis."><figcaption>Congelar o corpo significa impedir mudanças nos seus pesos. Ele continua fazendo as contas para cada foto.</figcaption></figure>
+</article>
+</section>
+<section id="s8-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Fazer uma conta com só duas respostas</h3>
+<p>No exemplo, a foto pertence à <strong>classe A</strong> e seu resumo CLS é <strong>[1; 2]</strong>. A cabeça tem uma linha para A e outra para B.</p>
+<p>Cada linha é multiplicada pelo CLS: multiplicamos os números da mesma posição e somamos. Assim surgem as notas.</p>
+<figure><img src="images/s8-21-notas.svg" width="640" height="340" alt="O resumo 1 e 2 passa pela linha de A, 0,5 e zero, e pela linha de B, zero e 0,5. As notas são 0,5 para A e 1 para B."><figcaption>A: 0,5 × 1 + 0 × 2 = 0,5. B: 0 × 1 + 0,5 × 2 = 1. A maior nota está na classe errada.</figcaption></figure>
+<p>As duas classes e os números são inventados para a conta caber no papel.</p>
+</article>
+<article>
+<h3>2.2 Medir o erro da resposta</h3>
+<p>O <strong>softmax</strong> transforma as notas em probabilidades que somam 100%. Antes de aprender, a cabeça dá 37,75% para A e 62,25% para B.</p>
+<figure><img src="images/s8-22-erro.svg" width="640" height="325" alt="Duas barras mostram 37,75% para A, a resposta certa, e 62,25% para B. A perda calculada é 0,974."><figcaption>Probabilidade e nota são medidas diferentes. O softmax converte uma na outra.</figcaption></figure>
+<p>Uma conta chamada <strong>perda</strong> mede o erro para orientar o treino. Neste exemplo, ela vale 0,974. Quanto menor a probabilidade da resposta certa, maior essa perda.</p>
+</article>
+<article>
+<h3>2.3 Descobrir para que lado ajustar</h3>
+<p>O <strong>gradiente</strong> indica como cada peso afeta a perda. Para calcular o ajuste deste exemplo, subtraímos o alvo da probabilidade:</p>
+<p>Para A: <strong>0,3775 − 1 = −0,6225</strong>.<br>Para B: <strong>0,6225 − 0 = +0,6225</strong>.</p>
+<p>Depois multiplicamos cada resultado pelo CLS [1; 2]. Isso dá um gradiente para cada peso das duas linhas.</p>
+<figure><img src="images/s8-23-gradiente.svg" width="640" height="310" alt="A linha de A recebe gradientes negativos, e seus pesos vão aumentar. A linha de B recebe gradientes positivos, e seus pesos vão diminuir. A regra é novo igual a antigo menos passo vezes gradiente."><figcaption>Andamos contra o gradiente para reduzir a perda. Neste exemplo, isso sobe os pesos de A e desce os de B.</figcaption></figure>
+</article>
+<article>
+<h3>2.4 Dar um passo pequeno</h3>
+<p>O <strong>passo de aprendizado</strong> controla o tamanho do ajuste. Aqui usamos 0,1 e aplicamos a regra: <strong>novo = antigo − 0,1 × gradiente</strong>.</p>
+<figure><img src="images/s8-24-ajuste.svg" width="640" height="340" alt="Os pesos da linha A passam de 0,5 e zero para aproximadamente 0,5622 e 0,1245. Os da linha B passam de zero e 0,5 para menos 0,0622 e 0,3755."><figcaption>Os valores foram arredondados para mostrar o ajuste de cada peso.</figcaption></figure>
+<p>Com a cabeça atualizada, a probabilidade de A sobe para <strong>53,06%</strong>. Agora ela fica acima de B. O corpo e o CLS permaneceram iguais.</p>
+</article>
+<article>
+<h3>2.5 Repetir o processo com as fotos reais</h3>
+<p>A cabeça real recebe 384 números e produz 37 notas. Ela tem <strong>14.208 pesos e 37 ajustes adicionais</strong>, chamados bias: 14.245 números ao todo.</p>
+<p>O programa junta <strong>32 fotos por lote</strong> e calcula um ajuste usando a média dos erros. Uma <strong>época</strong> é uma passada pelas 3.680 fotos de treino.</p>
+<figure><img src="images/s8-25-treino.svg" width="640" height="340" alt="Um grupo de 32 fichas representa um lote de fotos que produz um ajuste. Cinco épocas, cada uma com 115 lotes, totalizam 575 passos."><figcaption>Em cinco épocas, são 575 ajustes da cabeça. As mesmas fotos são revisitadas durante o treino.</figcaption></figure>
+<p>O treino real usa <strong>AdamW</strong>, que adapta os ajustes, começando com passo 0,001. Também suaviza o alvo da resposta certa para cerca de 90% e aplica um leve encolhimento dos pesos.</p>
+<p>O pesquisador repetiu o treino <strong>dez vezes</strong>. Cada repetição usou uma semente diferente, isto é, um número que controla os sorteios, como os pesos iniciais e a ordem das fotos.</p>
+</article>
+</section>
+<section id="s8-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 O exemplo mostra o erro diminuindo</h3>
+<p>Na conta de duas classes, a perda caiu depois de cada um dos dois ajustes acompanhados.</p>
+<figure><img src="images/s8-31-queda.svg" width="640" height="320" alt="Três barras mostram a perda caindo de 0,974 antes do ajuste para 0,634 após um passo e 0,440 após dois passos."><figcaption>O gradiente calculado à mão coincidiu com o cálculo automático do programa.</figcaption></figure>
+<p>Esses números são a perda do exemplo. Eles não são porcentagens de acerto no conjunto de fotos.</p>
+</article>
+<article>
+<h3>3.2 Só a cabeça já chegou a 93,82% de acerto</h3>
+<p>Nas fotos de teste, a média dos dez treinos subiu de <strong>3,18% antes de aprender</strong> para <strong>91,83% após uma época</strong> e <strong>93,82% após cinco</strong>.</p>
+<figure><img src="images/s8-32-acerto.svg" width="640" height="345" alt="As barras do acerto médio mostram 3,18% antes do treino, 91,83% após uma época e 93,82% após cinco épocas."><figcaption>Médias nas fotos de teste. Os rótulos do teste não foram usados para ajustar os pesos.</figcaption></figure>
+<p>Ao final, os dez resultados ficaram entre <strong>93,40% e 94,33%</strong>. A variação mostra por que vale repetir o treino, em vez de confiar em uma única execução.</p>
+</article>
+<article>
+<h3>3.3 O corpo não precisou mudar neste treino</h3>
+<p>O pesquisador comparou os números do corpo treinado com os do original. <strong>Nenhum dos 223 conjuntos de números do corpo mudou</strong>, nos dez treinos.</p>
+<figure><img src="images/s8-33-congelado.svg" width="640" height="325" alt="O corpo tem 223 conjuntos conferidos e zero alterados. Somente a cabeça, com 14.245 números, foi ajustada."><figcaption>Os quadrados ilustram os conjuntos conferidos; não representam todos os 223 individualmente.</figcaption></figure>
+<p class="takeaway"><strong>O que aprendemos:</strong> o corpo já produzia um resumo útil para distinguir as raças. A cabeça aprendeu a usar esse resumo. Na próxima sessão, veremos como o erro também pode orientar mudanças no corpo.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s8">Sessão 8 do diário original</a> · <a href="../../doutorado/experimento1/etapa1/scripts/gradient_examples.py">Programa das contas de gradiente</a> · <a href="../../doutorado/experimento1/etapa1/estudos/exemplos_gradiente.json">Valores do exemplo</a> · <a href="../../doutorado/experimento1/etapa1/estudos/so_cabeca.json">Resultados dos dez treinos</a>.</p>
+<p>O exemplo usa duas classes e um passo simples de descida do gradiente, sem bias nem suavização dos alvos. O treino real usa 37 classes e as configurações descritas acima. A aula distingue as notas das probabilidades e a perda da porcentagem de acertos.</p>
+</details>
+<p class="small"><a href="#sessao-9">Continuar para a sessão 9: como o corpo aprende.</a></p>
+<div id="sessao-9" class="session-heading">
+<div class="label">Sessão 9 · Aprender com desenhos</div>
+<h1>Como o corpo aprende?</h1>
+<p>O erro pode orientar ajustes nas tabelas que produzem o resumo da foto, além dos ajustes na cabeça.</p>
+<nav aria-label="Partes da sessão 9"><a href="#s9-problema">1. Problema</a><a href="#s9-metodo">2. Método</a><a href="#s9-resultado">3. Resultado</a></nav>
+</div>
+<section id="s9-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Como o erro chega até o corpo?</h3>
+<p>Na sessão 8, só a cabeça aprendeu. Mas a tese quer estudar as mudanças nas matrizes do <strong>corpo</strong>.</p>
+<p>Precisamos entender como uma resposta errada indica ajustes em tabelas que fizeram cálculos muito antes da resposta final.</p>
+<figure><img src="images/s9-11-voltar.svg" width="640" height="320" alt="As contas seguem do corpo à cabeça e ao erro. Uma seta no sentido contrário representa os gradientes voltando ao corpo."><figcaption>As contas produzem a resposta. Depois, os gradientes são calculados no sentido contrário.</figcaption></figure>
+</article>
+</section>
+<section id="s9-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Usar um corpo bem pequeno</h3>
+<p>No exemplo, uma única matriz <strong>W</strong> faz o papel do corpo. Ela transforma a entrada <strong>[1; 1]</strong> no CLS <strong>[1; 2]</strong>.</p>
+<figure><img src="images/s9-21-exemplo.svg" width="640" height="320" alt="Uma matriz com linhas 1 e zero, zero e 2 transforma a entrada 1 e 1 no resumo 1 e 2."><figcaption>A primeira linha dá 1 × 1 + 0 × 1 = 1. A segunda dá 0 × 1 + 2 × 1 = 2.</figcaption></figure>
+<p>A cabeça é a mesma do exemplo da sessão 8 e fica parada. A resposta certa continua sendo A. <strong>Desta vez, vamos ajustar W.</strong></p>
+</article>
+<article>
+<h3>2.2 Voltar da cabeça até o resumo</h3>
+<p>Já sabemos os sinais nas notas: <strong>[−0,6225; +0,6225]</strong>. Para saber como cada número do CLS afeta o erro, esses sinais passam de volta pela cabeça.</p>
+<figure><img src="images/s9-22-cls.svg" width="640" height="325" alt="Os sinais de gradiente nas notas, menos 0,6225 e mais 0,6225, passam pela cabeça e chegam ao CLS como menos 0,3112 e mais 0,3112."><figcaption>A conta usa a cabeça com linhas e colunas trocadas: sua transposta.</figcaption></figure>
+<p>Neste caso, aumentar o primeiro número do CLS favorece A. Diminuir o segundo reduz a nota de B.</p>
+</article>
+<article>
+<h3>2.3 Encontrar um ajuste para cada peso</h3>
+<p>O gradiente de cada número do CLS é multiplicado por cada número da entrada <strong>[1; 1]</strong>. Isso monta uma tabela com o mesmo tamanho de W.</p>
+<figure><img src="images/s9-23-matriz.svg" width="640" height="345" alt="Cada sinal do CLS é multiplicado pelos dois valores 1 da entrada, formando uma linha do gradiente de W."><figcaption>Como a entrada tem dois valores iguais a 1, o sinal se repete nas duas colunas. Com outra entrada, isso poderia mudar.</figcaption></figure>
+<p>Esse cálculo de trás para frente é a <strong>retropropagação</strong>. Ele acompanha como cada cálculo anterior influenciou o resultado final.</p>
+</article>
+<article>
+<h3>2.4 Ajustar W e conferir a resposta</h3>
+<p>Usamos a regra da sessão anterior: <strong>novo = antigo − passo × gradiente</strong>. O passo do exemplo é 0,1.</p>
+<figure><img src="images/s9-24-ajuste.svg" width="640" height="335" alt="A matriz W é atualizada, o CLS muda de 1 e 2 para aproximadamente 1,0622 e 1,9378, e a perda cai de 0,974 para 0,936."><figcaption>A cabeça ficou igual. A mudança na resposta veio da alteração do corpo de brinquedo.</figcaption></figure>
+<p>O gradiente feito à mão coincidiu com o cálculo automático. No modelo real, o mesmo princípio se aplica aos cálculos dos <strong>12 blocos</strong>.</p>
+</article>
+<article>
+<h3>2.5 Preparar a cabeça antes de liberar o corpo</h3>
+<p>No plano do experimento, o treino tem cinco épocas. Na <strong>primeira época, só a cabeça muda</strong>. Nas outras quatro, cabeça e corpo podem mudar juntos.</p>
+<figure><img src="images/s9-25-fases.svg" width="640" height="320" alt="Uma sequência de cinco épocas destaca a primeira para treinar apenas a cabeça e as outras quatro para ajustar cabeça e corpo."><figcaption>115 passos só com a cabeça, seguidos de 460 passos com o corpo liberado: 575 no total.</figcaption></figure>
+<p>Esse começo é o <strong>aquecimento</strong>. Ele dá tempo para a cabeça deixar de responder quase ao acaso antes de orientar mudanças no corpo já treinado.</p>
+<p>Congelar desliga o cálculo dos gradientes dos pesos do corpo. Nesta configuração, o AdamW pula esses pesos: nem o encolhimento chamado weight decay é aplicado a eles.</p>
+</article>
+<article>
+<h3>2.6 Usar passos menores no corpo</h3>
+<p>O passo inicial da cabeça é <strong>0,001</strong>. O do corpo é <strong>0,00001</strong>, cem vezes menor. O objetivo é adaptar o corpo com mais cuidado.</p>
+<figure><img src="images/s9-26-passo.svg" width="640" height="345" alt="Uma curva diminui o multiplicador do passo de 1 para quase zero ao longo dos 575 passos. O corpo é liberado no passo 116, sem reiniciar a curva."><figcaption>O eixo vertical mostra a fração do passo inicial. Os dois grupos seguem a mesma redução proporcional.</figcaption></figure>
+<p>A redução segue uma curva de cosseno. Quando o corpo é liberado, no passo 116, seu passo já está em cerca de <strong>0,000009</strong>.</p>
+<p>O otimizador continua o mesmo e a curva não recomeça. Ele ainda não tem histórico de ajustes do corpo, porque esses pesos estavam congelados.</p>
+</article>
+</section>
+<section id="s9-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 Congelar realmente manteve o corpo parado</h3>
+<p>Para conferir o procedimento, um teste executou <strong>a primeira época inteira e dez passos da segunda</strong>. Ele não executou as cinco épocas completas.</p>
+<p>Após a época congelada, nenhum dos 223 conjuntos de números do corpo havia mudado. A cabeça, por sua vez, tinha mudado.</p>
+<figure><img src="images/s9-31-congelado.svg" width="640" height="325" alt="Após a época congelada, zero dos 223 conjuntos do corpo mudaram, enquanto os pesos da cabeça apresentaram deslocamento relativo de cerca de 50%."><figcaption>Os 50% comparam o tamanho da mudança dos pesos da cabeça com seu tamanho inicial. Não significam que metade dos pesos mudou.</figcaption></figure>
+</article>
+<article>
+<h3>3.2 Liberar permitiu mudanças no corpo</h3>
+<p>Já no primeiro passo após a liberação, <strong>222 dos 223 conjuntos mudaram</strong>. O único que ficou igual foi o <strong>mask_token</strong>, que não participa desta tarefa de classificação sem esconder pedaços da foto.</p>
+<figure><img src="images/s9-32-solto.svg" width="640" height="345" alt="Uma grade mostra 222 conjuntos alterados e um inalterado. Após dez passos, a mudança mediana das 72 matrizes é de 0,17%."><figcaption>A mediana de 0,17% é o valor central ao ordenar as 72 medidas de mudança relativa.</figcaption></figure>
+<p>Após dez passos com o corpo liberado, a mudança mediana das 72 matrizes era de <strong>0,17%</strong>, com máximo de <strong>0,26%</strong>.</p>
+<p class="small">Essas porcentagens medem o tamanho da alteração das matrizes. Não são porcentagens de melhora no acerto.</p>
+</article>
+<article>
+<h3>3.3 Agora temos um antes e um depois para estudar</h3>
+<p>Chamamos a matriz original de <strong>W0</strong> e sua versão depois do treino de <strong>W1</strong>. Comparar esse par é o ponto central da pesquisa.</p>
+<figure><img src="images/s9-33-comparar.svg" width="640" height="325" alt="Duas grades representam uma matriz antes do treino, W0, e depois do treino, W1, com algumas diferenças destacadas."><figcaption>As cores são ilustrativas. A pesquisa compara os valores numéricos das matrizes.</figcaption></figure>
+<p class="takeaway"><strong>O que aprendemos:</strong> a retropropagação calcula os gradientes até o corpo. O congelamento controla quando seus pesos podem mudar. Agora podemos treinar e usar a SVD para investigar o que mudou.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s9">Sessão 9 do diário original</a> · <a href="../../doutorado/experimento1/etapa1/scripts/gradient_examples.py">Programa do exemplo de gradiente</a> · <a href="../../doutorado/experimento1/etapa1/estudos/exemplos_gradiente.json">Valores do exemplo</a> · <a href="../../doutorado/experimento1/etapa1/scripts/freeze_release_check.py">Teste de congelar e liberar</a> · <a href="../../doutorado/experimento1/etapa1/estudos/congelar_soltar.json">Resultados da checagem</a>.</p>
+<p>A matriz de duas linhas é um exemplo didático, com cabeça fixa e passo simples. A checagem do DINOv2 usou AdamW e uma execução parcial de 125 passos. O plano completo de treino tem 575 passos.</p>
+</details>
+<p class="small"><a href="#sessao-10">Continuar para a sessão 10: os primeiros resultados.</a></p>
+<div id="sessao-10" class="session-heading">
+<div class="label">Sessão 10 · Aprender com desenhos</div>
+<h1>O que mudou depois do treino?</h1>
+<p>Agora temos o modelo antes e depois do ajuste. Vamos comparar suas 72 matrizes com a SVD.</p>
+<nav aria-label="Partes da sessão 10"><a href="#s10-problema">1. Problema</a><a href="#s10-metodo">2. Método</a><a href="#s10-resultado">3. Resultado</a></nav>
+</div>
+<section id="s10-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Mudou a intensidade ou mudou o padrão?</h3>
+<p>Na sessão 1, vimos que cada peça da SVD tem uma <strong>intensidade σ</strong> e um <strong>padrão formado por direções</strong>.</p>
+<p>Depois de treinar o DINOv2 nas raças, o pesquisador quis medir: <strong>o que mudou nessas peças?</strong></p>
+<figure><img src="images/s10-11-pergunta.svg" width="640" height="320" alt="Uma barra muda de tamanho para representar sigma, e uma seta gira para representar a direção do padrão."><figcaption>O desenho ilustra dois tipos de mudança. Seus tamanhos estão exagerados para facilitar a leitura.</figcaption></figure>
+<p class="takeaway"><strong>A hipótese inicial:</strong> as direções mudariam mais que os σ. Esta sessão mostra as primeiras medidas; as próximas vão testar se essa comparação é válida.</p>
+</article>
+</section>
+<section id="s10-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Corrigir uma tentativa que foi mal</h3>
+<p>Uma tentativa anterior liberou o corpo desde o começo e usou passo 0,00005 nele. Após cinco épocas, acertou apenas <strong>17,72%</strong> das fotos de teste.</p>
+<figure><img src="images/s10-21-protocolo.svg" width="640" height="320" alt="A configuração inicial chegou a 17,72% de acerto. O protocolo com aquecimento e passo menor chegou a 94,15% em média."><figcaption>À esquerda, uma tentativa. À direita, a média dos dez treinos corrigidos. Duas configurações foram alteradas ao mesmo tempo.</figcaption></figure>
+<p>O protocolo corrigido usou <strong>uma época só com a cabeça</strong>, seguida de quatro com cabeça e corpo, e passo inicial de <strong>0,00001 no corpo</strong>.</p>
+</article>
+<article>
+<h3>2.2 Repetir o treino dez vezes</h3>
+<p>Cada treino começou do mesmo DINOv2 original. Foram usadas dez sementes, de 0 a 9, mudando os sorteios do treino.</p>
+<figure><img src="images/s10-22-repeticoes.svg" width="640" height="340" alt="Um modelo original W0 é ligado a dez treinos com sementes de zero a nove."><figcaption>São dez partidas do mesmo ponto inicial. Um treino não começa de onde o anterior terminou.</figcaption></figure>
+<p>Todos usaram <strong>weight decay de 0,05</strong>: o ajuste do otimizador que encolhe levemente os pesos durante o treino.</p>
+</article>
+<article>
+<h3>2.3 Medir o antes e o depois de cada matriz</h3>
+<p>Para cada uma das 72 matrizes, o programa comparou <strong>W0, antes do treino, e W1, depois</strong>. Mediu o deslocamento da matriz inteira e fez a SVD das duas versões.</p>
+<figure><img src="images/s10-23-medidas.svg" width="640" height="315" alt="Uma matriz antes e outra depois são comparadas pela mudança total e pelos principais componentes da SVD."><figcaption>Nos componentes, esta primeira régua acompanha os dez maiores σ e os dez vetores correspondentes de U.</figcaption></figure>
+<p>Para os σ, mede a mudança em relação ao valor inicial. Para as direções, mede o giro entre as setas antes e depois.</p>
+<p class="small">A SVD pode inverter o sinal de um par de vetores sem alterar a peça. A comparação ignora essa inversão para não contá-la como um giro real do padrão.</p>
+</article>
+<article>
+<h3>2.4 Comparar também os treinos entre si</h3>
+<p>Dois treinos da mesma tarefa podem alterar os pesos de formas diferentes. Por isso, o pesquisador comparou as mudanças de cada treino com as dos outros.</p>
+<figure><img src="images/s10-24-pares.svg" width="640" height="330" alt="Dez pontos representam os treinos. Cada ponto se liga aos outros, formando 45 pares."><figcaption>São 45 pares: 10 × 9 ÷ 2. Dividimos por dois para não contar A–B e B–A separadamente.</figcaption></figure>
+<p>O objetivo era procurar o que se repete, apesar dos sorteios diferentes, e o que varia de uma execução para outra.</p>
+</article>
+</section>
+<section id="s10-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 O treino corrigido chegou a 94,15%</h3>
+<p>O acerto médio dos dez treinos foi <strong>94,15%</strong>, variando de 93,79% a 94,66%.</p>
+<figure><img src="images/s10-31-acerto.svg" width="640" height="330" alt="O treino só da cabeça teve 93,82% de acerto médio; o treino com cabeça e corpo teve 94,15%, uma diferença de 0,33 ponto percentual."><figcaption>Comparação com a sessão 8, nas fotos de teste. O ganho observado foi pequeno.</figcaption></figure>
+<p>Liberar o corpo acrescentou <strong>0,33 ponto percentual</strong> nesta comparação. Isso ainda não responde se mudar o corpo é necessário para essa tarefa.</p>
+</article>
+<article>
+<h3>3.2 As matrizes se deslocaram pouco</h3>
+<p>Em média, o tamanho da diferença entre W1 e W0 foi de <strong>0,52% do tamanho de W0</strong>.</p>
+<figure><img src="images/s10-32-deslocamento.svg" width="640" height="320" alt="Duas grades representam as matrizes antes e depois, com deslocamento relativo médio de 0,52%."><figcaption>As cores são ilustrativas. A medida usa o conjunto das diferenças entre os valores das matrizes.</figcaption></figure>
+<p>Isso não significa que só 0,52% dos pesos mudaram. <strong>Muitos pesos podem mudar, cada um um pouquinho.</strong></p>
+</article>
+<article>
+<h3>3.3 A primeira régua sugeriu uma diferença grande</h3>
+<p>Os dez maiores σ mudaram, em média, <strong>0,019%</strong>. O giro das direções foi cerca de <strong>0,95 grau</strong>, convertido pela análise em mudança relativa de aproximadamente <strong>1,66%</strong>.</p>
+<figure><img src="images/s10-33-limite.svg" width="640" height="325" alt="A mudança dos dez maiores sigmas foi de 0,019%, enquanto a medida relativa das direções foi de 1,66%. A razão de cerca de 87 não prova qual parte aprendeu mais."><figcaption>O “87 vezes” é a razão entre essas duas medidas. Elas descrevem objetos diferentes.</figcaption></figure>
+<p><strong>Essa foi uma leitura inicial, depois revista.</strong> Um σ é um número; uma direção é uma lista com centenas de números. A régua pode produzir uma diferença grande mesmo sem aprendizado.</p>
+<p>Na sessão 12, controles com ruído mostrarão que essa razão, sozinha, não distingue aprendizado de variação aleatória.</p>
+</article>
+<article>
+<h3>3.4 Houve alguma concordância entre treinos</h3>
+<p>O pesquisador mediu a semelhança entre as mudanças usando o <strong>cosseno</strong>. Para as medidas desta etapa, encontrou cerca de <strong>0,53 nos σ</strong> e <strong>0,32 nas direções</strong>.</p>
+<figure><img src="images/s10-34-concordancia.svg" width="640" height="330" alt="Duas barras mostram concordância de aproximadamente 0,53 nas mudanças de sigma e 0,32 nas medidas de direção."><figcaption>Cosseno 1 indica a mesma direção; zero indica direções perpendiculares. Os valores não são porcentagens de acerto.</figcaption></figure>
+<p>As repetições não alteraram o modelo de formas totalmente iguais. Mas comparar diretamente os dois canais ainda depende da régua usada, que será revista adiante.</p>
+</article>
+<article>
+<h3>3.5 Apareceu uma pista sobre o weight decay</h3>
+<p>Parte da mudança dos σ parecia um <strong>encolhimento em conjunto</strong>. Essa parte comum respondeu por cerca de 24% da energia da mudança dos dez maiores σ.</p>
+<figure><img src="images/s10-35-encolhimento.svg" width="640" height="335" alt="Três barras encolhem proporcionalmente. A escala média medida foi menos 0,0092%, próxima aos menos 0,0088% previstos pelo weight decay."><figcaption>O encolhimento desenhado está exagerado. Os valores reais são muito pequenos.</figcaption></figure>
+<p>A escala média foi de <strong>−0,0092%</strong>, próxima dos <strong>−0,0088%</strong> previstos pelo encolhimento do otimizador.</p>
+<p class="takeaway"><strong>A próxima pergunta:</strong> essa parte da mudança veio do aprendizado ou do weight decay? A sessão 11 vai repetir o experimento desligando esse encolhimento.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s10">Sessão 10 do diário original</a> · <a href="../../doutorado/experimento1/etapa1/agregado.json">Resumo dos dez treinos</a> · <a href="../../doutorado/experimento1/etapa1/resultado_10sementes.json">Medidas das matrizes</a> · <a href="../../doutorado/experimento1/etapa1/decomposicao.json">Decomposição da mudança dos σ</a> · <a href="../../doutorado/experimento1/common/compare.py">Programa das comparações</a>.</p>
+<p>Os desenhos simplificam as medidas. A aula preserva a sequência da pesquisa, mas identifica como provisória a interpretação do “87 vezes”, revista pelos controles da sessão 12.</p>
+</details>
+<p class="small"><a href="#sessao-11">Continuar para a sessão 11: o treino sem weight decay.</a></p>
+<div id="sessao-11" class="session-heading">
+<div class="label">Sessão 11 · Aprender com desenhos</div>
+<h1>E se desligarmos o encolhimento?</h1>
+<p>Parte da mudança dos σ parecia vir do weight decay. O pesquisador repetiu o treino para conferir.</p>
+<nav aria-label="Partes da sessão 11"><a href="#s11-problema">1. Problema</a><a href="#s11-metodo">2. Método</a><a href="#s11-resultado">3. Resultado</a></nav>
+</div>
+<section id="s11-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Aprendizado e encolhimento podem se misturar</h3>
+<p>Durante o treino, os pesos recebem ajustes para reduzir o erro. Mas o <strong>weight decay</strong> também os encolhe um pouco a cada passo, independentemente de qual raça aparece na foto.</p>
+<figure><img src="images/s11-11-origem.svg" width="640" height="320" alt="Dois caminhos, aprender a tarefa e aplicar weight decay, contribuem para a mudança medida no modelo."><figcaption>Observar uma mudança não basta para saber sua origem.</figcaption></figure>
+<p class="takeaway"><strong>A pergunta:</strong> se desligarmos o weight decay, o encolhimento dos σ desaparece?</p>
+</article>
+</section>
+<section id="s11-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Repetir mudando só uma configuração</h3>
+<p>O pesquisador repetiu os dez treinos, com as mesmas fotos, sementes, épocas e passos de aprendizado. <strong>A mudança foi passar o weight decay de 0,05 para zero.</strong></p>
+<figure><img src="images/s11-21-controle.svg" width="640" height="330" alt="Dois protocolos iguais, exceto pelo weight decay: 0,05 na etapa 1 e zero na etapa 2."><figcaption>Comparar as mesmas sementes ajuda a observar o efeito da configuração alterada.</figcaption></figure>
+</article>
+<article>
+<h3>2.2 Separar o que muda junto do que muda diferente</h3>
+<p>Imagine três σ com mudanças de <strong>−2%, −4% e 0%</strong>. A média é −2%. Podemos separar essa média do restante de cada mudança.</p>
+<figure><img src="images/s11-22-separar.svg" width="640" height="310" alt="Mudanças de menos 2%, menos 4% e zero se dividem em uma parte comum de menos 2% e um restante de zero, menos 2% e mais 2%."><figcaption>Exemplo inventado: parte comum + restante = mudança original, em cada coluna.</figcaption></figure>
+<p>A <strong>parte comum</strong> descreve uma escala compartilhada. O <strong>restante</strong> mostra quanto cada σ se afastou dessa média. O programa fez isso com os dez maiores σ de cada matriz.</p>
+</article>
+<article>
+<h3>2.3 Repetir até a mesma semente</h3>
+<p>Além dos dez treinos, a semente 0 foi executada novamente. A pergunta era: <strong>com os mesmos sorteios, os pesos finais ficam exatamente iguais?</strong></p>
+<figure><img src="images/s11-23-repetir.svg" width="640" height="320" alt="A mesma semente zero dá origem a duas execuções separadas do treino."><figcaption>Depois, o programa comparou os valores das duas versões do corpo.</figcaption></figure>
+</article>
+<article>
+<h3>2.4 Conferir o que o corpo original já sabia</h3>
+<p>O pesquisador também manteve o corpo original parado, guardou o resumo CLS de cada foto e treinou um <strong>classificador simples</strong> sobre esses resumos.</p>
+<figure><img src="images/s11-24-diagnostico.svg" width="640" height="320" alt="O corpo congelado produz o CLS com 384 números. Apenas um classificador final aprende a partir desses resumos."><figcaption>O classificador é uma regressão logística: calcula notas para as raças a partir dos resumos.</figcaption></figure>
+<p>Esse diagnóstico pergunta: <strong>os resumos já contêm informação suficiente para reconhecer as raças, sem mudar o corpo?</strong></p>
+</article>
+</section>
+<section id="s11-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 O encolhimento médio quase sumiu</h3>
+<p>A média com sinal da parte comum passou de <strong>−0,0092%</strong> para aproximadamente <strong>−0,0002%</strong>. Isso sustenta a hipótese de que o weight decay explicava boa parte da tendência média de encolher.</p>
+<figure><img src="images/s11-31-escala.svg" width="640" height="330" alt="O encolhimento médio comum é muito menor sem weight decay: passa de menos 0,0092% para cerca de menos 0,0002%."><figcaption>Os valores negativos indicam diminuição. A medida resume matrizes e treinos.</figcaption></figure>
+<p>A parte comum ainda existia: sua participação na energia da mudança caiu de <strong>24,3% para 12,1%</strong>. Uma média próxima de zero não significa que todos os σ ficaram parados.</p>
+</article>
+<article>
+<h3>3.2 Os ajustes diferentes entre os σ continuaram</h3>
+<p>A parte em que cada σ se afasta da média ficou em cerca de <strong>0,0166%</strong>, com e sem weight decay.</p>
+<figure><img src="images/s11-32-restante.svg" width="640" height="330" alt="Duas barras iguais mostram uma mudança diferencial de aproximadamente 0,0166% nas duas configurações."><figcaption>Desligar o encolhimento não apagou todas as mudanças dos σ.</figcaption></figure>
+<p>A mudança total dos σ caiu de cerca de <strong>0,0191% para 0,0173%</strong>. A medida das direções ficou próxima: <strong>1,66% e 1,64%</strong>.</p>
+<p class="small">A razão entre direções e σ passou para cerca de 95. Como na sessão 10, essa régua inicial não permite concluir qual parte aprendeu mais.</p>
+</article>
+<article>
+<h3>3.3 Um ajuste comum também aumenta a semelhança entre treinos</h3>
+<p>Imagine que dois treinos encolham os σ do mesmo jeito. Só isso já faz parte das mudanças parecer igual, mesmo que os outros ajustes sejam diferentes.</p>
+<figure><img src="images/s11-33-parecidos.svg" width="640" height="320" alt="Dois treinos têm a mesma seta de encolhimento, mas setas diferentes para os outros ajustes."><figcaption>As setas são uma analogia. Um efeito compartilhado pode aumentar a semelhança medida entre repetições.</figcaption></figure>
+<p>Sem weight decay, a semelhança entre as mudanças dos σ caiu de <strong>0,53 para 0,45</strong> na régua usada. Isso ajuda a entender por que parte da concordância anterior podia vir do encolhimento comum.</p>
+<p class="small">Esses números medem alinhamento entre mudanças. Não significam 53% ou 45% de pesos iguais.</p>
+</article>
+<article>
+<h3>3.4 Mudar o corpo não trouxe vantagem neste teste</h3>
+<p>O ajuste completo acertou <strong>94,15% com weight decay</strong> e <strong>94,13% sem ele</strong>. A diferença foi de apenas 0,02 ponto percentual.</p>
+<figure><img src="images/s11-34-acerto.svg" width="640" height="345" alt="Os acertos são 94,15% no ajuste com decay, 94,13% sem decay e 94,79% no diagnóstico de corpo congelado com classificador simples."><figcaption>O diagnóstico com corpo fixo usa outro modo de ajustar o classificador final. Ele não é o treino só da cabeça da sessão 8.</figcaption></figure>
+<p>O corpo original com regressão logística chegou a <strong>94,79%</strong>. Portanto, neste protocolo e neste conjunto, o ajuste do corpo não superou esse diagnóstico.</p>
+<p>O classificador final aprendeu nos três casos. O que ficou parado no diagnóstico foi o corpo.</p>
+</article>
+<article>
+<h3>3.5 A mesma semente não garantiu pesos idênticos</h3>
+<p>As duas execuções da semente 0 acertaram <strong>94,17%</strong>. Mesmo assim, apenas <strong>1 dos 223 conjuntos de números do corpo</strong> ficou exatamente igual.</p>
+<figure><img src="images/s11-35-repeticao.svg" width="640" height="340" alt="Duas execuções têm o mesmo acerto de 94,17%, mas somente um dos 223 conjuntos de números do corpo é idêntico."><figcaption>A mesma porcentagem de acertos não exige o mesmo modelo nem exatamente os mesmos erros.</figcaption></figure>
+<p>A distância entre as duas versões ficou em cerca de <strong>20% do tamanho da mudança causada pelo treino</strong>. Isso não significa que 20% dos pesos mudaram.</p>
+<p>Neste ambiente de execução, controlar os sorteios não garantiu que todas as contas produzissem números finais idênticos.</p>
+<p class="takeaway"><strong>O que aprendemos:</strong> parte do encolhimento vinha do otimizador. As demais mudanças permaneceram, mas ainda precisamos de uma tarefa em que mudar o corpo realmente ajude.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s11">Sessão 11 do diário original</a> · <a href="../../doutorado/experimento1/etapa2/agregado.json">Resumo dos dez treinos</a> · <a href="../../doutorado/experimento1/etapa2/decomposicao.json">Mudanças dos σ sem weight decay</a> · <a href="../../doutorado/experimento1/etapa2/repeticao.json">Comparação da mesma semente</a> · <a href="../../doutorado/experimento1/etapa1/diagnostico.json">Diagnóstico do corpo congelado</a>.</p>
+<p>O exemplo de três σ e as setas são ilustrações. Os resultados numéricos vêm dos registros do experimento. A parte comum é calculada por matriz; os valores apresentados resumem matrizes e repetições.</p>
+</details>
+<p class="small"><a href="#sessao-12">Continuar para a sessão 12: conferir a tarefa e as medidas.</a></p>
+<div id="sessao-12" class="session-heading">
+<div class="label">Sessão 12 · Aprender com desenhos</div>
+<h1>Como saber se a mudança é aprendizado?</h1>
+<p>O modelo mudou. Mas a mudança ajudou na tarefa? E a régua usada para medi-la é justa?</p>
+<nav aria-label="Partes da sessão 12"><a href="#s12-problema">1. Problema</a><a href="#s12-metodo">2. Método</a><a href="#s12-resultado">3. Resultado</a></nav>
+</div>
+<section id="s12-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Precisamos conferir a tarefa e a régua</h3>
+<p>Em pets, ajustar o corpo não superou o classificador com corpo congelado. Então, medir uma mudança nos pesos não demonstrava que ela tinha sido útil.</p>
+<p>Havia outra dúvida: um σ é um número; uma direção é uma lista com centenas de números. <strong>A própria conta poderia fazer as direções parecerem mudar mais.</strong></p>
+<figure><img src="images/s12-11-duvidas.svg" width="640" height="320" alt="Duas perguntas: a mudança do corpo ajudou a acertar e a régua mostraria uma diferença mesmo com ruído?"><figcaption>A sessão enfrenta as duas dúvidas antes de interpretar as mudanças.</figcaption></figure>
+<p class="takeaway"><strong>O plano:</strong> conferir as medidas e procurar uma tarefa em que ajustar o modelo melhore o resultado.</p>
+</article>
+</section>
+<section id="s12-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Testar a régua sem aprendizado</h3>
+<p>O pesquisador somou números aleatórios às matrizes, sem treinar nada. Esse <strong>ruído</strong> mudou os pesos, mas não recebeu fotos nem respostas certas para aprender a tarefa.</p>
+<figure><img src="images/s12-21-ruido.svg" width="640" height="340" alt="A razão entre direções e sigma aparece grande tanto no treino real, cerca de 87, quanto com ruído aleatório, cerca de 112."><figcaption>O teste com ruído deu mediana 112,3. A razão grande também aparece sem aprendizado.</figcaption></figure>
+<p>Portanto, o “87 vezes” das sessões anteriores <strong>não prova que as direções aprenderam mais</strong>. A régua responde à geometria da mudança, mesmo quando ela foi sorteada.</p>
+</article>
+<article>
+<h3>2.2 Olhar o conjunto das direções</h3>
+<p>Imagine duas setas desenhadas sobre uma mesa. Você pode girar as setas sem inclinar o tampo. Olhar só as setas faria parecer que tudo mudou, embora o plano continue igual.</p>
+<figure><img src="images/s12-22-subespaco.svg" width="640" height="320" alt="Dois planos iguais possuem setas internas giradas, ilustrando que os vetores podem mudar sem mudar o plano que formam."><figcaption>O plano é uma analogia para o subespaço: o conjunto de combinações que as direções permitem formar.</figcaption></figure>
+<p>Quando σ vizinhos são muito parecidos, suas direções individuais podem girar bastante. A régua nova passou a olhar <strong>o conjunto das direções</strong>, e não só cada seta separada.</p>
+<p>Na revisão de um modelo de pets, o giro caiu de cerca de <strong>0,97 grau para 0,38 grau</strong> ao trocar a medida individual pela do conjunto.</p>
+</article>
+<article>
+<h3>2.3 Procurar uma tarefa mais difícil</h3>
+<p>Foram examinados quatro conjuntos: <strong>lesões de pele, texturas, letras japonesas e imagens de satélite</strong>. Em cada um, o corpo ficou congelado e só um classificador simples aprendeu a ler os resumos CLS.</p>
+<figure><img src="images/s12-23-candidatos.svg" width="640" height="330" alt="A triagem com corpo congelado chega a 56,58% em pele, 78,62% em texturas, 79,34% em letras e 94,88% em satélite."><figcaption>A triagem mede o que esse classificador consegue aproveitar do corpo original. Não mede uma distância física entre conjuntos.</figcaption></figure>
+<p>Cada candidato usou <strong>3.680 imagens de treino</strong>, sorteadas de forma fixa. Os conjuntos têm quantidades diferentes de classes, por isso também foram registradas as referências de acerto ao acaso.</p>
+</article>
+<article>
+<h3>2.4 Fazer um treino piloto</h3>
+<p>Um acerto baixo com o corpo congelado não garante que ajustá-lo vai ajudar. Por isso, o pesquisador fez <strong>um piloto em pele, letras e texturas</strong>, usando uma semente.</p>
+<figure><img src="images/s12-24-pilotos.svg" width="640" height="345" alt="Os ganhos dos pilotos foram 15,9 pontos em pele, 7,9 em letras e 3 em texturas."><figcaption>Satélite não teve piloto nesta etapa. Seu diagnóstico já acertava 94,88%.</figcaption></figure>
+<p>Pele teve o maior ganho: de <strong>56,58% para 72,46%</strong>. Foi o conjunto escolhido para os testes seguintes.</p>
+</article>
+<article>
+<h3>2.5 Conferir os dados de pele</h3>
+<p>O conjunto escolhido tem oito classes. Foram usadas <strong>3.680 imagens no treino e 2.840 no teste</strong>. Duas classes têm menos exemplos que as demais.</p>
+<figure><img src="images/s12-25-dados.svg" width="640" height="320" alt="Oito fichas numeradas representam as classes do conjunto de pele, com os tamanhos de treino e teste."><figcaption>As fichas são desenhos, não imagens clínicas nem interpretações das classes.</figcaption></figure>
+<p>A ficha do conjunto não explica bem a origem das imagens. A inspeção também encontrou <strong>duas cópias exatas entre os arquivos originais de treino e teste</strong>, além de imagens parecidas.</p>
+<p>Isso limita a leitura do resultado. O conjunto serve aqui para testar o método de adaptação; estes números não demonstram desempenho para uso médico.</p>
+</article>
+<article>
+<h3>2.6 Treinar também com respostas trocadas</h3>
+<p>Foram feitos <strong>dez treinos com os rótulos certos</strong> e <strong>dez com os rótulos de treino embaralhados</strong>. As imagens e o procedimento continuaram os mesmos.</p>
+<figure><img src="images/s12-26-rotulos.svg" width="640" height="330" alt="As fotos permanecem iguais, mas setas cruzadas trocam os rótulos associados a elas."><figcaption>Os rótulos do teste não foram trocados. A mesma permutação dos rótulos de treino foi usada nas dez repetições.</figcaption></figure>
+<p>No grupo trocado, o modelo pode decorar algumas associações falsas. Mas elas não oferecem a relação correta para reconhecer as classes no teste.</p>
+</article>
+<article>
+<h3>2.7 Comparar cada medida com o ruído equivalente</h3>
+<p>Para cada mudança real de uma matriz, o programa sorteou um ruído com <strong>o mesmo tamanho total</strong>. Depois aplicou as mesmas medidas às duas versões.</p>
+<figure><img src="images/s12-27-zero.svg" width="640" height="340" alt="Uma mudança real e uma mudança aleatória têm o mesmo tamanho total e são medidas pela mesma régua."><figcaption>O ruído é uma referência para calibrar a régua, não uma matriz sem nenhuma alteração.</figcaption></figure>
+<p>Assim, perguntamos: <strong>a mudança dos σ supera o que o acaso faria nos σ?</strong> E fazemos a mesma pergunta para o conjunto das direções.</p>
+<p>O programa também passou a medir todos os σ e conjuntos de 10, 50 e 100 direções.</p>
+</article>
+<article>
+<h3>2.8 Devolver só parte da mudança ao modelo</h3>
+<p>O pesquisador pegou um modelo já treinado e trocou apenas suas 72 matrizes. A cabeça e os outros parâmetros continuaram como estavam depois do treino.</p>
+<figure><img src="images/s12-28-transplante.svg" width="640" height="330" alt="Uma versão do modelo treinado recebe uma troca somente nas 72 matrizes. Cabeça e demais parâmetros são preservados."><figcaption>Essa troca recebeu o nome de transplante. O modelo é avaliado depois de cada versão montada.</figcaption></figure>
+<p>A mudança foi separada em duas partes: uma que <strong>reforça ou enfraquece os padrões originais da SVD</strong>, chamada aqui de parte σ, e o <strong>restante da mudança</strong>.</p>
+<p>Foram testadas versões com nenhuma mudança nas 72 matrizes, só a parte σ, só o resto e a mudança completa.</p>
+</article>
+<article>
+<h3>2.9 Fazer uma comparação com outra fatia pequena</h3>
+<p>A separação é muito desigual. Numa matriz de 384 × 384, há 147.456 números. A parte σ só permite ajustar 384 combinações independentes: é uma fatia pequena das possibilidades.</p>
+<figure><img src="images/s12-29-fatia.svg" width="640" height="330" alt="Uma barra quase toda verde representa o restante da mudança; uma faixa mínima representa a parte sigma, com 0,26% da energia."><figcaption>No treino real, a parte σ recebeu cerca de 0,26% da energia da mudança. O resto ficou com 99,74%.</figcaption></figure>
+<p>Para conferir se o problema era só o tamanho da fatia, o pesquisador sorteou <strong>outra fatia com a mesma quantidade de possibilidades</strong>. Também igualou sua energia à da parte σ.</p>
+<p>A pergunta ficou mais justa: a parte σ faz algo diferente de uma fatia aleatória desse tamanho?</p>
+</article>
+</section>
+<section id="s12-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 Com rótulos certos, o treino ajudou</h3>
+<p>Os dez treinos reais chegaram a <strong>72,84% de acerto médio</strong>, contra 56,58% no diagnóstico com corpo congelado. O ganho foi de cerca de 16,3 pontos.</p>
+<figure><img src="images/s12-31-acerto.svg" width="640" height="355" alt="No teste de pele, o diagnóstico chega a 56,58%, o treino real a 72,84% e o treino com rótulos trocados a 11,96%."><figcaption>Com rótulos trocados, o acerto ficou perto dos 12,5% de um chute uniforme entre oito classes.</figcaption></figure>
+<p>Agora há um ganho importante a investigar. As respostas corretas fizeram diferença no que o modelo conseguiu reconhecer no teste.</p>
+</article>
+<article>
+<h3>3.2 Mudar mais que o ruído ainda não provou aprendizado</h3>
+<p>Os dez maiores σ superaram sua referência de ruído em cerca de <strong>2,13 vezes</strong> nos treinos reais. O conjunto das dez direções superou sua referência em cerca de <strong>1,42 vez</strong>.</p>
+<figure><img src="images/s12-32-geometria.svg" width="640" height="345" alt="Os treinos reais superam as referências de ruído em 2,13 vezes nos sigmas e 1,42 nas direções, mas os de rótulos trocados também superam, em 2,40 e 1,44."><figcaption>As duas medidas têm suas próprias referências. Rótulos trocados produziram valores parecidos.</figcaption></figure>
+<p>Portanto, superar esse ruído mostra uma estrutura deixada pelo treino, mas <strong>não identifica sozinho a estrutura útil para a tarefa</strong>.</p>
+<p>Com 50 e 100 direções, as medidas ficaram próximas da referência de ruído. A mudança total também foi parecida em pets e pele: cerca de 0,52% e 0,54%, apesar dos ganhos diferentes no acerto.</p>
+</article>
+<article>
+<h3>3.3 Os treinos reais seguiram caminhos mais parecidos</h3>
+<p>O pesquisador comparou as mudanças de dois treinos. A pergunta foi: <strong>eles ajustaram o modelo de maneira parecida?</strong></p>
+<figure><img src="images/s12-33-concordancia.svg" width="640" height="355" alt="O alinhamento médio é 0,253 entre dois treinos reais, 0,088 entre dois trocados e 0,034 entre um real e um trocado."><figcaption>São cossenos entre as mudanças inteiras das matrizes. Não são frações de pesos iguais nem porcentagens de acerto.</figcaption></figure>
+<p>Dois treinos com respostas certas compartilharam mais o caminho da mudança do que um treino real e um trocado. <strong>Isso fornece evidência de um sinal da tarefa nas mudanças.</strong></p>
+<p>A concordância ainda é parcial. Os sorteios de cada treino também deixam suas marcas no resultado.</p>
+</article>
+<article>
+<h3>3.4 O transplante não mostrou que σ é incapaz de aprender</h3>
+<p>Ao devolver só a parte σ do treino pronto, o acerto quase não subiu. Mas a fatia aleatória com energia igual também quase não ajudou.</p>
+<figure><img src="images/s12-34-resultados.svg" width="640" height="410" alt="No transplante, as matrizes originais dão 48,47%; a parte sigma e uma fatia aleatória com energia igual dão 48,49%; o resto dá 72,82%; a mudança completa dá 72,84%."><figcaption>Os 48,47% não são o diagnóstico de 56,58%: aqui a cabeça e outros parâmetros são os do modelo treinado, com as 72 matrizes restauradas.</figcaption></figure>
+<p>O resto recuperou quase todo o acerto, mas também guardava <strong>99,74% da energia da mudança</strong>. Recuperar quase tudo usando quase toda a mudança não demonstra que “o aprendizado mora nas direções”.</p>
+<p>Quando o resto foi encolhido até a energia da parte σ, chegou a <strong>50,22%</strong>. É uma diferença, mas a rede não responde de forma proporcional ao tamanho do ajuste.</p>
+<p><strong>O teste mostra o que o treino livre deixou em cada parte.</strong> Ele não mostra o que a parte σ conseguiria aprender se fosse obrigada a trabalhar sozinha.</p>
+</article>
+<article>
+<h3>3.5 A próxima pergunta exige outro tipo de treino</h3>
+<p>Agora podemos perguntar: <strong>e se, desde o começo, só os σ puderem mudar nas 72 matrizes?</strong> E se só determinadas mudanças de direção forem permitidas?</p>
+<figure><img src="images/s12-35-proximo.svg" width="640" height="340" alt="Dois novos testes são propostos: treinar permitindo mudanças somente nos sigmas ou somente nas direções."><figcaption>A restrição vale para as 72 matrizes. A próxima sessão explica o que acontece com os demais parâmetros.</figcaption></figure>
+<p>Esta etapa ainda tem limites: um único domínio escolhido por pilotos de uma semente, dados com origem pouco documentada e uma única troca de rótulos compartilhada pelos controles.</p>
+<p class="takeaway"><strong>O que aprendemos:</strong> calibrar a régua evita confundir movimento com aprendizado. Os controles encontram sinal da tarefa, mas o transplante não decide qual parte teria maior capacidade de aprender. A sessão 13 vai testar isso diretamente.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s12">Sessão 12 do diário original</a> · <a href="../../doutorado/experimento1/etapa3/triagem.json">Triagem dos candidatos</a> · <a href="../../doutorado/experimento1/etapa3/inspecao_pele.json">Inspeção dos dados</a> · <a href="../../doutorado/experimento1/etapa3/regua_etapa3.json">Medidas dos treinos reais</a> · <a href="../../doutorado/experimento1/etapa3/regua_embaralhado.json">Medidas dos controles</a> · <a href="../../doutorado/experimento1/etapa3/transplante_etapa3.json">Resultados dos transplantes</a> · <a href="../../doutorado/experimento1/etapa3/controle_fatia_aleatoria.json">Controle da fatia aleatória</a> · <a href="../../doutorado/experimento1/etapa3/controle_embaralhado.json">Alinhamento entre treinos</a>.</p>
+<p>Os planos, fichas, fatias e grades são representações didáticas. A parte chamada σ no transplante é uma projeção da mudança sobre os padrões da SVD original; o resto não é uma separação pura de todas as mudanças de direção.</p>
+</details>
+<p class="small"><a href="#sessao-13">Continuar para a sessão 13: treinar só uma parte.</a></p>
+<div id="sessao-13" class="session-heading">
+<div class="label">Sessão 13 · Aprender com desenhos</div>
+<h1>E se só uma parte puder aprender?</h1>
+<p>Em vez de separar a mudança depois do treino, vamos limitar desde o começo o que as 72 matrizes podem mudar.</p>
+<nav aria-label="Partes da sessão 13"><a href="#s13-problema">1. Problema</a><a href="#s13-metodo">2. Método</a><a href="#s13-resultado">3. Resultado</a></nav>
+</div>
+<section id="s13-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 O treino livre usou pouco o σ. Ele conseguiria usar mais?</h3>
+<p>Na sessão 12, guardar só a parte σ de um treino pronto quase não recuperou o acerto. Isso não demonstrava que os σ eram incapazes de aprender.</p>
+<figure><img src="images/s13-11-pergunta.svg" width="640" height="320" alt="O transplante guarda parte da mudança depois de um treino pronto. O novo experimento restringe desde o começo quais mudanças são permitidas."><figcaption>Uma coisa é recolher o que o treino deixou numa parte. Outra é obrigar essa parte a trabalhar durante todo o treino.</figcaption></figure>
+<p>O pesquisador esperava que só os σ aprendessem pouco e que só as rotações aprendessem quase tudo. Vamos testar essa hipótese.</p>
+<p class="takeaway"><strong>Atenção ao “só”:</strong> a restrição vale para as 72 matrizes. A cabeça e os outros parâmetros do corpo continuam treinando em todas as variantes.</p>
+</article>
+</section>
+<section id="s13-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Criar uma referência com as 72 matrizes congeladas</h3>
+<p>Na primeira variante, as 72 matrizes ficam iguais às originais. A cabeça, os ajustes de escala, os bias e as tabelas de entrada continuam aprendendo.</p>
+<figure><img src="images/s13-21-referencia.svg" width="640" height="320" alt="Um cadeado mantém as 72 matrizes paradas, enquanto a cabeça e os outros parâmetros seguem ajustáveis."><figcaption>Essa variante mede o que se consegue sem dar liberdade às 72 matrizes.</figcaption></figure>
+<p>Ela não é o corpo inteiro congelado da triagem. Também não é o transplante da sessão 12: <strong>os outros parâmetros aprendem já convivendo com as 72 matrizes fixas</strong>.</p>
+</article>
+<article>
+<h3>2.2 Deixar apenas as intensidades σ mudarem</h3>
+<p>Na segunda variante, os padrões originais da SVD ficam parados. Cada σ recebe um ajuste próprio, chamado <strong>δ, ou delta</strong>.</p>
+<p>A conta é <strong>σ novo = σ original × (1 + δ)</strong>. Se σ era 10 e δ vira 0,1, ele passa a 11. Se δ vira −0,1, passa a 9.</p>
+<figure><img src="images/s13-22-sigma.svg" width="640" height="340" alt="As barras que representam os sigmas aumentam ou diminuem, mantendo os padrões de origem."><figcaption>Um ajuste por componente. São 384 por matriz, ou 27.648 nas 72 matrizes.</figcaption></figure>
+<p>Os ajustes começam em zero, preservando o ponto de partida. Durante o treino, o gradiente passa a ajustar esses números.</p>
+</article>
+<article>
+<h3>2.3 Deixar apenas rotações mudarem</h3>
+<p>Na terceira variante, o programa aplica uma transformação que <strong>gira sem esticar</strong>. Assim, os σ são preservados.</p>
+<figure><img src="images/s13-23-rotacao.svg" width="640" height="330" alt="Setas giram sem mudar seus comprimentos, ilustrando uma transformação que preserva os valores singulares."><figcaption>Desenho conceitual de rotação. No programa, ela recombina grupos de 32 linhas das matrizes.</figcaption></figure>
+<p>As linhas de grupos diferentes não se misturam. Portanto, esta é <strong>uma família limitada de mudanças de direção</strong>, não toda mudança possível.</p>
+</article>
+<article>
+<h3>2.4 Escolher o tamanho dos ajustes em pilotos</h3>
+<p>Os ajustes δ e as rotações precisam de seus próprios passos de aprendizado. O pesquisador reservou <strong>368 fotos, 10% do treino, para validação</strong> e comparou alguns passos em pilotos.</p>
+<figure><img src="images/s13-24-validacao.svg" width="640" height="345" alt="As fotos de treino são divididas em 90% para os pilotos e 10% para validação. O conjunto de teste fica separado da escolha."><figcaption>A validação escolhe o passo. O teste fica para a avaliação final.</figcaption></figure>
+<p>Foram escolhidos <strong>0,01 para só σ</strong> e <strong>0,0001 para só rotação</strong>. Esses passos se aplicam aos novos ajustes, não a todos os pesos do corpo.</p>
+<p class="small">Uma primeira fórmula para construir a rotação falhou por falta de memória. Ela foi substituída por outra, e os pilotos foram refeitos. A validação ainda usava recortes aleatórios, o que acrescentava oscilação às medidas.</p>
+</article>
+<article>
+<h3>2.5 Comparar quatro variantes em dez sementes</h3>
+<p>Foram feitos dez treinos de cada variante restrita. A quarta variante, <strong>completa</strong>, reaproveitou os dez modelos treinados livremente na sessão 12.</p>
+<figure><img src="images/s13-25-treinos.svg" width="640" height="345" alt="Quatro grupos de dez modelos representam as variantes 72 congeladas, só sigma, só rotação e completa."><figcaption>Trinta treinos novos e dez modelos completos reaproveitados.</figcaption></figure>
+<p>Nos treinos finais, todos usaram as mesmas imagens de pele, cinco épocas, lotes de 32 e weight decay zero. A primeira época continuou sendo só da cabeça.</p>
+</article>
+</section>
+<section id="s13-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 Só σ aprendeu muito mais que o esperado</h3>
+<p>O acerto médio foi <strong>60,31% com as 72 congeladas</strong>, <strong>70,30% só σ</strong>, <strong>71,26% só rotação</strong> e <strong>72,84% no treino completo</strong>.</p>
+<figure><img src="images/s13-31-acerto.svg" width="640" height="365" alt="Quatro barras mostram os acertos: 60,31% nas congeladas, 70,30% só sigma, 71,26% só rotação e 72,84% no treino completo."><figcaption>Médias de dez sementes no teste de pele. Os outros parâmetros também treinam nas quatro variantes.</figcaption></figure>
+<p>A hipótese de que os σ aprenderiam pouco <strong>não se confirmou</strong>. A rotação ficou acima deles em nove das dez sementes, com vantagem média de 0,96 ponto percentual.</p>
+</article>
+<article>
+<h3>3.2 O que significa recuperar 79,7% do ganho?</h3>
+<p>O ponto de partida desta comparação é 60,31%. O treino completo chega a 72,84%: uma melhora de <strong>12,53 pontos</strong>.</p>
+<p>Só σ melhora <strong>9,99 pontos</strong>, chegando a 70,30%. Ele percorre aproximadamente 80% daquele caminho.</p>
+<figure><img src="images/s13-32-ganho.svg" width="640" height="335" alt="O caminho total entre 60,31% e 72,84% tem 12,53 pontos. Só sigma recupera 9,99 deles, cerca de 79,7%."><figcaption>79,7% é a fração do ganho recuperada. O acerto dessa variante é 70,30%.</figcaption></figure>
+<p>Só rotação recuperou <strong>87,3% do ganho</strong>. Nenhuma das duas variantes chegou ao resultado do treino completo.</p>
+</article>
+<article>
+<h3>3.3 A rotação tinha muito mais ajustes livres</h3>
+<p>Só σ treinou <strong>27.648 ajustes nas 72 matrizes</strong>. A rotação tinha <strong>642.816 ajustes independentes</strong>, cerca de 23 vezes mais.</p>
+<figure><img src="images/s13-33-orcamento.svg" width="640" height="360" alt="As variantes têm 27.648 ajustes em sigma, 642.816 efetivos na rotação e 21.233.664 pesos no treino completo."><figcaption>A contagem da rotação considera a liberdade efetiva. O programa guarda mais números para representar essas rotações.</figcaption></figure>
+<p>Os ajustes de σ são <strong>0,13% dos parâmetros das 72 matrizes</strong>. Essa porcentagem não conta os outros 822.912 parâmetros do corpo nem os 3.080 da cabeça, que também aprendem.</p>
+<p>Portanto, a comparação usou o mesmo número de épocas, mas <strong>não a mesma quantidade de ajustes livres</strong>. A vantagem da rotação ainda precisa ser investigada com esse cuidado.</p>
+</article>
+<article>
+<h3>3.4 As restrições foram conferidas</h3>
+<p>O programa abriu os modelos salvos e mediu novamente suas matrizes. Em só σ, conferiu os padrões preservados. Em só rotação, conferiu os σ preservados.</p>
+<figure><img src="images/s13-34-conferir.svg" width="640" height="320" alt="Duas conferências: direções preservadas em só sigma, com índice próximo de 1; mudança dos dez maiores sigmas próxima de 0,00003% em só rotação."><figcaption>As pequenas diferenças numéricas são compatíveis com arredondamentos das contas.</figcaption></figure>
+<p>Os resultados foram consistentes com as restrições pretendidas. Não bastou confiar no nome dado a cada variante.</p>
+</article>
+<article>
+<h3>3.5 Trocar os maiores não é girar as direções</h3>
+<p>A régua das dez maiores direções mostrou 21,80 graus em só σ. Isso parece contraditório, mas o grupo das dez maiores pode <strong>trocar de membros</strong> quando os σ são reajustados.</p>
+<figure><img src="images/s13-35-ordem.svg" width="640" height="340" alt="Num exemplo de três componentes, os dois maiores mudam de A e B para C e A quando suas intensidades mudam. Os padrões individuais continuam os mesmos."><figcaption>Exemplo com três componentes e seleção dos dois maiores. No experimento, a seleção considera os dez maiores.</figcaption></figure>
+<p>Uma direção que estava fora das dez primeiras pode entrar no grupo. <strong>O conjunto selecionado muda, mesmo com os padrões originais preservados.</strong></p>
+<p>Por isso a conferência também compara as direções do conjunto completo, sem depender da ordem.</p>
+</article>
+<article>
+<h3>3.6 O caminho por σ exigiu mudanças maiores neste treino</h3>
+<p>Só σ deslocou as matrizes em média <strong>9,28%</strong>, contra <strong>2,22% na rotação</strong> e <strong>0,54% no treino completo</strong>.</p>
+<figure><img src="images/s13-36-limites.svg" width="640" height="345" alt="Os deslocamentos médios das matrizes foram 0,54% no treino completo, 2,22% em rotação e 9,28% em sigma."><figcaption>Deslocamento mede o tamanho da alteração. Ele não é uma medida de acerto nem de custo computacional.</figcaption></figure>
+<p>Os dez maiores σ mudaram cerca de 3,69% em só σ, contra 0,0175% no treino completo. O treino restrito encontrou uma solução com ajustes bem diferentes dos deixados pelo treino livre.</p>
+<p>Ainda há limites: o passo escolhido para σ foi o maior testado, foram só cinco épocas e a rotação teve mais ajustes livres. <strong>Os resultados não estabelecem a capacidade máxima de cada método.</strong></p>
+<p class="takeaway"><strong>O que aprendemos:</strong> os σ conseguem carregar uma parte importante da adaptação quando recebem essa tarefa durante o treino. Agora falta medir se treinar menos ajustes economiza tempo, memória ou espaço em disco.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s13">Sessão 13 do diário original</a> · <a href="../../doutorado/experimento1/etapa4/scripts/train_etapa4.py">Treino das variantes</a> · <a href="../../doutorado/experimento1/etapa4/passos_escolhidos.json">Pilotos e passos escolhidos</a> · <a href="../../doutorado/experimento1/etapa4/medidas_variantes.json">Resultados e conferências</a>.</p>
+<p>Os desenhos são esquemas didáticos. “Só rotação” designa a transformação implementada em grupos de 32 linhas. “Só σ” mantém os fatores de direção originais e aprende multiplicadores para seus valores. As restrições não congelam a cabeça nem os demais parâmetros do corpo.</p>
+</details>
+<p class="small"><a href="#sessao-14">Continuar para a sessão 14: o custo do treino.</a></p>
+<div id="sessao-14" class="session-heading">
+<div class="label">Sessão 14 · Aprender com desenhos</div>
+<h1>Treinar menos números economiza o quê?</h1>
+<p>Só σ aprendeu boa parte da tarefa. Agora vamos medir o custo de fazer isso.</p>
+<nav aria-label="Partes da sessão 14"><a href="#s14-problema">1. Problema</a><a href="#s14-metodo">2. Método</a><a href="#s14-resultado">3. Resultado</a></nav>
+</div>
+<section id="s14-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Menos ajustes não significa menos custo em tudo</h3>
+<p>Na sessão 13, só σ treinou poucos ajustes nas 72 matrizes. Mas as fotos ainda precisam passar pela rede, e outras partes também aprendem.</p>
+<figure><img src="images/s14-11-custos.svg" width="640" height="320" alt="Um relógio, um chip e um disco representam três custos diferentes: tempo, memória e armazenamento."><figcaption>Uma variante pode economizar num recurso e continuar gastando o mesmo em outro.</figcaption></figure>
+<p class="takeaway"><strong>A pergunta:</strong> o treino fica mais rápido, ocupa menos memória ou exige menos espaço para guardar o resultado?</p>
+</article>
+</section>
+<section id="s14-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Separar o que ocupa memória</h3>
+<p>Durante o treino, a placa de vídeo guarda quatro grupos principais:</p>
+<p><strong>Pesos:</strong> os números do modelo.<br><strong>Gradientes:</strong> como ajustar os pesos.<br><strong>Estados do otimizador:</strong> o histórico usado pelo AdamW.<br><strong>Ativações:</strong> resultados intermediários das fotos, necessários para calcular o gradiente.</p>
+<figure><img src="images/s14-21-memoria.svg" width="640" height="320" alt="Quatro compartimentos representam os pesos, os gradientes, os estados do otimizador e as ativações."><figcaption>Treinar menos pesos reduz principalmente os gradientes e o histórico do otimizador.</figcaption></figure>
+</article>
+<article>
+<h3>2.2 Cada peso treinado leva números de apoio</h3>
+<p>Na conta usada aqui, cada número em 32 bits ocupa <strong>4 bytes</strong>. Um peso treinado precisa ainda de um gradiente e duas médias guardadas pelo AdamW.</p>
+<figure><img src="images/s14-22-bytes.svg" width="640" height="320" alt="Quatro blocos de quatro bytes representam o peso, seu gradiente e duas médias do otimizador: dezesseis bytes no total."><figcaption>Conta básica em fp32. Cópias, resultados intermediários e memória temporária ficam fora dessa conta.</figcaption></figure>
+<p>Portanto, o apoio custa <strong>12 bytes por parâmetro treinado</strong>. Congelar o parâmetro elimina esse apoio, mas não elimina o peso que o modelo precisa usar.</p>
+</article>
+<article>
+<h3>2.3 Medir as quatro variantes do mesmo jeito</h3>
+<p>O pesquisador usou a mesma placa, uma <strong>RTX 3060 de 12 GB</strong>, e lotes de 32 fotos. Executou 30 passos de cada variante com o corpo liberado, como nas épocas finais do treino.</p>
+<figure><img src="images/s14-23-medida.svg" width="640" height="345" alt="Trinta passos são representados por fichas: os cinco primeiros aquecem a execução e os outros vinte e cinco entram na média do tempo."><figcaption>O aquecimento desta medição prepara a execução na placa. Ele não é a época inicial de treino só da cabeça.</figcaption></figure>
+<p>As fotos já estavam na placa para a leitura de arquivos não entrar no tempo medido. A memória ocupada por essas fotos foi descontada dos números apresentados.</p>
+<p>Também foi medido o tempo de avaliação com lotes de 64 fotos, sem calcular gradientes.</p>
+</article>
+</section>
+<section id="s14-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 A memória de apoio caiu bastante</h3>
+<p>No treino completo, gradientes e estados do AdamW ocuparam <strong>252,4 MB</strong>. Em só σ, ocuparam <strong>9,8 MB</strong>: cerca de 26 vezes menos.</p>
+<figure><img src="images/s14-31-apoio.svg" width="640" height="335" alt="A memória dos gradientes e do histórico do otimizador cai de 252,4 MB no treino completo para 9,8 MB em só sigma."><figcaption>São apenas duas partes da memória: gradientes e estados do otimizador.</figcaption></figure>
+<p>Contando a cabeça e os outros parâmetros, só σ treinava <strong>853.640 números no modelo inteiro</strong>. Por isso a memória de apoio não caiu a zero.</p>
+</article>
+<article>
+<h3>3.2 O pico total caiu só cerca de 8%</h3>
+<p>O maior uso de memória durante o treino passou de aproximadamente <strong>2.056 MB para 1.894 MB</strong>.</p>
+<figure><img src="images/s14-32-pico.svg" width="640" height="335" alt="O pico total é cerca de 2.056 MB no completo e 1.894 MB em só sigma, uma redução de aproximadamente 8%."><figcaption>O pico inclui outras despesas além dos gradientes e do AdamW.</figcaption></figure>
+<p>A rede ainda guarda resultados intermediários das fotos. Além disso, esta implementação de só σ guarda os fatores da SVD e reconstrói as matrizes durante a execução.</p>
+<p><strong>Economizar quase toda uma parte não elimina as outras partes.</strong> Por isso a grande queda da memória de apoio virou uma redução bem menor no total.</p>
+</article>
+<article>
+<h3>3.3 O treino não ficou mais rápido</h3>
+<p>Só σ levou <strong>0,1229 segundo por passo</strong>. A completa levou <strong>0,1225 segundo</strong>. Na prática desta medição, os tempos foram quase iguais.</p>
+<figure><img src="images/s14-33-tempo.svg" width="640" height="380" alt="O tempo por passo foi 0,1002 segundo com 72 matrizes congeladas, 0,1229 em sigma, 0,1972 em rotação e 0,1225 no completo."><figcaption>São médias de passos com fotos já na placa, não o tempo completo de um treino com leitura dos arquivos.</figcaption></figure>
+<p>Para chegar aos ajustes dos primeiros blocos, o gradiente ainda atravessa a rede. Em só σ, reconstruir as matrizes também custa trabalho.</p>
+<p>A rotação foi cerca de <strong>61% mais lenta</strong> que a completa, devido ao cálculo que constrói suas rotações. Congelar as 72 matrizes foi cerca de 18% mais rápido.</p>
+<p class="small">Na avaliação, só σ levou 0,0743 s por lote e a completa 0,0714 s. As matrizes poderiam ser montadas uma vez antes de usar o modelo, evitando reconstruí-las a cada lote.</p>
+</article>
+<article>
+<h3>3.4 Guardar os ajustes pode economizar espaço por tarefa</h3>
+<p>O arquivo com os ajustes δ de só σ ocupa cerca de <strong>129 KB</strong>. Uma cópia do corpo completo treinado ocupa cerca de <strong>84,2 MB</strong>.</p>
+<figure><img src="images/s14-34-disco.svg" width="640" height="340" alt="Para reutilizar uma adaptação, há um modelo base compartilhado, os deltas e os demais pesos alterados, incluindo a cabeça."><figcaption>Os 129 KB são só os δ, não o pacote inteiro necessário para reproduzir o resultado.</figcaption></figure>
+<p>Como outras partes também aprenderam, precisamos guardar <strong>a cabeça, cerca de 14 KB, e o restante do corpo alterado, cerca de 3,3 MB</strong>, além dos δ.</p>
+<p>O modelo base pode ser compartilhado entre tarefas. Para cada tarefa, guardaríamos seus ajustes. O experimento também salvou os modelos completos para conferência: os 129 KB não são o tamanho total dessas pastas.</p>
+</article>
+<article>
+<h3>3.5 Modelos maiores podem ter outra proporção de custos</h3>
+<p>A memória de apoio cresce com a quantidade de parâmetros treinados. Pela conta de 12 bytes, <strong>um bilhão de parâmetros treinados exigiria cerca de 12 GB só de apoio</strong>.</p>
+<figure><img src="images/s14-35-escala.svg" width="640" height="320" alt="Uma conta compara a ordem de 252 MB de apoio no modelo pequeno com doze bilhões de bytes para um bilhão de parâmetros treinados."><figcaption>Essa extrapolação é aritmética. Nesta sessão, nenhum modelo de um bilhão de parâmetros foi treinado.</figcaption></figure>
+<p>Isso ajuda a entender por que reduzir parâmetros treinados pode ser mais valioso em modelos grandes.</p>
+<p>Mas ainda faltam os pesos, as ativações e as cópias temporárias. <strong>Essa conta sozinha não diz em qual placa um modelo grande caberia.</strong></p>
+</article>
+<article>
+<h3>3.6 O ganho vem acompanhado de uma troca</h3>
+<p>No experimento de pele, só σ usou menos memória e permitiu guardar ajustes pequenos. Ao mesmo tempo, teve <strong>70,30% de acerto, contra 72,84% na completa</strong>: cerca de 2,5 pontos a menos.</p>
+<figure><img src="images/s14-36-troca.svg" width="640" height="345" alt="Resumo da troca: menor acerto, tempo quase igual, pico de memória cerca de 8% menor e ajustes pequenos para guardar por domínio."><figcaption>Resultados deste modelo, nesta placa, com este lote e esta implementação.</figcaption></figure>
+<p>Foram apenas 30 passos de medição, não novos treinos completos. Outras implementações, tamanhos de lote e modelos podem ter custos diferentes.</p>
+<p class="takeaway"><strong>O que aprendemos:</strong> poucos ajustes livres reduziram a memória de apoio e o que precisa ser guardado por tarefa. O tempo por passo permaneceu praticamente igual. Agora a pesquisa vai perguntar se as medidas do treino livre ajudam a entender o treino restrito.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s14">Sessão 14 do diário original</a> · <a href="../../doutorado/experimento1/etapa4/custo_gpu.json">Medições de tempo e memória</a> · <a href="../../doutorado/experimento1/etapa4/scripts/measure_gpu_cost.py">Programa da medição</a> · <a href="../../doutorado/experimento1/etapa4/medidas_variantes.json">Acertos das variantes</a>.</p>
+<p>A aula mantém os rótulos MB e KB dos registros. O programa divide bytes por potências de 1024. Os valores de disco são aproximados; o adaptador precisa ser acompanhado dos outros parâmetros alterados e do modelo base.</p>
+</details>
+<p class="small"><a href="#sessao-15">Continuar para a sessão 15: as pistas do treino livre.</a></p>
+<div id="sessao-15" class="session-heading">
+<div class="label">Sessão 15 · Aprender com desenhos</div>
+<h1>Uma mudança pequena pode dar uma pista?</h1>
+<p>O treino livre mexeu pouco na parte σ. Vamos comparar o sentido desses ajustes com o que só σ aprendeu.</p>
+<nav aria-label="Partes da sessão 15"><a href="#s15-problema">1. Problema</a><a href="#s15-metodo">2. Método</a><a href="#s15-resultado">3. Resultado</a></nav>
+</div>
+<section id="s15-problema">
+<h2>1. O problema</h2>
+<article>
+<h3>1.1 Pouca mudança não significa ausência de informação</h3>
+<p>O treino livre deixou pouca energia na parte σ. Mas, quando só os σ podiam mudar nas 72 matrizes, eles recuperaram boa parte do ganho.</p>
+<figure><img src="images/s15-11-pegada.svg" width="640" height="320" alt="Um traçado fraco e outro forte seguem caminhos parecidos, ilustrando uma pista pequena para um ajuste maior."><figcaption>A analogia é um esboço leve que pode lembrar o desenho mais forte. Ainda precisamos comparar os traçados.</figcaption></figure>
+<p class="takeaway"><strong>A pergunta:</strong> o treino livre aumenta e diminui os mesmos componentes que o treino só σ, mesmo fazendo isso em menor quantidade?</p>
+</article>
+</section>
+<section id="s15-metodo">
+<h2>2. O método</h2>
+<article>
+<h3>2.1 Comparar listas que falam dos mesmos padrões</h3>
+<p>Para cada matriz, o pesquisador manteve como referência os padrões da SVD original. No treino livre, calculou quanto da mudança reforçava ou enfraquecia cada padrão, em relação ao seu σ inicial. Essa lista recebeu o nome de <strong>pegada</strong>.</p>
+<p>No treino só σ, leu diretamente os ajustes <strong>δ</strong> aprendidos. As duas listas têm 384 posições, correspondentes aos mesmos padrões originais.</p>
+<figure><img src="images/s15-21-listas.svg" width="640" height="340" alt="Duas listas organizadas pelos mesmos padrões mostram ajustes pequenos no treino livre e maiores em só sigma."><figcaption>Valores inventados para explicar a comparação. Nas contas reais, há 384 ajustes relativos por matriz.</figcaption></figure>
+<p>Assim, podemos perguntar se as duas listas aumentam e diminuem os componentes de maneiras parecidas.</p>
+</article>
+<article>
+<h3>2.2 Comparar também sementes diferentes</h3>
+<p>Um par com a mesma semente compartilha sorteios, como a cabeça inicial e a ordem das fotos. Isso pode aumentar a semelhança sem representar uma regra geral da tarefa.</p>
+<figure><img src="images/s15-22-sementes.svg" width="640" height="320" alt="Linhas retas ligam treinos de mesma semente e linhas cruzadas ligam sementes diferentes."><figcaption>O desenho mostra apenas algumas sementes. O estudo usa dez pares de mesma semente e noventa pares cruzados.</figcaption></figure>
+<p>Por isso, o programa calculou os dois tipos de comparação. Também comparou dois treinos livres entre si e dois treinos só σ entre si, como referências.</p>
+<p>Nenhum modelo novo foi treinado nesta sessão. Foram lidos o original e os 30 modelos já disponíveis: dez livres, dez só σ e dez de rotação.</p>
+</article>
+<article>
+<h3>2.3 Separar o sentido do tamanho</h3>
+<p>Imagine os ajustes <strong>[1; −2; 1]</strong> e <strong>[10; −20; 10]</strong>. A segunda lista é dez vezes maior, mas segue exatamente o mesmo sentido: aumenta a primeira posição, diminui a segunda e aumenta a terceira nas mesmas proporções.</p>
+<figure><img src="images/s15-23-sentido.svg" width="640" height="340" alt="Duas setas paralelas e listas proporcionais ilustram o mesmo sentido com tamanhos diferentes."><figcaption>O cosseno dessas listas é 1. Ele mede alinhamento; a diferença de tamanho é medida separadamente.</figcaption></figure>
+<p>O pesquisador usou essa ideia para comparar a pegada do treino livre com o δ do treino só σ.</p>
+</article>
+</section>
+<section id="s15-resultado">
+<h2>3. O resultado</h2>
+<article>
+<h3>3.1 Há alinhamento, principalmente nos maiores componentes</h3>
+<p>Usando sementes diferentes, o cosseno médio foi <strong>0,08 nos 384 componentes</strong>. Considerando só os dez com maiores σ originais, subiu para <strong>0,28</strong>.</p>
+<figure><img src="images/s15-31-alinhamento.svg" width="640" height="345" alt="O alinhamento é maior com sementes iguais, mas também aparece entre diferentes: 0,08 nos 384 componentes e 0,28 nos dez maiores originais."><figcaption>O resultado de sementes diferentes reduz a influência dos sorteios compartilhados. Os valores não são porcentagens de acerto.</figcaption></figure>
+<p>Nas dez maiores posições, as referências foram 0,41 entre dois treinos livres e 0,36 entre dois treinos só σ. Portanto, o alinhamento de 0,28 é <strong>uma relação parcial</strong>, não uma cópia da solução.</p>
+<p class="small">Nos pares de mesma semente, o sinal dos ajustes coincidiu em cerca de 67% das posições. Esse número também pode incluir influência do sorteio compartilhado.</p>
+</article>
+<article>
+<h3>3.2 Os ajustes de só σ foram cerca de 33 vezes maiores</h3>
+<p>A magnitude média da pegada foi <strong>0,228%</strong>. A dos δ aprendidos em só σ foi <strong>7,60%</strong>.</p>
+<figure><img src="images/s15-32-tamanho.svg" width="640" height="335" alt="A pegada média tem magnitude de 0,228%, enquanto os deltas têm 7,600%, cerca de trinta e três vezes mais."><figcaption>Essa média usa os 384 componentes, não apenas os dez maiores. Os tamanhos são calculados sem cancelar aumentos com diminuições.</figcaption></figure>
+<p>Isso combina com a imagem do esboço: pode existir semelhança no sentido mesmo quando o ajuste é muito menor.</p>
+<p class="small">Aqui medimos ajustes relativos nos padrões originais. Essa conta é diferente de comparar os σ ordenados antes e depois, como em medidas das sessões anteriores.</p>
+</article>
+<article>
+<h3>3.3 As matrizes mais alteradas também tendem a coincidir</h3>
+<p>Outra pergunta foi: <strong>as matrizes que receberam os maiores ajustes na pegada também receberam os maiores δ?</strong></p>
+<figure><img src="images/s15-33-ranking.svg" width="640" height="340" alt="Dois rankings de exemplo mostram ordens parecidas de matrizes, com algumas inversões."><figcaption>O desenho usa três matrizes inventadas. A conta real compara o ranking das 72 matrizes.</figcaption></figure>
+<p>A semelhança entre os rankings, chamada <strong>correlação de Spearman</strong>, foi <strong>0,43</strong>. Há uma tendência de coincidirem, mas a ordem não é igual.</p>
+<p>Esse 0,43 não significa que 43% das matrizes ficaram na mesma posição. É uma medida de como as duas ordenações se acompanham.</p>
+</article>
+<article>
+<h3>3.4 Uma pista muito pequena pode estar bem alinhada</h3>
+<p>Nas matrizes do MLP, fc1 e fc2, a pegada teve magnitude média de apenas <strong>0,015% e 0,016%</strong>. Mesmo assim, o alinhamento geral entre sementes diferentes foi maior que o das matrizes de atenção.</p>
+<figure><img src="images/s15-34-mlp.svg" width="640" height="320" alt="As pegadas pequenas de fc1 e fc2 apresentam alinhamentos cruzados de 0,17 e 0,21."><figcaption>Nos 384 componentes, os alinhamentos cruzados foram cerca de 0,17 em fc1 e 0,21 em fc2.</figcaption></figure>
+<p>Nas matrizes de atenção, esse alinhamento geral ficou entre 0,01 e 0,04. Isso reforça a distinção: <strong>medir quanto mudou e medir para onde mudou são perguntas diferentes</strong>.</p>
+</article>
+<article>
+<h3>3.5 Para a rotação, não apareceu uma relação clara</h3>
+<p>O programa também comparou o restante da mudança do treino livre com a mudança aprendida pelo treino de rotação. Entre sementes diferentes, o alinhamento foi pequeno: <strong>0,05</strong>.</p>
+<figure><img src="images/s15-35-rotacao.svg" width="640" height="335" alt="O resto do treino livre e a rotação em grupos de 32 linhas têm liberdades diferentes e apresentam cosseno cruzado de 0,05."><figcaption>As referências entre dois treinos do mesmo tipo ficaram em torno de 0,25 e 0,30.</figcaption></figure>
+<p>A comparação tem um limite: o restante do treino livre inclui mudanças gerais, enquanto a rotação só mistura grupos de 32 linhas. Além disso, suas magnitudes foram diferentes.</p>
+<p>Portanto, o teste não permite concluir que toda medida das direções seja inútil para prever outros tipos de adaptação.</p>
+</article>
+<article>
+<h3>3.6 Encontrar uma relação ainda não é prever um adaptador</h3>
+<p>O estudo encontrou algum alinhamento entre a pegada do treino livre e os ajustes de só σ. Mas <strong>ainda não construiu uma adaptação usando apenas essa pista</strong>.</p>
+<figure><img src="images/s15-36-proximo.svg" width="640" height="325" alt="De um lado, o alinhamento já observado; do outro, o teste ainda necessário de ampliar a pegada e usá-la como adaptador."><figcaption>Comparar dois resultados prontos não substitui construir uma solução e medir seu acerto.</figcaption></figure>
+<p>O teste direto seria ampliar a pegada, usá-la para ajustar as matrizes, treinar o classificador final e conferir quanto do resultado ela recupera.</p>
+<p class="small">Os resultados desta sessão são de pele, no DINOv2-Small, com dez sementes por método. As medidas com sementes diferentes são moderadas e não determinam sozinhas o tamanho de cada ajuste.</p>
+<p class="takeaway"><strong>O que aprendemos:</strong> a pegada pequena contém alguma informação sobre onde e em que sentido ajustar σ. Ainda falta testar se ela basta para montar um adaptador. Antes disso, a próxima sessão vai tornar mais equilibrada a comparação entre σ e rotação.</p>
+</article>
+</section>
+<details>
+<summary>Onde isso aparece no diário?</summary>
+<p><a href="../index.html#s15">Sessão 15 do diário original</a> · <a href="../../doutorado/experimento1/etapa4/scripts/correlate_free_vs_restricted.py">Programa das comparações</a> · <a href="../../doutorado/experimento1/etapa4/correlacao_livre_vs_restrito.json">Resultados por matriz e resumos</a>.</p>
+<p>Os traçados, setas e rankings pequenos são exemplos didáticos. A razão de cerca de 33 vezes usa as magnitudes médias dos 384 componentes. No código, o alinhamento usa a base da SVD original, mantida igual para as duas listas.</p>
+</details>
+<p class="small"><a href="#sessao-16">Continuar para a sessão 16: a comparação mais equilibrada.</a></p>
+<div id="sessao-16" class="session-heading"><div class="label">Sessão 16 · Aprender com desenhos</div><h1>A rotação ganhou por ter mais ajustes?</h1><p>Vamos aproximar a quantidade de ajustes e testar se um passo maior melhora o σ.</p><nav aria-label="Partes da sessão 16"><a href="#s16-problema">1. Problema</a><a href="#s16-metodo">2. Método</a><a href="#s16-resultado">3. Resultado</a></nav></div>
+<section id="s16-problema"><h2>1. O problema</h2>
+<article><h3>1.1 A comparação anterior dava mais liberdade à rotação</h3><p>Na sessão 13, a rotação acertou um pouco mais que só σ. Mas ela tinha <strong>642.816 ajustes livres nas 72 matrizes</strong>, contra 27.648 do σ.</p><p>Também faltava testar passos maiores para σ. O melhor passo anterior era o maior da grade: talvez o treino ainda pudesse melhorar.</p><figure><img src="images/s16-11-aula.svg" width="640" height="207" alt="A comparação anterior dava mais liberdade à rotação"><figcaption>A comparação anterior não tinha o mesmo orçamento de parâmetros.</figcaption></figure><p><strong>Como ler as variantes:</strong> as restrições valem para as 72 matrizes. A cabeça e os outros parâmetros continuam treinando. “72 congeladas” não significa corpo inteiro congelado.</p></article>
+</section>
+<section id="s16-metodo"><h2>2. O método</h2>
+<article><h3>2.1 Diminuir os grupos de rotação</h3><p>Os grupos passaram de 32 para <strong>3 linhas</strong>. Grupos menores permitem menos combinações e reduzem a quantidade de ajustes da rotação.</p><p>A rotação pequena ficou com <strong>41.472 ajustes</strong>: ainda 1,5 vez os 27.648 do σ. O custo ficou mais próximo, não exatamente igual.</p><figure><img src="images/s16-21-aula.svg" width="640" height="252" alt="Diminuir os grupos de rotação"><figcaption>São ajustes das 72 matrizes; outras partes também aprendem.</figcaption></figure></article>
+<article><h3>2.2 Escolher o passo da rotação pequena</h3><p>Pilotos com uma semente e 368 fotos de validação compararam quatro passos. O escolhido foi <strong>0,001</strong>, com 62,50% na validação.</p><p>Depois foram treinadas dez sementes com esse passo. O teste final não escolheu a configuração.</p><figure><img src="images/s16-22-aula.svg" width="640" height="315" alt="Escolher o passo da rotação pequena"><figcaption>O procedimento de escolha segue o das sessões anteriores.</figcaption></figure></article>
+<article><h3>2.3 Experimentar passos maiores para σ</h3><p>Foram acrescentados dois passos aos pilotos: <strong>0,03 e 0,1</strong>. O de 0,03 ganhou a validação; o de 0,1 piorou bastante.</p><p>A vantagem de 0,03 sobre 0,01 na validação foi pequena, 0,54 ponto, dentro da oscilação dos pilotos. A regra foi seguida e os dez treinos finais usaram 0,03.</p><figure><img src="images/s16-23-aula.svg" width="640" height="330" alt="Experimentar passos maiores para σ"><figcaption>Pilotos de uma semente; a validação ainda usava recortes aleatórios.</figcaption></figure></article>
+<article><h3>2.4 Conferir novamente o que ficou preso</h3><p>Os modelos salvos foram medidos: a rotação pequena manteve os σ praticamente iguais, e só σ preservou seus padrões originais.</p><p>O treino continuou com cinco épocas, a primeira só da cabeça, e weight decay zero.</p><figure><img src="images/s16-24-aula.svg" width="640" height="207" alt="Conferir novamente o que ficou preso"><figcaption>Na rotação, a mudança média dos dez maiores σ foi de cerca de 0,00003%.</figcaption></figure></article>
+</section>
+<section id="s16-resultado"><h2>3. O resultado</h2>
+<article><h3>3.1 A rotação pequena ficou abaixo de só σ</h3><p>A rotação pequena chegou a <strong>69,47%</strong>. Só σ, ainda com o passo antigo, tinha 70,30%. A diferença apareceu a favor de σ nas <strong>dez sementes</strong>.</p><p>Isso enfraquece a leitura de que girar seria melhor por natureza. O desempenho também depende de quantos ajustes e quais rotações foram permitidos.</p><figure><img src="images/s16-31-aula.svg" width="640" height="255" alt="A rotação pequena ficou abaixo de só σ"><figcaption>A diferença média foi de aproximadamente 0,84 ponto percentual.</figcaption></figure></article>
+<article><h3>3.2 O passo maior levou σ a 71,51%</h3><p>Com passo 0,03, só σ chegou a <strong>71,51%</strong>, acima dos 70,30% anteriores nas dez sementes.</p><p>Ele recuperou <strong>89,4% do ganho</strong> entre 72 congeladas e completa, ficando 1,33 ponto abaixo do treino completo.</p><figure><img src="images/s16-32-aula.svg" width="640" height="330" alt="O passo maior levou σ a 71,51%"><figcaption>89,4% mede a fração do ganho recuperada; o acerto é 71,51%.</figcaption></figure></article>
+<article><h3>3.3 A melhora exigiu deslocar mais as matrizes</h3><p>O deslocamento médio em só σ passou de <strong>9,28% para 21,59%</strong>. O ajuste maior encontrou uma solução diferente da deixada pelo treino livre.</p><p>Uma mudança maior não equivale automaticamente a melhor aprendizado; aqui houve melhora medida no teste.</p><figure><img src="images/s16-33-aula.svg" width="640" height="330" alt="A melhora exigiu deslocar mais as matrizes"><figcaption>Os passos e as formas de ajustar são diferentes entre as variantes.</figcaption></figure></article>
+<article><h3>3.4 A conclusão vale para esta comparação</h3><p><strong>Com orçamentos próximos, σ ficou à frente desta rotação.</strong> Mas a rotação ainda tem 50% mais ajustes e não representa todas as formas de mudar direções.</p><p>Ainda faltam outros domínios e modelos. O melhor passo possível de σ e o efeito de mais épocas também não foram determinados.</p><figure><img src="images/s16-34-aula.svg" width="640" height="319" alt="A conclusão vale para esta comparação"><figcaption>Ter parâmetros próximos não garante o mesmo tempo ou pico de memória.</figcaption></figure></article>
+</section>
+<details><summary>Onde isso aparece no diário?</summary><p><a href="../index.html#s16">Sessão 16 do diário original</a> · <a href="../../doutorado/experimento1/etapa5/resumo_etapa5.json">Resumo dos resultados</a> · <a href="../../doutorado/experimento1/etapa5/passos_escolhidos.json">Pilotos</a></p><p>Os desenhos simplificam as contas. As médias e as comparações vêm dos registros locais; resultados desta sessão não constituem uma regra para todos os modelos e domínios.</p></details>
+<p class="small"><a href="#sessao-17">Continuar para a sessão 17.</a></p>
+<div id="sessao-17" class="session-heading"><div class="label">Sessão 17 · Aprender com desenhos</div><h1>A pista pequena vira um adaptador?</h1><p>Vamos ampliar a pegada do treino livre e medir se ela ajuda a reconhecer as imagens.</p><nav aria-label="Partes da sessão 17"><a href="#s17-problema">1. Problema</a><a href="#s17-metodo">2. Método</a><a href="#s17-resultado">3. Resultado</a></nav></div>
+<section id="s17-problema"><h2>1. O problema</h2>
+<article><h3>1.1 Alinhamento ainda não era uma solução pronta</h3><p>A sessão 15 encontrou alguma semelhança entre os ajustes do treino livre e os de só σ. Agora a pergunta é prática: <strong>usar essa pista melhora o acerto?</strong></p><p>Nenhum novo ajuste de σ será aprendido aqui. O programa vai usar a pegada que já existe e multiplicá-la por um fator.</p><figure><img src="images/s17-11-aula.svg" width="640" height="315" alt="Alinhamento ainda não era uma solução pronta"><figcaption>A pegada foi extraída de modelos já treinados. Esta sessão não prova um diagnóstico barato sem esse treino anterior.</figcaption></figure></article>
+</section>
+<section id="s17-metodo"><h2>2. O método</h2>
+<article><h3>2.1 Multiplicar a pegada por um único fator</h3><p>Em cada matriz, a pegada tem 384 ajustes relativos. Cada um foi multiplicado pelo mesmo fator <strong>k</strong>. Foram testados k = 10, 33 e 100.</p><p>As 72 matrizes são reconstruídas com esses ajustes. O restante do corpo volta aos valores originais.</p><figure><img src="images/s17-21-aula.svg" width="640" height="315" alt="Multiplicar a pegada por um único fator"><figcaption>O exemplo mostra só uma posição. O mesmo fator foi usado em todas as matrizes.</figcaption></figure></article>
+<article><h3>2.2 Usar o mesmo instrumento para todas as versões</h3><p>O corpo de cada versão fica congelado, produz os resumos CLS e uma <strong>regressão logística</strong> aprende a classificá-los.</p><p>Isso vale para a base, o adaptador previsto e os δ realmente aprendidos na sessão 16. A comparação é feita dentro deste procedimento.</p><figure><img src="images/s17-22-aula.svg" width="640" height="315" alt="Usar o mesmo instrumento para todas as versões"><figcaption>Por isso o δ aprendido não precisa atingir os 71,51% da sessão 16: aqui o restante do corpo não foi ajustado junto.</figcaption></figure></article>
+<article><h3>2.3 Escolher k e comparar com um controle aleatório</h3><p>Uma parte do treino ficou para validação, que escolheu <strong>k = 100</strong>. O teste não escolheu k.</p><p>Também foi criado um δ aleatório com a <strong>mesma norma em cada matriz</strong>. Esse controle confere se ampliar qualquer ajuste teria o mesmo efeito.</p><figure><img src="images/s17-23-aula.svg" width="640" height="207" alt="Escolher k e comparar com um controle aleatório"><figcaption>Igualar a norma compara o tamanho total dos ajustes, não suas entradas uma por uma.</figcaption></figure></article>
+</section>
+<section id="s17-resultado"><h2>3. O resultado</h2>
+<article><h3>3.1 O adaptador previsto melhorou um pouco</h3><p>A base ficou em <strong>56,65%</strong>. Com k = 100, o previsto chegou a <strong>58,37%</strong>, acima da base nas dez sementes.</p><p>Os fatores 10 e 33 ficaram perto da base. O valor de 56,65% difere levemente da triagem anterior por diferenças numéricas na preparação guardada das fotos.</p><figure><img src="images/s17-31-aula.svg" width="640" height="405" alt="O adaptador previsto melhorou um pouco"><figcaption>A melhora escolhida foi de 1,72 ponto percentual, não de 100 vezes no acerto.</figcaption></figure></article>
+<article><h3>3.2 Recuperou cerca de um quinto do ganho</h3><p>Os δ aprendidos por treino, avaliados neste mesmo instrumento, chegaram a <strong>65,08%</strong>. A pegada ampliada recuperou <strong>20,4% do ganho</strong> entre a base e esse resultado.</p><p>A conta é: (58,37 − 56,65) ÷ (65,08 − 56,65).</p><figure><img src="images/s17-32-aula.svg" width="640" height="330" alt="Recuperou cerca de um quinto do ganho"><figcaption>20,4% é a fração do ganho recuperada, não o acerto do adaptador.</figcaption></figure></article>
+<article><h3>3.3 O controle do mesmo tamanho foi muito pior</h3><p>Com k = 100, o controle aleatório chegou a <strong>27,34%</strong>, bem abaixo da base. A pegada ampliada, com escala comparável, preservou mais do resultado e melhorou um pouco.</p><p>Isso indica que o sentido da pegada contém informação útil. A magnitude sozinha não explica o resultado.</p><figure><img src="images/s17-33-aula.svg" width="640" height="330" alt="O controle do mesmo tamanho foi muito pior"><figcaption>O controle é aleatório na orientação, com norma igualada por matriz.</figcaption></figure></article>
+<article><h3>3.4 A pista ainda não substitui aprender os ajustes</h3><p>Um fator único não acertou o tamanho necessário em cada componente. Mas este teste não determina o melhor adaptador possível a partir da pegada.</p><p>Só três fatores foram testados e o vencedor era o maior. Usar fatores por matriz ou treinar a partir dessa inicialização são perguntas para outros testes.</p><figure><img src="images/s17-34-aula.svg" width="640" height="207" alt="A pista ainda não substitui aprender os ajustes"><figcaption>Tudo foi medido em pele, no Small, com dez sementes por comparação.</figcaption></figure></article>
+</section>
+<details><summary>Onde isso aparece no diário?</summary><p><a href="../index.html#s17">Sessão 17 do diário original</a> · <a href="../../doutorado/experimento1/etapa6/adaptador_previsto.json">Resultados do adaptador</a> · <a href="../../doutorado/experimento1/etapa6/scripts/predicted_sigma_adapter.py">Programa do teste</a></p><p>Os desenhos simplificam as contas. As médias e as comparações vêm dos registros locais; resultados desta sessão não constituem uma regra para todos os modelos e domínios.</p></details>
+<p class="small"><a href="#sessao-18">Continuar para a sessão 18.</a></p>
+<div id="sessao-18" class="session-heading"><div class="label">Sessão 18 · Aprender com desenhos</div><h1>O resultado se repete em letras?</h1><p>Vamos trocar as fotos de pele por caracteres japoneses escritos à mão.</p><nav aria-label="Partes da sessão 18"><a href="#s18-problema">1. Problema</a><a href="#s18-metodo">2. Método</a><a href="#s18-resultado">3. Resultado</a></nav></div>
+<section id="s18-problema"><h2>1. O problema</h2>
+<article><h3>1.1 Uma regra vista em pele pode depender das imagens</h3><p>Até aqui, os treinos restritos foram comparados em pele. Para conferir se o resultado se repete, o pesquisador escolheu o <strong>KMNIST</strong>, com dez classes de caracteres.</p><p><strong>Como ler as variantes:</strong> as restrições valem para as 72 matrizes. A cabeça e os outros parâmetros continuam treinando. “72 congeladas” não significa corpo inteiro congelado.</p><figure><img src="images/s18-11-aula.svg" width="640" height="315" alt="Uma regra vista em pele pode depender das imagens"><figcaption>Exemplos reais de classes do conjunto de treino. Os rótulos numéricos vêm dos dados.</figcaption></figure></article>
+</section>
+<section id="s18-metodo"><h2>2. O método</h2>
+<article><h3>2.1 Preparar a mesma amostra para todas as variantes</h3><p>Foram sorteadas <strong>3.680 imagens de treino e 3.669 de teste</strong>. As originais têm 28 × 28 pixels em cinza.</p><p>Elas são ampliadas para 224 × 224 e apresentadas nos três canais de cor. Ampliar aumenta o tamanho, mas não cria detalhes reais que não existiam.</p><figure><img src="images/s18-21-aula.svg" width="640" height="315" alt="Preparar a mesma amostra para todas as variantes"><figcaption>O sorteio de imagens foi fixado para os métodos usarem a mesma amostra.</figcaption></figure></article>
+<article><h3>2.2 Escolher o passo neste domínio</h3><p>Os pilotos escolheram <strong>0,01 para σ</strong> e <strong>0,001 para rotação pequena</strong>. Em pele, σ havia sido melhorado usando 0,03.</p><p>Isso mostra a necessidade de escolher a configuração no domínio novo. Não demonstra que 0,01 seja o melhor valor entre todos os valores possíveis.</p><figure><img src="images/s18-22-aula.svg" width="640" height="319" alt="Escolher o passo neste domínio"><figcaption>As diferenças pequenas de validação também sofrem com a oscilação dos recortes.</figcaption></figure></article>
+<article><h3>2.3 Repetir quatro variantes em dez sementes</h3><p>O procedimento continuou com cinco épocas e weight decay zero. Foram treinados <strong>40 modelos</strong>: dez de cada variante.</p><p>As restrições foram conferidas nos modelos salvos: padrões preservados em σ e σ praticamente fixos na rotação.</p><figure><img src="images/s18-23-aula.svg" width="640" height="319" alt="Repetir quatro variantes em dez sementes"><figcaption>Um protocolo comum facilita comparar as variantes dentro deste domínio.</figcaption></figure></article>
+</section>
+<section id="s18-resultado"><h2>3. O resultado</h2>
+<article><h3>3.1 Só σ voltou a superar a rotação pequena</h3><p>No teste, só σ acertou <strong>84,86%</strong> e a rotação pequena <strong>83,52%</strong>. O treino completo chegou a 87,66%.</p><p>O ponto de partida das 72 matrizes congeladas foi 69,86%.</p><figure><img src="images/s18-31-aula.svg" width="640" height="405" alt="Só σ voltou a superar a rotação pequena"><figcaption>Acertos médios de dez sementes no KMNIST.</figcaption></figure></article>
+<article><h3>3.2 A ordem apareceu nas dez sementes</h3><p>Só σ ficou acima da rotação pequena nas <strong>dez comparações de mesma semente</strong>. A diferença média foi 1,34 ponto.</p><p>Ele recuperou <strong>84,2% do ganho</strong> entre 72 congeladas e completa; a rotação recuperou 76,7%.</p><figure><img src="images/s18-32-aula.svg" width="640" height="285" alt="A ordem apareceu nas dez sementes"><figcaption>As sementes foram pareadas para comparar execuções com os mesmos sorteios.</figcaption></figure></article>
+<article><h3>3.3 A referência de 69,86% difere da triagem</h3><p>A triagem do corpo totalmente congelado tinha dado <strong>79,34%</strong>. Ela treinava uma regressão logística sobre resumos de imagens preparadas de forma fixa.</p><p>A variante 72 congeladas usa outro treino da cabeça, mantém outros parâmetros ajustáveis e usa recortes aleatórios e espelhamento. Não é o mesmo procedimento.</p><figure><img src="images/s18-33-aula.svg" width="640" height="207" alt="A referência de 69,86% difere da triagem"><figcaption>Para calcular ganho recuperado, o ponto de partida é o mesmo protocolo das variantes: 69,86%.</figcaption></figure><p>Essas diferenças podem influenciar o resultado. Não foi isolado o efeito de cada uma.</p></article>
+<article><h3>3.4 A repetição ajuda, mas ainda tem limites</h3><p>O espelhamento foi herdado do protocolo. Em caracteres, virar a imagem pode alterar o símbolo e atrapalhar a tarefa.</p><p>A ordem σ acima de rotação apareceu em pele e KMNIST, nas condições testadas. Dois domínios e um modelo ainda não estabelecem uma regra universal.</p><figure><img src="images/s18-34-aula.svg" width="640" height="315" alt="A repetição ajuda, mas ainda tem limites"><figcaption>Manter o mesmo protocolo não garante que cada transformação seja apropriada para o novo domínio.</figcaption></figure></article>
+</section>
+<details><summary>Onde isso aparece no diário?</summary><p><a href="../index.html#s18">Sessão 18 do diário original</a> · <a href="../../doutorado/experimento1/etapa7/resumo_etapa7.json">Resumo do KMNIST</a> · <a href="../../doutorado/experimento1/etapa7/passos_escolhidos.json">Pilotos do KMNIST</a></p><p>Os desenhos simplificam as contas. As médias e as comparações vêm dos registros locais; resultados desta sessão não constituem uma regra para todos os modelos e domínios.</p></details>
+<p class="small"><a href="#sessao-19">Continuar para a sessão 19.</a></p>
+<div id="sessao-19" class="session-heading"><div class="label">Sessão 19 · Aprender com desenhos</div><h1>E se o modelo for maior?</h1><p>O teste de pele será repetido com o DINOv2-Base, um modelo mais largo da mesma família.</p><nav aria-label="Partes da sessão 19"><a href="#s19-problema">1. Problema</a><a href="#s19-metodo">2. Método</a><a href="#s19-resultado">3. Resultado</a></nav></div>
+<section id="s19-problema"><h2>1. O problema</h2>
+<article><h3>1.1 O resultado do Small vale para o Base?</h3><p>A ideia é mudar o tamanho do modelo e manter as mesmas imagens de pele. Assim podemos conferir se a vantagem de σ sobre a rotação pequena reaparece.</p><p><strong>Como ler as variantes:</strong> as restrições valem para as 72 matrizes. A cabeça e os outros parâmetros continuam treinando. “72 congeladas” não significa corpo inteiro congelado.</p><figure><img src="images/s19-11-aula.svg" width="640" height="207" alt="O resultado do Small vale para o Base?"><figcaption>Os valores estão arredondados: os corpos têm 22.056.576 e 86.580.480 parâmetros.</figcaption></figure></article>
+</section>
+<section id="s19-metodo"><h2>2. O método</h2>
+<article><h3>2.1 Dobrar a largura, mantendo os 12 blocos</h3><p>O Base continua com <strong>12 blocos e 72 matrizes principais</strong>. A lista de cada token cresce de 384 para 768 números, e as cabeças de atenção passam de seis para doze.</p><p>Dobrar os dois lados de uma matriz quadrada quadruplica sua quantidade de pesos. Nas 72 matrizes, são cerca de 84,9 milhões, contra 21,2 milhões no Small.</p><figure><img src="images/s19-21-aula.svg" width="640" height="319" alt="Dobrar a largura, mantendo os 12 blocos"><figcaption>Os σ dobram em quantidade; a rotação pequena continua com 1,5 vez os ajustes de σ.</figcaption></figure></article>
+<article><h3>2.2 Repetir a triagem antes do ajuste</h3><p>Com o corpo congelado e uma regressão logística, o Base acertou <strong>59,15%</strong> no teste de pele. O Small havia acertado 56,58%.</p><p>O classificador do Base chegou a quase 100% no treino, mas ficou bem abaixo disso no teste. Um acerto alto nas imagens vistas não garante generalização.</p><figure><img src="images/s19-22-aula.svg" width="640" height="255" alt="Repetir a triagem antes do ajuste"><figcaption>A comparação usa a mesma amostra, mas resumos de tamanhos diferentes.</figcaption></figure></article>
+<article><h3>2.3 Escolher os passos e treinar quarenta modelos</h3><p>A validação escolheu <strong>0,03 para σ e 0,001 para rotação</strong>, como em pele no Small. Depois foram feitas dez sementes de cada uma das quatro variantes.</p><p>A diferença entre dois passos de σ na validação foi pequena. Os outros passos não foram todos repetidos em dez sementes.</p><figure><img src="images/s19-23-aula.svg" width="640" height="315" alt="Escolher os passos e treinar quarenta modelos"><figcaption>Cinco épocas, mesmas imagens de pele, primeira época só da cabeça e weight decay zero.</figcaption></figure></article>
+<article><h3>2.4 Medir novamente o custo na placa</h3><p>Foi repetida a medição de 30 passos com lotes de 32 e fotos já na placa, como na sessão 14. Os cinco primeiros passos ficaram fora da média de tempo.</p><p>A comparação de memória e tempo usa o modelo inteiro, incluindo os demais parâmetros que treinam.</p><figure><img src="images/s19-24-aula.svg" width="640" height="319" alt="Medir novamente o custo na placa"><figcaption>A rotação do Base usa grupos de três linhas; a medição antiga do Small usava grupos de 32.</figcaption></figure></article>
+</section>
+<section id="s19-resultado"><h2>3. O resultado</h2>
+<article><h3>3.1 Só σ recuperou 92% do ganho</h3><p>No Base, só σ atingiu <strong>74,49%</strong>; a rotação pequena, 72,20%; e a completa, 75,35%. As 72 congeladas ficaram em 64,59%.</p><p>Só σ recuperou <strong>92,0% do ganho</strong> e superou a rotação pequena nas dez sementes.</p><figure><img src="images/s19-31-aula.svg" width="640" height="405" alt="Só σ recuperou 92% do ganho"><figcaption>A completa ainda ficou acima de σ nas dez sementes, com diferença média de 0,86 ponto.</figcaption></figure></article>
+<article><h3>3.2 O Base com σ passou o Small completo</h3><p><strong>74,49%</strong> do Base com σ ficou acima dos <strong>72,84%</strong> do Small completo, nesta tarefa.</p><p>Isso não significa que o Base inteiro custe menos: seu pico de memória com σ foi maior que o pico do Small completo. A vantagem em ajustes livres não elimina o custo de usar um corpo maior.</p><figure><img src="images/s19-32-aula.svg" width="640" height="255" alt="O Base com σ passou o Small completo"><figcaption>O Base tem mais pesos, cálculos e ativações, mesmo com poucos parâmetros ajustados nas 72 matrizes.</figcaption></figure></article>
+<article><h3>3.3 A memória de apoio caiu, o tempo quase não</h3><p>No Base, gradientes e AdamW caíram de <strong>990,9 MB para 19,5 MB</strong> em só σ. O pico total caiu de 4.841 para 4.177 MB: <strong>13,7% menos</strong>.</p><p>O tempo por passo foi 0,3042 s em só σ e 0,3009 s na completa, praticamente igual. A redução de pico foi maior que os cerca de 8% medidos no Small.</p><figure><img src="images/s19-33-aula.svg" width="640" height="319" alt="A memória de apoio caiu, o tempo quase não"><figcaption>São medidas desta implementação e deste lote; memória de apoio e pico total são coisas diferentes.</figcaption></figure></article>
+<article><h3>3.4 O arquivo de δ é só uma parte da adaptação</h3><p>Os δ ocupam cerca de <strong>237 KB</strong>, enquanto o corpo completo salvo ocupa 330,3 MB. Mas também é preciso preservar a cabeça, cerca de 26 KB, e os outros pesos alterados, cerca de 6,3 MB.</p><p>O modelo base original continua necessário e pode ser compartilhado entre tarefas.</p><figure><img src="images/s19-34-aula.svg" width="640" height="315" alt="O arquivo de δ é só uma parte da adaptação"><figcaption>Os 237 KB não são um modelo completo independente. Os registros usam unidades aproximadas de armazenamento.</figcaption></figure></article>
+<article><h3>3.5 Mais um resultado, ainda dentro da mesma família</h3><p>As restrições foram conferidas nos modelos salvos: os padrões de σ foram preservados e os σ da rotação ficaram praticamente fixos.</p><p>Nesta sessão, o Base só foi testado em pele. Dois tamanhos de DINOv2 não cobrem outras arquiteturas nem todos os domínios.</p><figure><img src="images/s19-35-aula.svg" width="640" height="319" alt="Mais um resultado, ainda dentro da mesma família"><figcaption>A escolha de passos ainda sofre com a oscilação dos pilotos de validação.</figcaption></figure></article>
+</section>
+<details><summary>Onde isso aparece no diário?</summary><p><a href="../index.html#s19">Sessão 19 do diário original</a> · <a href="../../doutorado/experimento1/etapa8/resumo_etapa8.json">Resumo do Base</a> · <a href="../../doutorado/experimento1/etapa8/custo_gpu_base.json">Medição de GPU</a> · <a href="../../doutorado/experimento1/etapa8/passos_escolhidos.json">Pilotos do Base</a></p><p>Os desenhos simplificam as contas. As médias e as comparações vêm dos registros locais; resultados desta sessão não constituem uma regra para todos os modelos e domínios.</p></details>
+<p class="small"><a href="#sessao-20">Continuar para a sessão 20.</a></p>
+<div id="sessao-20" class="session-heading"><div class="label">Sessão 20 · Aprender com desenhos</div><h1>E quando há pouco ganho disponível?</h1><p>Vamos repetir o teste em texturas, como superfícies riscadas, tecidos e rachaduras.</p><nav aria-label="Partes da sessão 20"><a href="#s20-problema">1. Problema</a><a href="#s20-metodo">2. Método</a><a href="#s20-resultado">3. Resultado</a></nav></div>
+<section id="s20-problema"><h2>1. O problema</h2>
+<article><h3>1.1 Os métodos precisam funcionar em imagens diferentes</h3><p>O conjunto <strong>DTD</strong> tem 47 classes de textura. Na triagem, o classificador sobre o corpo congelado já acertava 78,62%.</p><p>O piloto da sessão 12 havia sugerido uma melhora pequena com o treino completo. Será que σ continua acima da rotação quando há pouco a ganhar?</p><figure><img src="images/s20-11-aula.svg" width="640" height="315" alt="Os métodos precisam funcionar em imagens diferentes"><figcaption>Exemplos reais do treino de DTD; os rótulos representam categorias de textura.</figcaption></figure><p><strong>Como ler as variantes:</strong> as restrições valem para as 72 matrizes. A cabeça e os outros parâmetros continuam treinando. “72 congeladas” não significa corpo inteiro congelado.</p></article>
+</section>
+<section id="s20-metodo"><h2>2. O método</h2>
+<article><h3>2.1 Usar as mesmas imagens entre as variantes</h3><p>Foram usadas <strong>3.680 imagens de treino e todas as 1.880 de teste</strong>. O DINOv2-Small e o protocolo de cinco épocas continuaram os mesmos.</p><p>O teste tem 40 imagens por classe. Essa quantidade limita o tamanho das diferenças que podemos observar no acerto.</p><figure><img src="images/s20-21-aula.svg" width="640" height="319" alt="Usar as mesmas imagens entre as variantes"><figcaption>As imagens são preparadas para 224 × 224 antes de entrar na rede.</figcaption></figure></article>
+<article><h3>2.2 Escolher novamente os passos</h3><p>A validação escolheu <strong>0,01 para σ e 0,001 para rotação pequena</strong>, como no KMNIST.</p><p>Os passos menores de σ ficaram próximos na validação, que usa recortes aleatórios. A escolha não estabelece que esse passo venceria em qualquer nova repetição.</p><figure><img src="images/s20-22-aula.svg" width="640" height="252" alt="Escolher novamente os passos"><figcaption>Outros passos não foram todos repetidos nas dez sementes finais.</figcaption></figure></article>
+<article><h3>2.3 Treinar as quatro variantes e conferir as restrições</h3><p>Foram feitos <strong>40 treinos</strong>, dez por variante. Os modelos salvos foram medidos para conferir os σ fixos na rotação e os padrões preservados em só σ.</p><p>A cabeça e os outros parâmetros aprenderam nos quatro casos.</p><figure><img src="images/s20-23-aula.svg" width="640" height="315" alt="Treinar as quatro variantes e conferir as restrições"><figcaption>Mesmo protocolo entre variantes, com as mesmas sementes.</figcaption></figure></article>
+</section>
+<section id="s20-resultado"><h2>3. O resultado</h2>
+<article><h3>3.1 Desta vez a rotação ficou ligeiramente à frente</h3><p>Só σ chegou a <strong>80,57%</strong>, e a rotação pequena a <strong>80,85%</strong>. O treino completo deu 81,30%; as 72 congeladas, 78,27%.</p><p>A ordem observada nos casos de pele e KMNIST não se repetiu.</p><figure><img src="images/s20-31-aula.svg" width="640" height="405" alt="Desta vez a rotação ficou ligeiramente à frente"><figcaption>A diferença entre rotação e σ foi pequena: aproximadamente 0,28 ponto percentual.</figcaption></figure></article>
+<article><h3>3.2 O ganho total também foi pequeno</h3><p>Entre 72 congeladas e completa, o ganho foi de <strong>3,03 pontos</strong>. Só σ recuperou 76,0% dele, e a rotação, 85,1%.</p><p>Uma fração do ganho pode mudar bastante quando o ganho total usado como denominador é pequeno.</p><figure><img src="images/s20-32-aula.svg" width="640" height="330" alt="O ganho total também foi pequeno"><figcaption>São diferenças de acerto dentro de cada domínio, não comparação direta de dificuldade entre tarefas.</figcaption></figure></article>
+<article><h3>3.3 A vantagem apareceu em oito das dez sementes</h3><p>A rotação ficou acima de σ em <strong>oito sementes</strong>. A diferença média de 0,28 ponto equivale a cerca de cinco acertos a mais em 1.880 imagens.</p><p>Isso não significa que foram sempre as mesmas cinco imagens. É uma diferença de contagens, em média.</p><figure><img src="images/s20-33-aula.svg" width="640" height="285" alt="A vantagem apareceu em oito das dez sementes"><figcaption>O desvio das diferenças pareadas foi de 0,27 ponto. O teste não provou equivalência entre os métodos.</figcaption></figure></article>
+<article><h3>3.4 A triagem sozinha não deu uma regra de previsão</h3><p>DTD e KMNIST tiveram triagens parecidas, <strong>78,62% e 79,34%</strong>. Mesmo assim, seus ganhos entre 72 congeladas e completa foram muito diferentes: 3,03 e 17,81 pontos.</p><p>A triagem ainda informa como um classificador aproveita o corpo original. Mas estes casos não sustentam usá-la sozinha para prever o ganho do treino ou sua fração recuperada.</p><figure><img src="images/s20-34-aula.svg" width="640" height="319" alt="A triagem sozinha não deu uma regra de previsão"><figcaption>Os valores de ganho dependem também da referência e do protocolo usados.</figcaption></figure></article>
+<article><h3>3.5 Surge uma hipótese, que precisa de outro caso</h3><p>Nos casos com ganhos maiores, σ tinha vencido. No DTD, o único caso de ganho pequeno até aqui, a rotação ficou à frente. <strong>Talvez o tamanho do ganho ajude a explicar a ordem.</strong></p><p>Isso ainda é uma hipótese. A vantagem é pequena, outros passos não foram repetidos e há poucos pares de modelo e domínio.</p><figure><img src="images/s20-35-aula.svg" width="640" height="315" alt="Surge uma hipótese, que precisa de outro caso"><figcaption>A próxima sessão procura um segundo domínio com ganho pequeno.</figcaption></figure><p>Outro cuidado: os deslocamentos das matrizes foram parecidos entre domínios com os mesmos passos. Isso sugere influência do protocolo, sem demonstrar que o domínio não tenha efeito.</p></article>
+</section>
+<details><summary>Onde isso aparece no diário?</summary><p><a href="../index.html#s20">Sessão 20 do diário original</a> · <a href="../../doutorado/experimento1/etapa9/resumo_etapa9.json">Resumo do DTD</a> · <a href="../../doutorado/experimento1/etapa9/passos_escolhidos.json">Pilotos do DTD</a></p><p>Os desenhos simplificam as contas. As médias e as comparações vêm dos registros locais; resultados desta sessão não constituem uma regra para todos os modelos e domínios.</p></details>
+<p class="small"><a href="#sessao-21">Continuar para a sessão 21.</a></p>
+<div id="sessao-21" class="session-heading"><div class="label">Sessão 21 · Aprender com desenhos</div><h1>O satélite confirma a hipótese?</h1><p>O EuroSAT oferece outro caso com pouco ganho total. Vamos conferir quem fica à frente.</p><nav aria-label="Partes da sessão 21"><a href="#s21-problema">1. Problema</a><a href="#s21-metodo">2. Método</a><a href="#s21-resultado">3. Resultado</a></nav></div>
+<section id="s21-problema"><h2>1. O problema</h2>
+<article><h3>1.1 Uma hipótese precisa sobreviver a exemplos novos</h3><p>A hipótese da sessão 20 dizia que ganho pequeno favoreceria a rotação. O <strong>EuroSAT</strong> era um novo teste: dez classes de uso do solo em imagens de satélite.</p><p>A triagem tinha dado 94,88%. Até esta etapa, não havia sido feito o piloto de treino livre nesse conjunto.</p><figure><img src="images/s21-11-aula.svg" width="640" height="315" alt="Uma hipótese precisa sobreviver a exemplos novos"><figcaption>Exemplos reais do treino. As imagens originais têm 64 × 64 pixels.</figcaption></figure><p><strong>Como ler as variantes:</strong> as restrições valem para as 72 matrizes. A cabeça e os outros parâmetros continuam treinando. “72 congeladas” não significa corpo inteiro congelado.</p></article>
+</section>
+<section id="s21-metodo"><h2>2. O método</h2>
+<article><h3>2.1 Usar o mesmo desenho de comparação</h3><p>Foram sorteadas <strong>3.680 imagens de treino e 3.669 de teste</strong>. As imagens de 64 × 64 são ampliadas para 224 × 224.</p><p>Continuam o Small, a rotação em grupos de três linhas, cinco épocas e dez sementes de cada variante.</p><figure><img src="images/s21-21-aula.svg" width="640" height="315" alt="Usar o mesmo desenho de comparação"><figcaption>Ampliar as imagens não cria os detalhes de uma fotografia originalmente maior.</figcaption></figure></article>
+<article><h3>2.2 Escolher os passos nos pilotos</h3><p>Foram escolhidos <strong>0,01 para σ e 0,001 para rotação</strong>, como em DTD e KMNIST.</p><p>Dois passos de σ ficaram muito próximos na validação. Os demais valores não foram todos executados nas dez sementes, então a ordem final pode depender da configuração.</p><figure><img src="images/s21-22-aula.svg" width="640" height="252" alt="Escolher os passos nos pilotos"><figcaption>As restrições foram conferidas nos pesos salvos, como nos outros domínios.</figcaption></figure></article>
+<article><h3>2.3 Comparar casos com ganhos totais parecidos</h3><p>O novo resultado permitiria comparar EuroSAT com DTD. A hipótese estava ligada ao <strong>ganho total entre 72 congeladas e completa</strong>, e não só ao acerto absoluto.</p><p>Também foram reunidos os cinco pares de modelo e domínio já testados, sem treinar nada novo nessa reunião.</p><figure><img src="images/s21-23-aula.svg" width="640" height="319" alt="Comparar casos com ganhos totais parecidos"><figcaption>Diferenças de acerto são dadas em pontos percentuais.</figcaption></figure></article>
+</section>
+<section id="s21-resultado"><h2>3. O resultado</h2>
+<article><h3>3.1 Só σ voltou a ficar um pouco acima</h3><p>No EuroSAT, só σ atingiu <strong>98,00%</strong>; rotação, <strong>97,78%</strong>; e completa, 98,17%. As 72 congeladas ficaram em 95,12%.</p><p>Só σ recuperou <strong>94,4% do ganho</strong> e ficou a 0,17 ponto da completa.</p><figure><img src="images/s21-31-aula.svg" width="640" height="405" alt="Só σ voltou a ficar um pouco acima"><figcaption>Acertos médios de dez sementes. O teto de 100% está perto e limita o espaço para melhorar.</figcaption></figure></article>
+<article><h3>3.2 A vantagem apareceu em sete sementes</h3><p>Só σ ficou acima da rotação em <strong>sete das dez sementes</strong>, com diferença média de 0,22 ponto.</p><p>Essa diferença equivale a cerca de oito acertos em 3.669 imagens. É pequena e não demonstra que σ sempre venceria nesse domínio.</p><figure><img src="images/s21-32-aula.svg" width="640" height="285" alt="A vantagem apareceu em sete sementes"><figcaption>O desvio das diferenças pareadas foi de 0,25 ponto percentual.</figcaption></figure></article>
+<article><h3>3.3 O ganho pequeno não escolheu o vencedor</h3><p>O DTD teve ganho total de <strong>3,03 pontos</strong>, com a rotação à frente. O EuroSAT teve <strong>3,06 pontos</strong>, com σ à frente.</p><p><strong>Ganhos quase iguais vieram acompanhados de ordens diferentes.</strong> A regra proposta na sessão 20 não se sustentou nesses resultados.</p><figure><img src="images/s21-33-aula.svg" width="640" height="319" alt="O ganho pequeno não escolheu o vencedor"><figcaption>São diferenças pequenas, sensíveis aos passos e à variação entre sementes.</figcaption></figure></article>
+<article><h3>3.4 O conjunto dos resultados ainda é pequeno</h3><p>Nos três pares com ganhos maiores, σ ficou acima da rotação por cerca de <strong>1,3 a 2,3 pontos</strong>, em todas as dez sementes. Nos dois pares de ganho pequeno, as diferenças foram menores que 0,3 ponto e mudaram de sinal.</p><p>É um padrão observado em cinco pares, não uma lei. O Base só aparece em pele, e a comparação ainda não inclui outras famílias de rotação.</p><figure><img src="images/s21-34-aula.svg" width="640" height="420" alt="O conjunto dos resultados ainda é pequeno"><figcaption>Cinco pares de modelo e domínio; os quatro casos do Small não são quatro modelos diferentes.</figcaption></figure></article>
+<article><h3>3.5 O que podemos levar até aqui</h3><p><strong>Só σ foi uma adaptação eficiente em quantidade de ajustes nas 72 matrizes</strong>, principalmente nos três casos com maior ganho observado. Em texturas, ficou ligeiramente atrás da rotação.</p><p>A triagem continuou útil para examinar o corpo original, mas não forneceu uma regra validada que determine o ganho ou o vencedor.</p><figure><img src="images/s21-35-aula.svg" width="640" height="319" alt="O que podemos levar até aqui"><figcaption>A cabeça e os outros parâmetros também treinam nas variantes restritas; a economia não vale automaticamente para todos os recursos.</figcaption></figure><p>O próximo trabalho é ampliar os testes: mais domínios no Base, configurações melhor verificadas e comparações de custo completas. Os resultados até a sessão 21 não encerram essas questões.</p></article>
+</section>
+<details><summary>Onde isso aparece no diário?</summary><p><a href="../index.html#s21">Sessão 21 do diário original</a> · <a href="../../doutorado/experimento1/etapa10/resumo_etapa10.json">Resumo do EuroSAT</a> · <a href="../../doutorado/experimento1/etapa10/passos_escolhidos.json">Pilotos do EuroSAT</a></p><p>Os desenhos simplificam as contas. As médias e as comparações vêm dos registros locais; resultados desta sessão não constituem uma regra para todos os modelos e domínios.</p></details>
+<footer>Revisão concluída até a sessão 21.</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</main>
+</body>
+</html>

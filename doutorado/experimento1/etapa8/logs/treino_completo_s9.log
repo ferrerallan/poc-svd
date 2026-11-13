@@ -1,0 +1,14 @@
+1) variant completo | train 3680 | teste 2840 | classes 8 | restricted lr None
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 10249.07it/s]
+   trainable parameters: restricted 0 | rest of the body 86,580,480 | head 6,152
+   accuracy before training (teste): 16.4%
+   epoch 1/5  frozen   loss 1.604  train acc 44.5%  acc teste 54.5%
+   epoch 2/5  free     loss 1.352  train acc 57.3%  acc teste 66.9%
+   epoch 3/5  free     loss 1.045  train acc 74.3%  acc teste 70.5%
+   epoch 4/5  free     loss 0.870  train acc 83.5%  acc teste 74.8%
+   epoch 5/5  free     loss 0.776  train acc 89.3%  acc teste 74.9%
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9139.35it/s]
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9828.09it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.59it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.58it/s]
+
+DONE in 3.2 min | completo | teste: 16.4% -> 74.9% | saved in models/etapa8/completo_s9/

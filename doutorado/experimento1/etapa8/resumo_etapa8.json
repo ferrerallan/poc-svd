@@ -1,0 +1,308 @@
+{
+ "modelo": "dinov2-base",
+ "dominio": "pele",
+ "n_matrizes": 72,
+ "params_72_matrizes": 84934656,
+ "corpo_congelado_triagem": 59.15,
+ "congelado_72": {
+  "acuracia": {
+   "media": 64.595,
+   "dp": 0.649568232666045,
+   "min": 63.03,
+   "max": 65.39,
+   "por_semente": [
+    64.33,
+    65.0,
+    64.61,
+    64.82,
+    65.18,
+    64.33,
+    65.39,
+    63.03,
+    64.72,
+    64.54
+   ]
+  },
+  "acuracia_treino_final": 70.17699999999999,
+  "params_restritos_efetivos": 0,
+  "params_resto_corpo": 1645824,
+  "params_cabeca": 6152,
+  "lr_restrito": null,
+  "minutos": 2.63,
+  "desloc_pct": 0.0,
+  "sigma_top10_abs_pct": 0.0,
+  "direcoes_preservadas": 1.000000011589792
+ },
+ "so_sigma": {
+  "acuracia": {
+   "media": 74.493,
+   "dp": 0.6488973553481131,
+   "min": 73.42,
+   "max": 75.74,
+   "por_semente": [
+    74.26,
+    73.42,
+    74.44,
+    74.89,
+    75.14,
+    74.58,
+    75.74,
+    74.4,
+    73.98,
+    74.08
+   ]
+  },
+  "acuracia_treino_final": 84.61,
+  "params_restritos_efetivos": 55296,
+  "params_resto_corpo": 1645824,
+  "params_cabeca": 6152,
+  "lr_restrito": 0.03,
+  "minutos": 3.32,
+  "desloc_pct": 22.77387269048227,
+  "sigma_top10_abs_pct": 12.463470052979472,
+  "direcoes_preservadas": 0.9999291451440917,
+  "ganho_recuperado_pct": 92.0145021846239
+ },
+ "so_rotacao_bloco3": {
+  "acuracia": {
+   "media": 72.197,
+   "dp": 0.8030642702936178,
+   "min": 70.11,
+   "max": 73.13,
+   "por_semente": [
+    72.04,
+    72.39,
+    72.22,
+    72.64,
+    72.15,
+    73.13,
+    72.57,
+    70.11,
+    72.61,
+    72.11
+   ]
+  },
+  "acuracia_treino_final": 81.637,
+  "params_restritos_efetivos": 82944,
+  "params_resto_corpo": 1645824,
+  "params_cabeca": 6152,
+  "lr_restrito": 0.001,
+  "minutos": 4.03,
+  "desloc_pct": 5.654813131938378,
+  "sigma_top10_abs_pct": 2.969779041745508e-05,
+  "direcoes_preservadas": 0.9983775125609504,
+  "ganho_recuperado_pct": 70.67026122524868
+ },
+ "completo": {
+  "acuracia": {
+   "media": 75.352,
+   "dp": 0.47154120828524737,
+   "min": 74.44,
+   "max": 75.99,
+   "por_semente": [
+    75.53,
+    75.42,
+    75.81,
+    75.25,
+    75.63,
+    75.6,
+    75.99,
+    74.44,
+    74.96,
+    74.89
+   ]
+  },
+  "acuracia_treino_final": 89.30799999999999,
+  "params_restritos_efetivos": 0,
+  "params_resto_corpo": 86580480,
+  "params_cabeca": 6152,
+  "lr_restrito": null,
+  "minutos": 3.23,
+  "desloc_pct": 0.5709849330984677,
+  "sigma_top10_abs_pct": 0.016697801198562148,
+  "direcoes_preservadas": 0.9826945929891533
+ },
+ "ganho_total": 10.757000000000005,
+ "rotacao_bloco3_menos_so_sigma": {
+  "media": -2.2960000000000007,
+  "sementes_rotacao_acima": 0
+ },
+ "completo_menos_so_sigma": {
+  "media": 0.8589999999999975,
+  "sementes_completo_acima": 10
+ },
+ "small_referencia": {
+  "congelado_72": {
+   "acuracia": {
+    "media": 60.313,
+    "dp": 0.6017760750016944,
+    "min": 59.33,
+    "max": 61.23,
+    "por_semente": [
+     59.33,
+     60.14,
+     60.0,
+     60.39,
+     60.85,
+     61.23,
+     60.49,
+     61.02,
+     59.68,
+     60.0
+    ]
+   },
+   "acuracia_treino_final": 64.626,
+   "params_restritos_efetivos": 0,
+   "lr_restrito": null,
+   "bloco_oft": null,
+   "minutos": 1.1,
+   "desloc_pct": 0.0,
+   "sigma_top10_abs_pct": 0.0,
+   "direcoes_preservadas": 1.000000009106265
+  },
+  "so_sigma": {
+   "acuracia": {
+    "media": 70.30199999999999,
+    "dp": 0.6312034361264018,
+    "min": 69.08,
+    "max": 71.13,
+    "por_semente": [
+     70.21,
+     70.14,
+     70.42,
+     69.58,
+     71.13,
+     70.63,
+     71.13,
+     69.08,
+     70.21,
+     70.49
+    ]
+   },
+   "acuracia_treino_final": 76.656,
+   "params_restritos_efetivos": 27648,
+   "lr_restrito": 0.01,
+   "bloco_oft": null,
+   "minutos": 1.25,
+   "desloc_pct": 9.276983343685666,
+   "sigma_top10_abs_pct": 3.6876010329514326,
+   "direcoes_preservadas": 0.9999645847413275
+  },
+  "so_rotacao_bloco32": {
+   "acuracia": {
+    "media": 71.257,
+    "dp": 0.5566976039307362,
+    "min": 70.39,
+    "max": 72.25,
+    "por_semente": [
+     71.76,
+     70.99,
+     71.13,
+     71.02,
+     71.83,
+     72.25,
+     71.16,
+     70.7,
+     71.34,
+     70.39
+    ]
+   },
+   "acuracia_treino_final": 78.595,
+   "params_restritos_efetivos": 642816,
+   "lr_restrito": 0.0001,
+   "bloco_oft": 32,
+   "minutos": 2.0,
+   "desloc_pct": 2.217287558467231,
+   "sigma_top10_abs_pct": 2.9902806222281697e-05,
+   "direcoes_preservadas": 0.9997820956839455
+  },
+  "so_rotacao_bloco3": {
+   "acuracia": {
+    "media": 69.466,
+    "dp": 0.6539316987779878,
+    "min": 68.63,
+    "max": 70.56,
+    "por_semente": [
+     69.3,
+     70.07,
+     69.23,
+     68.63,
+     70.56,
+     69.3,
+     70.35,
+     68.7,
+     69.15,
+     69.37
+    ]
+   },
+   "acuracia_treino_final": 75.853,
+   "params_restritos_efetivos": 41472,
+   "lr_restrito": 0.001,
+   "bloco_oft": 3,
+   "minutos": 2.01,
+   "desloc_pct": 5.5947719801527755,
+   "sigma_top10_abs_pct": 3.0003344789382897e-05,
+   "direcoes_preservadas": 0.9983975398043792
+  },
+  "completo": {
+   "acuracia": {
+    "media": 72.845,
+    "dp": 0.5408891856111638,
+    "min": 71.87,
+    "max": 73.63,
+    "por_semente": [
+     72.99,
+     72.92,
+     72.64,
+     73.42,
+     72.89,
+     73.63,
+     73.27,
+     71.87,
+     72.64,
+     72.18
+    ]
+   },
+   "acuracia_treino_final": 81.554,
+   "params_restritos_efetivos": null,
+   "lr_restrito": null,
+   "bloco_oft": null,
+   "minutos": 1.48,
+   "desloc_pct": 0.5448378037221523,
+   "sigma_top10_abs_pct": 0.017521264453534968,
+   "direcoes_preservadas": 0.9910359215405252
+  },
+  "so_sigma_passo_novo": {
+   "acuracia": {
+    "media": 71.513,
+    "dp": 0.5372987995519802,
+    "min": 70.42,
+    "max": 72.25,
+    "por_semente": [
+     71.3,
+     71.06,
+     71.94,
+     72.25,
+     72.11,
+     71.58,
+     71.44,
+     71.34,
+     70.42,
+     71.69
+    ]
+   },
+   "acuracia_treino_final": 78.30799999999999,
+   "params_restritos_efetivos": 27648,
+   "lr_restrito": 0.03,
+   "bloco_oft": null,
+   "minutos": 1.25,
+   "desloc_pct": 21.592646435730988,
+   "sigma_top10_abs_pct": 10.705533704927397,
+   "direcoes_preservadas": 0.9999632168975141
+  },
+  "rotacao_bloco3_menos_so_sigma": {
+   "media": -0.8359999999999971,
+   "sementes_rotacao_acima": 0
+  }
+ }
+}

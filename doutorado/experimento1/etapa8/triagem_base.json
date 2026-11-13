@@ -1,0 +1,16 @@
+{
+  "modelo": "dinov2-base",
+  "largura_cls": 768,
+  "n_treino": 3680,
+  "n_teste": 2840,
+  "classes": 8,
+  "acuracia_corpo_congelado": 59.15,
+  "acuracia_treino": 99.97,
+  "acaso_pct": 12.5,
+  "segundos": 93,
+  "small_referencia": {
+    "acuracia_corpo_congelado": 56.58,
+    "acuracia_treino": 85.05,
+    "fonte": "etapa3/triagem.json"
+  }
+}

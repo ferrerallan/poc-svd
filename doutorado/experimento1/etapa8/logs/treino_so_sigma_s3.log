@@ -1,0 +1,14 @@
+1) variant so_sigma | train 3680 | teste 2840 | classes 8 | restricted lr 0.03
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 7067.09it/s]
+   trainable parameters: restricted 55,296 | rest of the body 1,645,824 | head 6,152
+   accuracy before training (teste): 13.4%
+   epoch 1/5  frozen   loss 1.612  train acc 44.1%  acc teste 53.9%
+   epoch 2/5  free     loss 1.385  train acc 56.3%  acc teste 65.6%
+   epoch 3/5  free     loss 1.128  train acc 68.4%  acc teste 71.6%
+   epoch 4/5  free     loss 0.949  train acc 79.1%  acc teste 73.7%
+   epoch 5/5  free     loss 0.842  train acc 85.3%  acc teste 74.9%
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9927.29it/s]
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 9846.09it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  6.91it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  6.90it/s]
+
+DONE in 3.3 min | so_sigma | teste: 13.4% -> 74.9% | saved in models/etapa8/so_sigma_s3/

@@ -1,0 +1,545 @@
+{
+ "dominio": "eurosat",
+ "corpo_congelado_triagem": 94.88,
+ "classes": 10,
+ "acaso_pct": 10.0,
+ "congelado_72": {
+  "acuracia": {
+   "media": 95.116,
+   "dp": 0.21629198372159666,
+   "min": 94.77,
+   "max": 95.45,
+   "por_semente": [
+    95.45,
+    94.77,
+    95.2,
+    95.42,
+    94.85,
+    95.15,
+    95.09,
+    95.15,
+    95.09,
+    94.99
+   ]
+  },
+  "acuracia_treino_final": 96.497,
+  "params_restritos_efetivos": 0,
+  "lr_restrito": null,
+  "minutos": 1.1400000000000001,
+  "desloc_pct": 0.0,
+  "sigma_top10_abs_pct": 0.0,
+  "direcoes_preservadas": 1.000000009106265
+ },
+ "so_sigma": {
+  "acuracia": {
+   "media": 98.001,
+   "dp": 0.1743846323504461,
+   "min": 97.71,
+   "max": 98.36,
+   "por_semente": [
+    98.04,
+    98.36,
+    97.98,
+    97.71,
+    98.01,
+    97.93,
+    98.15,
+    97.9,
+    97.87,
+    98.06
+   ]
+  },
+  "acuracia_treino_final": 99.073,
+  "params_restritos_efetivos": 27648,
+  "lr_restrito": 0.01,
+  "minutos": 1.32,
+  "desloc_pct": 8.610266257180935,
+  "sigma_top10_abs_pct": 3.2883667546815962,
+  "direcoes_preservadas": 0.9999648304449187,
+  "ganho_recuperado_pct": 94.43535188216035
+ },
+ "so_rotacao_bloco3": {
+  "acuracia": {
+   "media": 97.78399999999999,
+   "dp": 0.1906829829848513,
+   "min": 97.55,
+   "max": 98.09,
+   "por_semente": [
+    97.57,
+    97.82,
+    97.6,
+    97.93,
+    97.87,
+    97.55,
+    97.85,
+    97.96,
+    97.6,
+    98.09
+   ]
+  },
+  "acuracia_treino_final": 99.018,
+  "params_restritos_efetivos": 41472,
+  "lr_restrito": 0.001,
+  "minutos": 2.1500000000000004,
+  "desloc_pct": 5.130564270075411,
+  "sigma_top10_abs_pct": 2.9623578739664442e-05,
+  "direcoes_preservadas": 0.9986488996280565,
+  "ganho_recuperado_pct": 87.33224222585879
+ },
+ "completo": {
+  "acuracia": {
+   "media": 98.171,
+   "dp": 0.17233365570569278,
+   "min": 97.9,
+   "max": 98.47,
+   "por_semente": [
+    97.9,
+    98.47,
+    98.23,
+    98.01,
+    98.34,
+    98.04,
+    98.09,
+    98.12,
+    98.31,
+    98.2
+   ]
+  },
+  "acuracia_treino_final": 99.407,
+  "params_restritos_efetivos": 0,
+  "lr_restrito": null,
+  "minutos": 1.3,
+  "desloc_pct": 0.47098376358109006,
+  "sigma_top10_abs_pct": 0.01741288059090746,
+  "direcoes_preservadas": 0.9930719594988558
+ },
+ "ganho_total": 3.055000000000007,
+ "rotacao_bloco3_menos_so_sigma": {
+  "media": -0.21700000000000585,
+  "sementes_rotacao_acima": 3
+ },
+ "completo_menos_so_sigma": {
+  "media": 0.1700000000000003,
+  "sementes_completo_acima": 8
+ },
+ "pele_referencia": {
+  "congelado_72": {
+   "acuracia": {
+    "media": 60.313,
+    "dp": 0.6017760750016944,
+    "min": 59.33,
+    "max": 61.23,
+    "por_semente": [
+     59.33,
+     60.14,
+     60.0,
+     60.39,
+     60.85,
+     61.23,
+     60.49,
+     61.02,
+     59.68,
+     60.0
+    ]
+   },
+   "acuracia_treino_final": 64.626,
+   "params_restritos_efetivos": 0,
+   "lr_restrito": null,
+   "bloco_oft": null,
+   "minutos": 1.1,
+   "desloc_pct": 0.0,
+   "sigma_top10_abs_pct": 0.0,
+   "direcoes_preservadas": 1.000000009106265
+  },
+  "so_sigma": {
+   "acuracia": {
+    "media": 70.30199999999999,
+    "dp": 0.6312034361264018,
+    "min": 69.08,
+    "max": 71.13,
+    "por_semente": [
+     70.21,
+     70.14,
+     70.42,
+     69.58,
+     71.13,
+     70.63,
+     71.13,
+     69.08,
+     70.21,
+     70.49
+    ]
+   },
+   "acuracia_treino_final": 76.656,
+   "params_restritos_efetivos": 27648,
+   "lr_restrito": 0.01,
+   "bloco_oft": null,
+   "minutos": 1.25,
+   "desloc_pct": 9.276983343685666,
+   "sigma_top10_abs_pct": 3.6876010329514326,
+   "direcoes_preservadas": 0.9999645847413275
+  },
+  "so_rotacao_bloco32": {
+   "acuracia": {
+    "media": 71.257,
+    "dp": 0.5566976039307362,
+    "min": 70.39,
+    "max": 72.25,
+    "por_semente": [
+     71.76,
+     70.99,
+     71.13,
+     71.02,
+     71.83,
+     72.25,
+     71.16,
+     70.7,
+     71.34,
+     70.39
+    ]
+   },
+   "acuracia_treino_final": 78.595,
+   "params_restritos_efetivos": 642816,
+   "lr_restrito": 0.0001,
+   "bloco_oft": 32,
+   "minutos": 2.0,
+   "desloc_pct": 2.217287558467231,
+   "sigma_top10_abs_pct": 2.9902806222281697e-05,
+   "direcoes_preservadas": 0.9997820956839455
+  },
+  "so_rotacao_bloco3": {
+   "acuracia": {
+    "media": 69.466,
+    "dp": 0.6539316987779878,
+    "min": 68.63,
+    "max": 70.56,
+    "por_semente": [
+     69.3,
+     70.07,
+     69.23,
+     68.63,
+     70.56,
+     69.3,
+     70.35,
+     68.7,
+     69.15,
+     69.37
+    ]
+   },
+   "acuracia_treino_final": 75.853,
+   "params_restritos_efetivos": 41472,
+   "lr_restrito": 0.001,
+   "bloco_oft": 3,
+   "minutos": 2.01,
+   "desloc_pct": 5.5947719801527755,
+   "sigma_top10_abs_pct": 3.0003344789382897e-05,
+   "direcoes_preservadas": 0.9983975398043792
+  },
+  "completo": {
+   "acuracia": {
+    "media": 72.845,
+    "dp": 0.5408891856111638,
+    "min": 71.87,
+    "max": 73.63,
+    "por_semente": [
+     72.99,
+     72.92,
+     72.64,
+     73.42,
+     72.89,
+     73.63,
+     73.27,
+     71.87,
+     72.64,
+     72.18
+    ]
+   },
+   "acuracia_treino_final": 81.554,
+   "params_restritos_efetivos": null,
+   "lr_restrito": null,
+   "bloco_oft": null,
+   "minutos": 1.48,
+   "desloc_pct": 0.5448378037221523,
+   "sigma_top10_abs_pct": 0.017521264453534968,
+   "direcoes_preservadas": 0.9910359215405252
+  },
+  "so_sigma_passo_novo": {
+   "acuracia": {
+    "media": 71.513,
+    "dp": 0.5372987995519802,
+    "min": 70.42,
+    "max": 72.25,
+    "por_semente": [
+     71.3,
+     71.06,
+     71.94,
+     72.25,
+     72.11,
+     71.58,
+     71.44,
+     71.34,
+     70.42,
+     71.69
+    ]
+   },
+   "acuracia_treino_final": 78.30799999999999,
+   "params_restritos_efetivos": 27648,
+   "lr_restrito": 0.03,
+   "bloco_oft": null,
+   "minutos": 1.25,
+   "desloc_pct": 21.592646435730988,
+   "sigma_top10_abs_pct": 10.705533704927397,
+   "direcoes_preservadas": 0.9999632168975141
+  },
+  "rotacao_bloco3_menos_so_sigma": {
+   "media": -0.8359999999999971,
+   "sementes_rotacao_acima": 0
+  }
+ },
+ "kmnist_referencia": {
+  "dominio": "kmnist",
+  "corpo_congelado_triagem": 79.34,
+  "classes": 10,
+  "acaso_pct": 10.0,
+  "congelado_72": {
+   "acuracia": {
+    "media": 69.857,
+    "dp": 0.6628566126160979,
+    "min": 68.87,
+    "max": 70.67,
+    "por_semente": [
+     70.43,
+     68.87,
+     68.93,
+     69.83,
+     70.67,
+     70.02,
+     69.96,
+     70.26,
+     70.48,
+     69.12
+    ]
+   },
+   "acuracia_treino_final": 85.112,
+   "params_restritos_efetivos": 0,
+   "lr_restrito": null,
+   "minutos": 1.17,
+   "desloc_pct": 0.0,
+   "sigma_top10_abs_pct": 0.0,
+   "direcoes_preservadas": 1.000000009106265
+  },
+  "so_sigma": {
+   "acuracia": {
+    "media": 84.858,
+    "dp": 0.5655439859109118,
+    "min": 83.86,
+    "max": 85.64,
+    "por_semente": [
+     83.86,
+     85.15,
+     84.44,
+     85.5,
+     85.31,
+     85.06,
+     84.6,
+     85.64,
+     84.66,
+     84.36
+    ]
+   },
+   "acuracia_treino_final": 95.1,
+   "params_restritos_efetivos": 27648,
+   "lr_restrito": 0.01,
+   "minutos": 1.32,
+   "desloc_pct": 9.230999131169584,
+   "sigma_top10_abs_pct": 3.7809825821831407,
+   "direcoes_preservadas": 0.999969792448812,
+   "ganho_recuperado_pct": 84.23742138364786
+  },
+  "so_rotacao_bloco3": {
+   "acuracia": {
+    "media": 83.518,
+    "dp": 0.6466632302314189,
+    "min": 82.8,
+    "max": 84.71,
+    "por_semente": [
+     82.88,
+     83.73,
+     82.86,
+     84.27,
+     84.71,
+     83.4,
+     83.07,
+     83.92,
+     82.8,
+     83.54
+    ]
+   },
+   "acuracia_treino_final": 94.471,
+   "params_restritos_efetivos": 41472,
+   "lr_restrito": 0.001,
+   "minutos": 2.14,
+   "desloc_pct": 5.5685276535546615,
+   "sigma_top10_abs_pct": 3.0296090684068923e-05,
+   "direcoes_preservadas": 0.9983567714691162,
+   "ganho_recuperado_pct": 76.71271338724173
+  },
+  "completo": {
+   "acuracia": {
+    "media": 87.66499999999999,
+    "dp": 0.5789501993551206,
+    "min": 86.56,
+    "max": 88.47,
+    "por_semente": [
+     87.24,
+     88.47,
+     87.19,
+     88.03,
+     88.36,
+     87.49,
+     86.56,
+     87.95,
+     87.6,
+     87.76
+    ]
+   },
+   "acuracia_treino_final": 97.029,
+   "params_restritos_efetivos": 0,
+   "lr_restrito": null,
+   "minutos": 1.31,
+   "desloc_pct": 0.4951965469323719,
+   "sigma_top10_abs_pct": 0.015243546443646967,
+   "direcoes_preservadas": 0.9921887200739649
+  },
+  "ganho_total": 17.807999999999993,
+  "rotacao_bloco3_menos_so_sigma": {
+   "media": -1.3400000000000005,
+   "sementes_rotacao_acima": 0
+  }
+ },
+ "dtd_referencia": {
+  "dominio": "dtd",
+  "corpo_congelado_triagem": 78.62,
+  "classes": 47,
+  "acaso_pct": 2.13,
+  "congelado_72": {
+   "acuracia": {
+    "media": 78.26599999999999,
+    "dp": 0.7422069193365886,
+    "min": 76.97,
+    "max": 78.99,
+    "por_semente": [
+     78.56,
+     78.35,
+     77.39,
+     78.24,
+     78.94,
+     76.97,
+     77.45,
+     78.99,
+     78.83,
+     78.94
+    ]
+   },
+   "acuracia_treino_final": 91.207,
+   "params_restritos_efetivos": 0,
+   "lr_restrito": null,
+   "minutos": 1.07,
+   "desloc_pct": 0.0,
+   "sigma_top10_abs_pct": 0.0,
+   "direcoes_preservadas": 1.000000009106265
+  },
+  "so_sigma": {
+   "acuracia": {
+    "media": 80.57,
+    "dp": 0.4030164044083327,
+    "min": 79.79,
+    "max": 81.33,
+    "por_semente": [
+     80.48,
+     80.69,
+     79.79,
+     80.69,
+     80.64,
+     80.48,
+     80.16,
+     80.8,
+     80.64,
+     81.33
+    ]
+   },
+   "acuracia_treino_final": 95.95400000000001,
+   "params_restritos_efetivos": 27648,
+   "lr_restrito": 0.01,
+   "minutos": 1.27,
+   "desloc_pct": 8.97901920032584,
+   "sigma_top10_abs_pct": 3.382201012249829,
+   "direcoes_preservadas": 0.9999751442008549,
+   "ganho_recuperado_pct": 76.01451666116785
+  },
+  "so_rotacao_bloco3": {
+   "acuracia": {
+    "media": 80.846,
+    "dp": 0.4052488947136877,
+    "min": 80.21,
+    "max": 81.38,
+    "por_semente": [
+     80.96,
+     80.8,
+     80.21,
+     81.17,
+     81.22,
+     80.43,
+     80.43,
+     80.64,
+     81.22,
+     81.38
+    ]
+   },
+   "acuracia_treino_final": 96.024,
+   "params_restritos_efetivos": 41472,
+   "lr_restrito": 0.001,
+   "minutos": 2.07,
+   "desloc_pct": 5.464999286147456,
+   "sigma_top10_abs_pct": 3.0031958692728405e-05,
+   "direcoes_preservadas": 0.9984883493019475,
+   "ganho_recuperado_pct": 85.12042230287058
+  },
+  "completo": {
+   "acuracia": {
+    "media": 81.297,
+    "dp": 0.4153459067117704,
+    "min": 80.69,
+    "max": 81.91,
+    "por_semente": [
+     81.12,
+     81.91,
+     80.8,
+     81.65,
+     81.54,
+     81.44,
+     80.9,
+     81.22,
+     81.7,
+     80.69
+    ]
+   },
+   "acuracia_treino_final": 98.181,
+   "params_restritos_efetivos": 0,
+   "lr_restrito": null,
+   "minutos": 1.26,
+   "desloc_pct": 0.5551609820556931,
+   "sigma_top10_abs_pct": 0.017816785277520668,
+   "direcoes_preservadas": 0.9906802208887207
+  },
+  "ganho_total": 3.031000000000006,
+  "rotacao_bloco3_menos_so_sigma": {
+   "media": 0.2759999999999991,
+   "sementes_rotacao_acima": 8
+  },
+  "completo_menos_so_sigma": {
+   "media": 0.727000000000001,
+   "sementes_completo_acima": 9
+  }
+ }
+}

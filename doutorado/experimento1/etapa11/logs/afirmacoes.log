@@ -1,0 +1,10 @@
+claim 1: holds | Sigma only recovers most of the gain of the 72 matrices in every pair, with at most 0.13% of their numbers.
+claim 2: holds | Full training stays above sigma only in every pair.
+claim 3: holds | At comparable cost, sigma only never lost to the 3-block rotation by more than 0.3 point, and in the large-gain pairs it won by 1.3 to 2.3 points in 10 of 10 seeds.
+claim 4: holds | The restrictions held in every pair: sigma only kept the directions and the rotation kept the sigmas.
+claim 5: holds | Free training changes the 10 largest sigmas by about 0.02% in every pair, while sigma only needs 3% to 12% to do its share of the work.
+claim 6: holds | The displacement of the 72 matrices is set by the variant and the step, not by the domain or the model.
+claim 7: holds | The rotation step was 1e-3 in every pair; the sigma step depended on the domain and not on the model.
+claim 8: holds | Sigma only saves no time per step and saves most of the gradient and optimizer memory, in both models.
+claim 9: holds | The frozen-body screening predicts neither the total gain nor the fraction that sigma only recovers.
+written: doutorado/experimento1/etapa11/afirmacoes_etapa11.json

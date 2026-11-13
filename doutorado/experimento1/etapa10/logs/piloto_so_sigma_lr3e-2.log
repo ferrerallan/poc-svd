@@ -1,0 +1,14 @@
+1) variant so_sigma | train 3312 | validacao 368 | classes 10 | restricted lr 0.03
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 7322.08it/s]
+   trainable parameters: restricted 27,648 | rest of the body 822,912 | head 3,850
+   accuracy before training (validacao): 6.2%
+   epoch 1/5  frozen   loss 1.097  train acc 77.9%  acc validacao 91.3%
+   epoch 2/5  free     loss 0.750  train acc 92.3%  acc validacao 92.4%
+   epoch 3/5  free     loss 0.620  train acc 96.8%  acc validacao 96.7%
+   epoch 4/5  free     loss 0.572  train acc 98.6%  acc validacao 96.7%
+   epoch 5/5  free     loss 0.554  train acc 99.3%  acc validacao 97.3%
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8348.18it/s]
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 8931.29it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 27.96it/s]
+
+DONE in 1.0 min | so_sigma | validacao: 6.2% -> 97.0% | saved in models/etapa10/piloto_so_sigma_lr3e-2/

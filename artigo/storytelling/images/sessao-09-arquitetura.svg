@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="660" viewBox="0 0 760 660" role="img" aria-labelledby="title"><title id="title">Liberar o corpo para aprender</title>
+<rect width="760" height="660" rx="20" fill="#f3f6f1"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8" fill="none" stroke="#237a63" stroke-width="1.5"/></marker></defs>
+<text x="30" y="42" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">01  O caminho desta sessão</text>
+<rect x="30" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="140.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Passada 1</text>
+<text x="140.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Só a cabeça aprende</text>
+<path d="M254 112 H266" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="270" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="380.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Passadas 2 a 5</text>
+<text x="380.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Liberar o corpo</text>
+<path d="M494 112 H506" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="510" y="65" width="220" height="94" rx="10" fill="#cfdfed"/>
+<text x="620.0" y="105.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Conferir os pesos</text>
+<text x="620.0" y="133.0" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="400" text-anchor="middle" fill="#233b49">Antes × depois</text>
+<path d="M380 171 V202" fill="none" stroke="#237a63" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="30" y="235" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">02  O que pode mudar em cada fase</text>
+<text x="30" y="283" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#233b49">Fase</text>
+<text x="300" y="283" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#233b49">Corpo</text>
+<text x="555" y="283" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#233b49">Cabeça</text>
+<rect x="30" y="303" width="230" height="62" rx="10" fill="#e1ebe2"/>
+<text x="145.0" y="341.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Passada 1</text>
+<rect x="280" y="303" width="210" height="62" rx="10" fill="#cfdfed"/>
+<text x="385.0" y="341.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Fixo</text>
+<rect x="510" y="303" width="220" height="62" rx="10" fill="#ffe2a4"/>
+<text x="620.0" y="341.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Aprende</text>
+<rect x="30" y="385" width="230" height="62" rx="10" fill="#e1ebe2"/>
+<text x="145.0" y="423.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Passadas 2 a 5</text>
+<rect x="280" y="385" width="210" height="62" rx="10" fill="#ffe2a4"/>
+<text x="385.0" y="423.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Aprende</text>
+<rect x="510" y="385" width="220" height="62" rx="10" fill="#ffe2a4"/>
+<text x="620.0" y="423.0" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="middle" fill="#233b49">Aprende</text>
+<text x="30" y="479" font-family="DejaVu Sans,sans-serif" font-size="18" font-weight="400" text-anchor="start" fill="#233b49">Conferência após liberar: 222 de 223 conjuntos mudaram.</text>
+<text x="30" y="540" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" text-anchor="start" fill="#233b49">03  O que ficou desta sessão</text>
+<rect x="30" y="560" width="700" height="76" rx="10" fill="#e1ebe2"/>
+<text x="48" y="588" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" text-anchor="start" fill="#233b49">A liberação fez a correção alcançar o corpo</text>
+<text x="48" y="616" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" text-anchor="start" fill="#233b49">A exceção foi um token de máscara, não usado nessa tarefa.</text>
+</svg>
